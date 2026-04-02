@@ -13,24 +13,7 @@ CREATE TABLE users (
   gender VARCHAR(30),
   gender_preference VARCHAR(30),
   buddy_status VARCHAR(30) NOT NULL DEFAULT 'not_applied' CHECK (
-    buddy_status IN ('not_applied', 'pending', 'approved', 'rejected')
-  ),
-  profile_photo_url TEXT,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE buddy_requests (
-  id SERIAL PRIMARY KEY,
-  international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  preferred_language VARCHAR(100),
-  support_topics TEXT[] DEFAULT ARRAY[]::TEXT[],
-  message TEXT,
-  status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (
-    status IN ('pending', 'accepted', 'declined', 'cancelled')
-  ),
-  created_at TIMESTAMP DEFAULT NOW(),
+    buddy_status IN ('not_applied', 'pending', 'approv
   responded_at TIMESTAMP
 );
 
