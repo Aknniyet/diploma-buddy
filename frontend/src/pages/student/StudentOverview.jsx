@@ -6,7 +6,13 @@ import NextStepsCard from "../../components/dashboard/NextStepsCard";
 
 function StudentOverviewPage() {
   const { user } = useAuth();
-  const [dashboard, setDashboard] = useState({ progress: 25, pendingRequests: 0, unreadMessages: 0, buddy: null });
+  const [dashboard, setDashboard] = useState({
+    progress: 0,
+    pendingRequests: 0,
+    unreadMessages: 0,
+    buddy: null,
+    nextSteps: [],
+  });
 
   useEffect(() => {
     apiRequest("/dashboard/student").then(setDashboard).catch(() => null);
@@ -24,14 +30,26 @@ function StudentOverviewPage() {
           <div className="dashboard-card">
             <h3 className="card-title">Profile Progress</h3>
             <div className="progress-value">{dashboard.progress}%</div>
-            <div className="progress-bar"><div className="progress-fill" style={{ width: `${dashboard.progress}%` }} /></div>
-            <p className="card-subtitle">Complete your profile and checklist to improve matching.</p>
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${dashboard.progress}%` }}
+              />
+            </div>
+            <p className="card-subtitle">
+              Complete your profile and checklist to improve matching.
+            </p>
           </div>
+
           <div className="dashboard-card">
             <h3 className="card-title">Your Buddy</h3>
             {dashboard.buddy ? (
               <div className="buddy-info">
-                <img src={dashboard.buddy.avatar} alt={dashboard.buddy.name} className="buddy-avatar" />
+                <img
+                  src={dashboard.buddy.avatar}
+                  alt={dashboard.buddy.name}
+                  className="buddy-avatar"
+                />
                 <div>
                   <h4>{dashboard.buddy.name}</h4>
                   <p>{dashboard.buddy.department}</p>
@@ -41,18 +59,25 @@ function StudentOverviewPage() {
               <p className="card-subtitle">No active buddy yet.</p>
             )}
           </div>
+
           <div className="dashboard-card">
             <h3 className="card-title">Unread Messages</h3>
             <div className="message-count">{dashboard.unreadMessages}</div>
-            <p className="card-subtitle">Pending requests: {dashboard.pendingRequests}</p>
+            <p className="card-subtitle">
+              Pending requests: {dashboard.pendingRequests}
+            </p>
           </div>
         </div>
 
         <div className="overview-bottom-grid">
-          <NextStepsCard />
+          <NextStepsCard steps={dashboard.nextSteps} />
           <div className="dashboard-card">
             <h3 className="card-title">Current Status</h3>
-            <p className="card-subtitle">{dashboard.buddy ? "You already have an active buddy and can message them now." : "You do not have an active buddy yet. Open Find Buddies to send a request."}</p>
+            <p className="card-subtitle">
+              {dashboard.buddy
+                ? "You already have an active buddy and can message them now."
+                : "You do not have an active buddy yet. Open Find Buddies to send a request."}
+            </p>
           </div>
         </div>
       </section>
@@ -61,4 +86,3 @@ function StudentOverviewPage() {
 }
 
 export default StudentOverviewPage;
-

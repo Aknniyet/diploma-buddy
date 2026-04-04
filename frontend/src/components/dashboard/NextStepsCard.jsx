@@ -1,34 +1,34 @@
 import { Link } from "react-router-dom";
-import { nextSteps } from "../../constants/dashboardData";
 
-function NextStepsCard() {
+function NextStepsCard({ steps = [] }) {
   return (
-    <section className="dashboard-card large-card">
-      <div className="card-header-row">
+    <div className="dashboard-card">
+      <div className="next-steps-header">
         <div>
-          <h3 className="section-title">Next Steps</h3>
-          <p className="section-subtitle">
-            Tasks to complete in your adaptation journey
-          </p>
+          <h3 className="card-title">Next Steps</h3>
+          <p className="card-subtitle">Tasks to complete in your adaptation journey</p>
         </div>
-
-        <Link to="/student/checklist" className="view-all-btn">
+         <Link to="/student/checklist" className="view-all-btn">
           View all
         </Link>
       </div>
 
-      <div className="steps-list">
-        {nextSteps.map((step) => (
-          <div className="step-item" key={step.id}>
-            <div className="step-circle" />
-            <div className="step-content">
-              <h4>{step.title}</h4>
-              <p>{step.description}</p>
+      {steps.length === 0 ? (
+        <p className="card-subtitle">All checklist tasks are completed 🎉</p>
+      ) : (
+        <div className="next-steps-list">
+          {steps.map((step) => (
+            <div key={step.id} className="next-step-row">
+              <div className="next-step-circle" />
+              <div className="next-step-content">
+                <h4>{step.title}</h4>
+                <p>{step.description}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </section>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

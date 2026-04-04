@@ -338,38 +338,52 @@ button {
   font-size: 15px;
 }
 
-.steps-list {
+.next-steps-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.next-steps-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.next-steps-list {
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-.step-item {
+.next-step-row {
   display: flex;
   align-items: flex-start;
   gap: 14px;
 }
 
-.step-circle {
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
+.next-step-circle {
+  width: 18px;
+  height: 18px;
   border-radius: 999px;
-  border: 2px solid #d1d5db;
-  margin-top: 4px;
+  border: 2px solid #cfd8dc;
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
-.step-content h4 {
+.next-step-content h4 {
   margin: 0 0 6px;
   font-size: 14px;
   font-weight: 700;
+  color: #0f172a;
 }
 
-.step-content p {
+.next-step-content p {
   margin: 0;
-  color: #6b7280;
+  font-size: 14px;
   line-height: 1.5;
-  font-size: 13px;
+  color: #667085;
 }
 
 .recent-messages-list {

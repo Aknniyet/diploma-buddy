@@ -2,10 +2,24 @@ import { Send } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSavedUser } from "../../lib/api";
 
-function formatMessageTime(date) {
-  return new Date(date).toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
+function formatDateLabel(dateValue) {
+  const date = new Date(dateValue);
+  const today = new Date();
+
+  const isToday = date.toDateString() === today.toDateString();
+
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  if (isToday) return "Today";
+  if (isYesterday) return "Yesterday";
+
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
   });
 }
 
@@ -26,6 +40,8 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
     setText("");
   };
 
+  let lastDate = null;
+
   return (
     <div className="chat-window-card">
       <div className="chat-header">
@@ -44,27 +60,43 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
 
       <div className="chat-messages">
         {messages.map((message) => {
+          const rawDate = message.date || message.createdAt || message.created_at;
+          const currentDate = rawDate ? new Date(rawDate).toDateString() : null;
+          const showDateDivider = currentDate && currentDate !== lastDate;
+
+          if (currentDate) {
+            lastDate = currentDate;
+          }
+
           const isMyMessage =
             message.sender === "me" ||
             message.senderId === currentUser?.id ||
             message.sender_id === currentUser?.id;
 
           return (
-            <div
-              key={message.id}
-              className={
-                isMyMessage
-                  ? "chat-message-row my-message"
-                  : "chat-message-row buddy-message"
-              }
-            >
-              <div className="chat-bubble">
-                <p>{message.text}</p>
-                <span>{formatMessageTime(message.createdAt || message.created_at)}</span>
+            <div key={message.id}>
+              {showDateDivider && (
+                <div className="chat-date-divider">
+                  {formatDateLabel(rawDate)}
+                </div>
+              )}
+
+              <div
+                className={
+                  isMyMessage
+                    ? "chat-message-row my-message"
+                    : "chat-message-row buddy-message"
+                }
+              >
+                <div className="chat-bubble">
+                  <p>{message.text}</p>
+                  <span>{message.time}</span>
+                </div>
               </div>
             </div>
           );
         })}
+
         <div ref={messagesEndRef} />
       </div>
 
