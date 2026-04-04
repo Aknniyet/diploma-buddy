@@ -13,7 +13,8 @@ CREATE TABLE users (
   gender VARCHAR(30),
   gender_preference VARCHAR(30),
   buddy_status VARCHAR(30) NOT NULL DEFAULT 'not_applied' CHECK (
-    buddy_status IN ('not_applied', 'pending', 'approv
+    buddy_status IN ('not_applied', 'pending', 'approved', 'rejected')
+  ),
   responded_at TIMESTAMP
 );
 

@@ -21,7 +21,6 @@ function CategoryTabs({ categories, selectedCategory, onSelectCategory }) {
             </div>
 
             <h4>{category.title}</h4>
-            <p>{category.progress}%</p>
           </button>
         );
       })}

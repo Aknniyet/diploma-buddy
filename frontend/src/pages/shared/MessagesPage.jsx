@@ -38,10 +38,13 @@ function MessagesPage({ userType = "student" }) {
 
   const handleSendMessage = async (text) => {
     if (!selectedConversation) return;
-    const result = await apiRequest(`/messages/conversations/${selectedConversation.id}/messages`, {
-      method: "POST",
-      body: JSON.stringify({ text }),
-    });
+    const result = await apiRequest(
+      `/messages/conversations/${selectedConversation.id}/messages`,
+      {
+        method: "POST",
+        body: JSON.stringify({ text }),
+      }
+    );
     setMessages((prev) => [...prev, result.message]);
     await loadConversations();
   };
@@ -56,13 +59,24 @@ function MessagesPage({ userType = "student" }) {
 
         <div className="messages-layout">
           {conversations.length > 0 ? (
-            <ConversationsList conversations={conversations} selectedConversation={selectedConversation} onSelectConversation={setSelectedConversation} />
+            <ConversationsList
+              conversations={conversations}
+              selectedConversation={selectedConversation}
+              onSelectConversation={setSelectedConversation}
+            />
           ) : (
-            <EmptyConversationsState title="No conversations yet" description="Accept or receive a match to start chatting." />
+            <EmptyConversationsState
+              title="No conversations yet"
+              description="Accept or receive a match to start chatting."
+            />
           )}
 
           {selectedConversation ? (
-            <ChatWindow conversation={selectedConversation} messages={messages} onSendMessage={handleSendMessage} />
+            <ChatWindow
+              conversation={selectedConversation}
+              messages={messages}
+              onSendMessage={handleSendMessage}
+            />
           ) : (
             <EmptyChatState />
           )}
