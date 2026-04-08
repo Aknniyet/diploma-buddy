@@ -136,6 +136,25 @@
   color: #6b7280;
 }
 
+.calendar-link {
+  display: inline-block;
+  margin-top: 6px;
+  color: #0ea5e9;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.calendar-link:hover {
+  text-decoration: underline;
+}
+
+.links-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 @media (max-width: 992px) {
   .guide-hero h1 {
     font-size: 42px;

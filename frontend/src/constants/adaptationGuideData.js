@@ -5,6 +5,7 @@ import {
   Heart,
   Bus,
   Users,
+  School,
 } from "lucide-react";
 
 export const quickTips = [
@@ -181,6 +182,51 @@ export const guideSections = [
         },
       ],
     },
-
-    
+    {
+      icon: FileText,
+      title: "Academic Calendar (AITU)",
+      subtitle: "Plan your semester with official university dates.",
+      items: [
+        {
+          title: "Bachelor Year 1",
+          content: "Includes semester start/end dates, exam sessions, and holidays.",
+          link: "/pdfs/calendar-year1.pdf",
+        },
+        {
+          title: "Bachelor Year 2",
+          content: " Important academic deadlines and exam periods.",
+          link: "/pdfs/calendar-year2.pdf",
+        },
+        {
+          title: "Bachelor Year 3",
+          content: "Final academic schedule and project deadlines.",
+          link: "/pdfs/calendar-year3.pdf",
+        },
+      ],
+    },
+    {
+      icon: School,
+      title: "University Life (AITU)",
+      subtitle: "Everything you need inside the university.",
+      items: [
+        {
+          title: "Dean’s Office",
+          content: "Contact your dean's office for academic issues.",
+        },
+        {
+          title: "Student Portal",
+          content: "Use university systems to check grades and schedule.",
+          links: [
+            {
+              label: "LMS Moodle",
+              url: "https://lms.astanait.edu.kz/",
+            },
+            {
+              label: "DU",
+              url: "https://du.astanait.edu.kz/",
+            },
+          ],
+        },
+      ],
+    },
 ];

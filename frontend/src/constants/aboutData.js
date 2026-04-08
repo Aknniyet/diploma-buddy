@@ -51,6 +51,6 @@ export const aboutValues = [
     id: 3,
     icon: Users,
     title: "Community",
-    text: "BuddyConnect is designed to strengthen friendship, trust, and communication across the student community.",
+    text: "KazakhBuddy is designed to strengthen friendship, trust, and communication across the student community.",
   },
 ];

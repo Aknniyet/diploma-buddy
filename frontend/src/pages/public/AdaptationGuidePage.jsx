@@ -58,6 +58,8 @@ function AdaptationGuidePage() {
                           key={itemIndex}
                           title={item.title}
                           content={item.content}
+                          link={item.link}
+                          links={item.links}
                         />
                       ))}
                     </div>

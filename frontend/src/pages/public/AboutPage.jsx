@@ -37,7 +37,7 @@ function AboutPage() {
               </p>
               <p>
                 By offering a simple and user-friendly space for communication
-                and guidance, BuddyConnect aims to make the transition to
+                and guidance, KazakhBuddy aims to make the transition to
                 student life in Kazakhstan less stressful and more welcoming.
               </p>
             </div>
