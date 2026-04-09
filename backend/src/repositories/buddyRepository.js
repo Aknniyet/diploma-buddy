@@ -135,7 +135,10 @@ export async function respondToBuddyRequest({ requestId, buddyId, action }) {
         [requestId]
       );
       await client.query('COMMIT');
-      return { message: 'Request declined.' };
+      return {
+        message: 'Request declined.',
+        studentId: buddyRequest.international_student_id,
+      };
     }
 
     const activeStudentsResult = await client.query(
@@ -182,7 +185,10 @@ export async function respondToBuddyRequest({ requestId, buddyId, action }) {
     );
 
     await client.query('COMMIT');
-    return { message: 'Request accepted. Match created successfully.' };
+    return {
+      message: 'Request accepted. Match created successfully.',
+      studentId: buddyRequest.international_student_id,
+    };
   } catch (error) {
     await client.query('ROLLBACK');
     throw error;

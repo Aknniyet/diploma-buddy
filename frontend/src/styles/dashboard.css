@@ -29,6 +29,16 @@ button {
   padding: 18px 16px 22px;
 }
 
+.dashboard-sidebar-backdrop,
+.sidebar-close-button,
+.dashboard-menu-button {
+  display: none;
+}
+
+.dashboard-sidebar-mobile-header {
+  display: block;
+}
+
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -154,10 +164,20 @@ button {
   z-index: 500;
 }
 
+.dashboard-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
 .dashboard-topbar h2 {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .topbar-actions {
@@ -174,6 +194,21 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.notification-bell-button {
+  position: relative;
+}
+
+.notification-dot {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #ef4444;
+  border: 2px solid #eef4f4;
 }
 
 .topbar-avatar {
@@ -434,6 +469,95 @@ button {
   }
 
   .dashboard-sidebar {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(320px, calc(100vw - 32px));
+    max-width: 100%;
+    z-index: 1200;
+    border-right: none;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    overflow-y: auto;
+  }
+
+  .dashboard-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .dashboard-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    border: none;
+    padding: 0;
+    background: rgba(15, 23, 42, 0.32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 1100;
+  }
+
+  .dashboard-sidebar-backdrop.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dashboard-sidebar-mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .sidebar-close-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 12px;
+    background: #e3efee;
+    color: #0f172a;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .dashboard-menu-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #d8e4e3;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #111827;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-topbar {
+    padding: 0 14px;
+  }
+
+  .dashboard-content {
+    padding: 14px;
+  }
+
+  .dashboard-card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .card-header-row,
+  .next-steps-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 }

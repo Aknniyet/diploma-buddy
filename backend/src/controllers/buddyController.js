@@ -12,6 +12,8 @@ import {
   respondToBuddyRequest,
 } from '../repositories/buddyRepository.js';
 import { formatBuddyCard } from '../services/matchingService.js';
+import { createNotification } from '../repositories/notificationRepository.js';
+import { findUserProfileById } from '../repositories/userRepository.js';
 
 export async function getAvailableBuddies(req, res) {
   try {
@@ -80,8 +82,20 @@ export async function createRequest(req, res) {
       message,
     });
 
+    const studentResult = await findUserProfileById(req.user.id);
+    const studentName = studentResult.rows[0]?.full_name || 'A student';
+
+    await createNotification({
+      userId: buddyId,
+      type: 'request_received',
+      title: 'New buddy request',
+      description: `${studentName} sent you a buddy request.`,
+      referenceType: 'buddy_request',
+      referenceId: result.rows[0].id,
+    }).catch(() => null);
+
     return res.status(201).json({
-      message: 'Your request has been sent. Please wait for the buddy’s response.',
+      message: 'Your request has been sent. Please wait for the buddyвЂ™s response.',
       request: result.rows[0],
     });
   } catch (error) {
@@ -149,6 +163,23 @@ export async function respondToRequest(req, res) {
       buddyId: req.user.id,
       action,
     });
+
+    const buddyResult = await findUserProfileById(req.user.id);
+    const buddyName = buddyResult.rows[0]?.full_name || 'Your buddy';
+
+    if (result.studentId) {
+      await createNotification({
+        userId: result.studentId,
+        type: action === 'accept' ? 'request_accepted' : 'request_declined',
+        title: action === 'accept' ? 'Buddy request accepted' : 'Buddy request declined',
+        description:
+          action === 'accept'
+            ? `${buddyName} accepted your buddy request.`
+            : `${buddyName} declined your buddy request.`,
+        referenceType: 'buddy_request',
+        referenceId: Number(requestId),
+      }).catch(() => null);
+    }
 
     return res.json(result);
   } catch (error) {
