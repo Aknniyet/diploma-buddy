@@ -1,27 +1,27 @@
 import "../../styles/footer.css";
+import { useI18n } from "../../context/I18nContext";
 
 function Footer() {
+  const { t } = useI18n();
+
   return (
     <footer className="footer">
       <div className="container footer-content">
 
         <div className="footer-column">
-          <h3>KazakhBuddy</h3>
-          <p>
-            Connecting international students with local buddies to make
-            their transition to university life easier.
-          </p>
+          <h3>{t("common.brand")}</h3>
+          <p>{t("footer.description")}</p>
         </div>
 
         <div className="footer-column">
-          <h4>Quick Links</h4>
-          <a href="/about">About</a>
-          <a href="/guide">Adaptation Guide</a>
-          <a href="/signup">Join as Student</a>
+          <h4>{t("footer.quickLinks")}</h4>
+          <a href="/about">{t("nav.about")}</a>
+          <a href="/guide">{t("nav.guide")}</a>
+          <a href="/signup">{t("footer.joinAsStudent")}</a>
         </div>
 
         <div className="footer-column">
-          <h4>Contact</h4>
+          <h4>{t("footer.contact")}</h4>
           <p>support@kazakhbuddy.kz</p>
           <p>Astana, Kazakhstan</p>
         </div>
@@ -29,7 +29,7 @@ function Footer() {
       </div>
 
       <div className="footer-bottom">
-        © 2026 KazakhBuddy. Made for international students.
+        © 2026 {t("common.brand")}. {t("footer.madeForStudents")}
       </div>
     </footer>
   );

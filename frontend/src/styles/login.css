@@ -15,6 +15,39 @@
   align-items: center;
 }
 
+.auth-language-switcher {
+  align-self: flex-end;
+  margin-bottom: 16px;
+}
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: #f1f7f7;
+  border: 1px solid #d8eceb;
+  border-radius: 999px;
+}
+
+.language-switcher-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.language-switcher-button.active {
+  background: #ffffff;
+  color: #0f9aa8;
+  box-shadow: 0 4px 12px rgba(15, 154, 168, 0.12);
+}
+
 .login-brand {
   display: flex;
   align-items: center;
@@ -120,6 +153,48 @@
 
 .login-button:active {
   transform: translateY(1px);
+}
+
+.login-secondary-action {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-secondary-action p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.login-secondary-button {
+  width: 100%;
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid #b9dede;
+  background: #f4fbfb;
+  color: #0f7f8a;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.login-secondary-button:hover {
+  background: #e8f7f7;
+  border-color: #97cfd0;
+}
+
+.login-secondary-button:active {
+  transform: translateY(1px);
+}
+
+.login-secondary-button:disabled,
+.login-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
 }
 
 .login-footer-text {

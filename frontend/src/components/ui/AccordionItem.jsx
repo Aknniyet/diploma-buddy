@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useI18n } from "../../context/I18nContext";
 
 function AccordionItem({ title, content, link, links }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useI18n();
 
   return (
     <div className="accordion-item">
@@ -26,7 +28,7 @@ function AccordionItem({ title, content, link, links }) {
               rel="noreferrer"
               className="calendar-link"
             >
-              Download PDF
+              {t("guide.downloadPdf")}
             </a>
           )}
 

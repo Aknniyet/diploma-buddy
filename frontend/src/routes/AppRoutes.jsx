@@ -4,6 +4,9 @@ import AboutPage from "../pages/public/AboutPage";
 import AdaptationGuidePage from "../pages/public/AdaptationGuidePage";
 import LoginPage from "../pages/public/LoginPage";
 import SignupPage from "../pages/public/SignupPage";
+import VerifyEmailPage from "../pages/public/VerifyEmailPage";
+import ForgotPasswordPage from "../pages/public/ForgotPasswordPage";
+import ResetPasswordPage from "../pages/public/ResetPasswordPage";
 import MessagesPage from "../pages/shared/MessagesPage";
 import NotificationsPage from "../pages/shared/NotificationsPage";
 import ProfilePage from "../pages/shared/ProfilePage";
@@ -25,6 +28,9 @@ function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/guide" element={<AdaptationGuidePage />} />
 
@@ -36,6 +42,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/buddy/messages"
         element={
@@ -44,6 +51,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/student/notifications"
         element={
@@ -52,6 +60,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/buddy/notifications"
         element={
@@ -60,6 +69,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/student/profile"
         element={
@@ -68,6 +78,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/buddy/profile"
         element={
@@ -76,6 +87,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/student/events"
         element={
@@ -92,6 +104,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/student/find-buddies"
         element={
@@ -100,6 +113,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/student/checklist"
         element={
@@ -108,6 +122,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/buddy/events"
         element={
@@ -124,6 +139,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/buddy/my-buddies"
         element={
@@ -132,6 +148,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/buddy/buddy-requests"
         element={
@@ -140,6 +157,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/admin/matches"
         element={

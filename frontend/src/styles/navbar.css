@@ -17,11 +17,35 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.logo-mark {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: inline-flex;
+  align-items: baseline;
   font-size: 22px;
   font-weight: 700;
   color: #111827;
-  text-decoration: none;
   letter-spacing: -0.03em;
+}
+
+.logo-text-primary {
+  color: #111827;
+}
+
+.logo-text-accent {
+  color: #0f9aa8;
 }
 
 .nav-panel {
@@ -77,6 +101,34 @@
   gap: 20px;
 }
 
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: #f1f7f7;
+  border: 1px solid #d8eceb;
+  border-radius: 999px;
+}
+
+.language-switcher-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.language-switcher-button.active {
+  background: #ffffff;
+  color: #0f9aa8;
+  box-shadow: 0 4px 12px rgba(15, 154, 168, 0.12);
+}
+
 .login {
   text-decoration: none;
   color: #374151;
@@ -114,6 +166,15 @@
     border: none;
     border-radius: 0;
     box-shadow: none;
+  }
+
+  .logo-mark {
+    width: 48px;
+    height: 48px;
+  }
+
+  .logo-text {
+    font-size: 20px;
   }
 
   .nav-toggle {
@@ -154,6 +215,10 @@
     gap: 8px;
   }
 
+  .language-switcher {
+    justify-content: center;
+  }
+
   .nav-link {
     padding: 10px 12px;
     text-align: center;
@@ -175,9 +240,13 @@
 }
 
 @media (max-width: 480px) {
-  .logo {
-    font-size: 16px;
-    text-align: center;
+  .logo-mark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .logo-text {
+    font-size: 18px;
   }
 
   .navbar-content {
@@ -198,10 +267,7 @@
     border-radius: 10px;
   }
 
-  .login {
-    font-size: 13px;
-  }
-
+  .login,
   .signup-btn {
     font-size: 13px;
   }

@@ -1,18 +1,19 @@
 import bcrypt from "bcrypt";
 import { pool } from "../config/db.js";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@kazakhbuddy.kz";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const ADMIN_NAME = process.env.ADMIN_NAME || "KazakhBuddy Admin";
+const ADMIN_NAME = process.env.ADMIN_NAME ;
 
 async function seedAdmin() {
   try {
     if (!ADMIN_PASSWORD) {
       throw new Error(
-        "ADMIN_PASSWORD is missing. Add it to backend/.env before running db:seed-admin."
+        "ADMIN_PASSWORD is missing.."
       );
     }
 
+    const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
     const existingAdmin = await pool.query(
       `SELECT id, email
        FROM users
@@ -21,11 +22,22 @@ async function seedAdmin() {
     );
 
     if (existingAdmin.rows.length > 0) {
-      console.log(`Admin already exists: ${ADMIN_EMAIL}`);
+      await pool.query(
+        `UPDATE users
+         SET full_name = $2,
+             password_hash = $3,
+             role = 'admin',
+             buddy_status = 'not_applied',
+             email_verified = TRUE,
+             updated_at = NOW()
+         WHERE email = $1`,
+        [ADMIN_EMAIL, ADMIN_NAME, passwordHash]
+      );
+
+      console.log(`Admin already exists and was updated: ${ADMIN_EMAIL}`);
+      console.log(`Password: ${ADMIN_PASSWORD}`);
       return;
     }
-
-    const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
 
     await pool.query(
       `INSERT INTO users (
@@ -33,9 +45,10 @@ async function seedAdmin() {
         email,
         password_hash,
         role,
-        buddy_status
+        buddy_status,
+        email_verified
       )
-      VALUES ($1, $2, $3, 'admin', 'not_applied')`,
+      VALUES ($1, $2, $3, 'admin', 'not_applied', TRUE)`,
       [ADMIN_NAME, ADMIN_EMAIL, passwordHash]
     );
 
@@ -43,7 +56,7 @@ async function seedAdmin() {
     console.log(`Email: ${ADMIN_EMAIL}`);
     console.log("Password: loaded from ADMIN_PASSWORD");
   } catch (error) {
-    console.error("Seed admin error:", error.message);
+    console.error("Seed admin error:", error);
     process.exitCode = 1;
   } finally {
     await pool.end();

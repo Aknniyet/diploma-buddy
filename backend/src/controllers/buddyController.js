@@ -30,9 +30,12 @@ export async function getAvailableBuddies(req, res) {
     const requestStatuses = await findStudentRequestStatuses(req.user.id);
     const statusMap = new Map(requestStatuses.rows.map((item) => [item.buddy_id, item.status]));
 
-    const buddiesResult = await findAvailableBuddies();
+    const buddiesResult = await findAvailableBuddies(activeMatchBuddyId);
+    const buddyRows = activeMatchBuddyId
+      ? buddiesResult.rows.filter((buddy) => buddy.id === activeMatchBuddyId)
+      : buddiesResult.rows;
 
-    const buddies = buddiesResult.rows
+    const buddies = buddyRows
       .map((buddy) => formatBuddyCard(student, buddy, statusMap, activeMatchBuddyId))
       .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 

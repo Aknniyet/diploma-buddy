@@ -14,12 +14,15 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
+console.log("CORS frontend URL:", env.frontendUrl);
+
 app.use(
   cors({
-    origin: env.frontendUrl,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
+
 app.use(express.json());
 
 app.get("/", (_req, res) => {

@@ -27,7 +27,7 @@ export function findStudentRequestStatuses(studentId) {
   );
 }
 
-export function findAvailableBuddies() {
+export function findAvailableBuddies(activeMatchBuddyId = null) {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
             u.about_you, u.gender, u.buddy_status, u.profile_photo_url,
@@ -37,7 +37,9 @@ export function findAvailableBuddies() {
      WHERE u.role = 'local' AND u.buddy_status = 'approved'
      GROUP BY u.id
      HAVING COUNT(m.id) FILTER (WHERE m.status = 'active') < 3
-     ORDER BY u.full_name ASC`
+        OR u.id = $1
+     ORDER BY u.full_name ASC`,
+    [activeMatchBuddyId]
   );
 }
 

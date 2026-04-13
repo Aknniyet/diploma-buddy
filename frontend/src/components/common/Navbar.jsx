@@ -1,18 +1,31 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import "../../styles/navbar.css";
 import { NavLink } from "react-router-dom";
+import "../../styles/navbar.css";
+import logo from "../../assets/kazakhbuddy-logo.png";
+import { useI18n } from "../../context/I18nContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { t } = useI18n();
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
     <header className="navbar">
       <div className="container navbar-content">
-        <NavLink to="/" className="logo" onClick={closeMenu}>
-          KazakhBuddy
+        <NavLink
+          to="/"
+          className="logo"
+          aria-label={`${t("common.brand")} home`}
+          onClick={closeMenu}
+        >
+          <img src={logo} alt="KazakhBuddy logo" className="logo-mark" />
+          <span className="logo-text">
+            <span className="logo-text-primary">Kazakh</span>
+            <span className="logo-text-accent">Buddy</span>
+          </span>
         </NavLink>
 
         <button
@@ -31,7 +44,7 @@ function Navbar() {
               className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
               onClick={closeMenu}
             >
-              Home
+              {t("nav.home")}
             </NavLink>
 
             <NavLink
@@ -39,7 +52,7 @@ function Navbar() {
               className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
               onClick={closeMenu}
             >
-              About
+              {t("nav.about")}
             </NavLink>
 
             <NavLink
@@ -47,17 +60,19 @@ function Navbar() {
               className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
               onClick={closeMenu}
             >
-              Adaptation Guide
+              {t("nav.guide")}
             </NavLink>
           </nav>
 
           <div className="nav-actions">
+            <LanguageSwitcher />
+
             <NavLink to="/login" className="login" onClick={closeMenu}>
-              Log in
+              {t("common.logIn")}
             </NavLink>
 
             <NavLink to="/signup" className="signup-btn" onClick={closeMenu}>
-              Sign up
+              {t("common.signUp")}
             </NavLink>
           </div>
         </div>
