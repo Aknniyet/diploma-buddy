@@ -11,7 +11,12 @@ function DashboardTopbar({
 }) {
   const { user } = useAuth();
   const [notifications, setNotifications] = useState([]);
-  const notificationsPath = sidebarType === "buddy" ? "/buddy/notifications" : "/student/notifications";
+  const notificationsPath =
+    sidebarType === "buddy"
+      ? "/buddy/notifications"
+      : sidebarType === "student"
+      ? "/student/notifications"
+      : null;
   const displayName = user?.full_name || user?.name || "User";
   const initials = displayName
     .split(" ")
@@ -33,6 +38,11 @@ function DashboardTopbar({
         setNotifications(Array.isArray(data) ? data : []);
       }
     };
+
+    if (!notificationsPath) {
+      setNotifications([]);
+      return () => {};
+    }
 
     loadNotifications().catch(() => null);
 
@@ -64,10 +74,12 @@ function DashboardTopbar({
         <h2>{title}</h2>
       </div>
       <div className="topbar-actions">
-        <Link to={notificationsPath} className="icon-button notification-bell-button">
-          <Bell size={20} />
-          {hasUnreadNotifications ? <span className="notification-dot" /> : null}
-        </Link>
+        {notificationsPath ? (
+          <Link to={notificationsPath} className="icon-button notification-bell-button">
+            <Bell size={20} />
+            {hasUnreadNotifications ? <span className="notification-dot" /> : null}
+          </Link>
+        ) : null}
         <div className="topbar-avatar" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
           {initials}
         </div>

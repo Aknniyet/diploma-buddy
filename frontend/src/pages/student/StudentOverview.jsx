@@ -13,9 +13,13 @@ function StudentOverviewPage() {
     buddy: null,
     nextSteps: [],
   });
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     apiRequest("/dashboard/student").then(setDashboard).catch(() => null);
+    apiRequest("/events")
+      .then((data) => setEvents((Array.isArray(data) ? data : []).slice(0, 2)))
+      .catch(() => null);
   }, []);
 
   return (
@@ -72,12 +76,28 @@ function StudentOverviewPage() {
         <div className="overview-bottom-grid">
           <NextStepsCard steps={dashboard.nextSteps} />
           <div className="dashboard-card">
-            <h3 className="card-title">Current Status</h3>
-            <p className="card-subtitle">
-              {dashboard.buddy
-                ? "You already have an active buddy and can message them now."
-                : "You do not have an active buddy yet. Open Find Buddies to send a request."}
-            </p>
+            <h3 className="card-title">Upcoming Events</h3>
+            {events.length > 0 ? (
+              <div className="recent-messages-list">
+                {events.map((event) => (
+                  <div key={event.id} className="recent-message-content">
+                    <h4>{event.title}</h4>
+                    <p>
+                      {new Date(event.event_date).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                      {" · "}
+                      {event.location || "Location TBD"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="card-subtitle">No upcoming events yet.</p>
+            )}
           </div>
         </div>
       </section>

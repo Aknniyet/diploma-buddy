@@ -2,6 +2,7 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { LogOut, Users, X } from "lucide-react";
 import { sidebarLinks } from "../../constants/dashboardData";
 import { localSidebarLinks } from "../../constants/localDashboardData";
+import { adminSidebarLinks } from "../../constants/adminDashboardData";
 import { useAuth } from "../../context/AuthContext";
 
 function DashboardSidebar({
@@ -12,7 +13,12 @@ function DashboardSidebar({
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const links = sidebarType === "buddy" ? localSidebarLinks : sidebarLinks;
+  const links =
+    sidebarType === "buddy"
+      ? localSidebarLinks
+      : sidebarType === "admin"
+      ? adminSidebarLinks
+      : sidebarLinks;
 
   const displayName = user?.full_name || user?.name || "User";
   const initials = displayName
@@ -61,6 +67,7 @@ function DashboardSidebar({
                 <NavLink
                   key={item.id}
                   to={item.path}
+                  end={item.end}
                   className={({ isActive }) => (isActive ? "sidebar-link active" : "sidebar-link")}
                   onClick={onClose}
                 >

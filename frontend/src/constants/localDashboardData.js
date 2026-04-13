@@ -1,4 +1,5 @@
 import {
+  CalendarDays,
   LayoutGrid,
   Users,
   Bell,
@@ -34,12 +35,18 @@ export const localSidebarLinks = [
   },
   {
     id: 5,
+    label: "Events",
+    path: "/buddy/events",
+    icon: CalendarDays,
+  },
+  {
+    id: 6,
     label: "Notifications",
     path: "/buddy/notifications",
     icon: Bell,
   },
   {
-    id: 6,
+    id: 7,
     label: "Profile",
     path: "/buddy/profile",
     icon: User,

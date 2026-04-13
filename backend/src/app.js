@@ -10,6 +10,7 @@ import messageRoutes from "./routes/messageRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import checklistRoutes from "./routes/checklistRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/checklist", checklistRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.originalUrl} not found.` });

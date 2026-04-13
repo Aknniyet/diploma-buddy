@@ -88,3 +88,14 @@ export function updateUserProfile(userId, profileData) {
     ]
   );
 }
+
+export function updateBuddyStatus(userId, buddyStatus) {
+  return query(
+    `UPDATE users
+     SET buddy_status = $2,
+         updated_at = NOW()
+     WHERE id = $1 AND role = 'local'
+     RETURNING id, full_name, email, role, buddy_status`,
+    [userId, buddyStatus]
+  );
+}

@@ -16,8 +16,9 @@ button {
 .dashboard-layout {
   display: grid;
   grid-template-columns: 272px 1fr;
-  min-height: 100vh;
+  height: 100vh;
   background: #eef4f4;
+  overflow: hidden;
 }
 
 .dashboard-sidebar {
@@ -27,6 +28,8 @@ button {
   background: #edf4f3;
   border-right: 1px solid #d8e4e3;
   padding: 18px 16px 22px;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .dashboard-sidebar-backdrop,
@@ -149,6 +152,8 @@ button {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .dashboard-topbar {
@@ -220,6 +225,9 @@ button {
 
 .dashboard-content {
   padding: 18px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .overview-page {
@@ -466,6 +474,9 @@ button {
 @media (max-width: 900px) {
   .dashboard-layout {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
   }
 
   .dashboard-sidebar {
@@ -537,6 +548,16 @@ button {
     background: #ffffff;
     color: #111827;
     cursor: pointer;
+  }
+
+  .dashboard-main {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .dashboard-content {
+    overflow: visible;
   }
 }
 

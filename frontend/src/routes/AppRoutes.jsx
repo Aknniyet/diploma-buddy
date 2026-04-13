@@ -7,6 +7,7 @@ import SignupPage from "../pages/public/SignupPage";
 import MessagesPage from "../pages/shared/MessagesPage";
 import NotificationsPage from "../pages/shared/NotificationsPage";
 import ProfilePage from "../pages/shared/ProfilePage";
+import EventsPage from "../pages/shared/EventsPage";
 import StudentOverview from "../pages/student/StudentOverview";
 import FindBuddiesPage from "../pages/student/FindBuddiesPage";
 import AdaptationChecklistPage from "../pages/student/AdaptationChecklistPage";
@@ -14,6 +15,8 @@ import BuddyOverviewPage from "../pages/buddy/BuddyOverviewPage";
 import MyBuddiesPage from "../pages/buddy/MyBuddiesPage";
 import BuddyRequestsPage from "../pages/buddy/BuddyRequestsPage";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import AdminEventsPage from "../pages/admin/AdminEventsPage";
+import AdminMatchesPage from "../pages/admin/AdminMatchesPage";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 function AppRoutes() {
@@ -74,6 +77,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/student/events"
+        element={
+          <ProtectedRoute allowedRoles={["international"]}>
+            <EventsPage userType="student" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/student/overview"
         element={
           <ProtectedRoute allowedRoles={["international"]}>
@@ -98,6 +109,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/buddy/events"
+        element={
+          <ProtectedRoute allowedRoles={["local"]}>
+            <EventsPage userType="buddy" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/buddy/overview"
         element={
           <ProtectedRoute allowedRoles={["local"]}>
@@ -118,6 +137,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["local"]}>
             <BuddyRequestsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/matches"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminMatchesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/events"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminEventsPage />
           </ProtectedRoute>
         }
       />
