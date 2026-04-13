@@ -334,16 +334,161 @@
 @media (max-width: 1100px) {
   .messages-layout {
     grid-template-columns: 1fr;
-    height: auto;
+    height: calc(100vh - 170px);
+    align-content: start;
+  }
+
+  .messages-sidebar-card {
+    min-height: 0;
+    max-height: 280px;
   }
 
   .chat-window-card,
-  .messages-sidebar-card,
   .empty-chat-state {
-    min-height: 500px;
+    min-height: 0;
+    height: calc(100vh - 470px);
   }
 
   .conversations-list {
-    max-height: 280px;
+    max-height: 194px;
+  }
+}
+
+@media (max-width: 768px) {
+  .messages-page {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 130px);
+  }
+
+  .messages-page-header {
+    margin-bottom: 14px;
+  }
+
+  .messages-page-header h1 {
+    font-size: 20px;
+  }
+
+  .messages-page-header p {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .messages-layout {
+    gap: 12px;
+    height: calc(100vh - 210px);
+    min-height: 0;
+  }
+
+  .messages-sidebar-card,
+  .chat-window-card {
+    border-radius: 18px;
+  }
+
+  .messages-sidebar-card {
+    max-height: 220px;
+  }
+
+  .messages-card-header {
+    height: 64px;
+    padding: 0 16px;
+  }
+
+  .messages-card-header h3 {
+    font-size: 16px;
+  }
+
+  .conversations-list {
+    padding: 10px 8px 10px;
+    max-height: 156px;
+  }
+
+  .conversation-item {
+    padding: 12px;
+    gap: 12px;
+    border-radius: 14px;
+  }
+
+  .conversation-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .conversation-text h4 {
+    font-size: 14px;
+  }
+
+  .conversation-text p {
+    font-size: 12px;
+  }
+
+  .chat-window-card,
+  .empty-chat-state {
+    height: calc(100vh - 442px);
+    min-height: 360px;
+  }
+
+  .chat-header {
+    height: 74px;
+    padding: 0 16px;
+  }
+
+  .chat-user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .chat-user h3 {
+    font-size: 15px;
+  }
+
+  .chat-user p {
+    font-size: 12px;
+  }
+
+  .chat-messages {
+    padding: 14px 12px;
+    gap: 12px;
+  }
+
+  .chat-bubble {
+    max-width: 82%;
+    padding: 12px 14px 9px;
+  }
+
+  .chat-bubble p {
+    font-size: 13px;
+  }
+
+  .chat-bubble span {
+    font-size: 11px;
+  }
+
+  .chat-input-area {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messages-layout {
+    height: calc(100vh - 196px);
+  }
+
+  .messages-sidebar-card {
+    max-height: 204px;
+  }
+
+  .conversations-list {
+    max-height: 140px;
+  }
+
+  .chat-window-card,
+  .empty-chat-state {
+    height: calc(100vh - 404px);
+    min-height: 330px;
+  }
+
+  .chat-bubble {
+    max-width: 88%;
   }
 }

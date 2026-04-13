@@ -1,5 +1,8 @@
 .footer {
-  margin-top: 50px;
+  margin-top: 0;
+  background: linear-gradient(180deg, #f8fbfb 0%, #eef5f5 100%);
+  border-top: 1px solid #dce7e7;
+  padding-top: 40px;
 }
 
 .footer-content {
@@ -12,11 +15,13 @@
 .footer-column h3 {
   font-size: 20px;
   margin-bottom: 12px;
+  color: #111827;
 }
 
 .footer-column h4 {
   font-size: 16px;
   margin-bottom: 14px;
+  color: #111827;
 }
 
 .footer-column p {
@@ -44,4 +49,30 @@
   font-size: 14px;
   color: #6b7280;
   margin-top: 10px;
+}
+
+@media (max-width: 900px) {
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    padding: 56px 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    margin-top: 0;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    padding: 36px 0 28px;
+  }
+
+  .footer-bottom {
+    padding: 18px 0 22px;
+    font-size: 13px;
+    margin-top: 0;
+  }
 }

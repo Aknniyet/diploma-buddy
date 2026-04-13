@@ -71,14 +71,16 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  align-items: stretch;
 }
 
 .about-feature-card {
   background: #ffffff;
   border: 1px solid #d8e4e3;
   border-radius: 18px;
-  padding: 18px 16px;
+  padding: 22px 20px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  min-width: 0;
 }
 
 .about-feature-icon {
@@ -98,6 +100,9 @@
   font-size: 17px;
   font-weight: 700;
   color: #0f172a;
+  line-height: 1.3;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .about-feature-card p {
@@ -105,6 +110,8 @@
   font-size: 14px;
   line-height: 1.65;
   color: #667085;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .about-center-block {
@@ -135,8 +142,12 @@
 
 .about-value-card {
   text-align: center;
-  background: transparent;
-  padding: 8px 10px;
+  background: #ffffff;
+  border: 1px solid #d8e4e3;
+  border-radius: 22px;
+  padding: 28px 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  min-width: 0;
 }
 
 .about-value-icon {
@@ -156,6 +167,9 @@
   font-size: 18px;
   font-weight: 700;
   color: #0f172a;
+  line-height: 1.3;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .about-value-card p {
@@ -163,6 +177,8 @@
   font-size: 14px;
   line-height: 1.7;
   color: #667085;
+  word-break: normal;
+  overflow-wrap: normal;
 }
 
 .about-cta-section {
@@ -205,8 +221,12 @@
     grid-template-columns: 1fr;
   }
 
+  .about-feature-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .about-values-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -225,6 +245,15 @@
 
   .about-feature-cards {
     grid-template-columns: 1fr;
+  }
+
+  .about-values-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-feature-card,
+  .about-value-card {
+    padding: 20px 18px;
   }
 
   .about-text-block h2,

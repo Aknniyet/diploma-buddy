@@ -172,6 +172,14 @@
   color: #667085;
 }
 
+.buddy-card-footer small {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: #0f172a;
+  text-align: left;
+}
+
 .connect-btn {
   border: none;
   border-radius: 12px;

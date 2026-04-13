@@ -5,6 +5,8 @@ import {
   findMessagesInConversation,
   markMessagesAsRead,
 } from '../repositories/messageRepository.js';
+import { createNotification } from '../repositories/notificationRepository.js';
+import { findUserProfileById } from '../repositories/userRepository.js';
 
 function formatMessageTime(dateValue) {
   return new Date(dateValue).toLocaleTimeString("en-GB", {
@@ -78,6 +80,22 @@ export async function sendMessage(req, res) {
     }
 
     const result = await createMessage(conversationId, req.user.id, text);
+    const conversation = conversationCheck.rows[0];
+    const recipientId =
+      conversation.international_student_id === req.user.id
+        ? conversation.buddy_id
+        : conversation.international_student_id;
+    const senderResult = await findUserProfileById(req.user.id);
+    const senderName = senderResult.rows[0]?.full_name || 'A user';
+
+    await createNotification({
+      userId: recipientId,
+      type: 'new_message',
+      title: 'New message',
+      description: `${senderName} sent you a new message.`,
+      referenceType: 'conversation',
+      referenceId: Number(conversationId),
+    }).catch(() => null);
 
     return res.status(201).json({
       message: {

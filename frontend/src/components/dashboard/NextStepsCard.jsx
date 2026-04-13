@@ -14,7 +14,7 @@ function NextStepsCard({ steps = [] }) {
       </div>
 
       {steps.length === 0 ? (
-        <p className="card-subtitle">All checklist tasks are completed 🎉</p>
+        <p className="card-subtitle">All checklist tasks are completed </p>
       ) : (
         <div className="next-steps-list">
           {steps.map((step) => (

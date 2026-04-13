@@ -28,11 +28,13 @@ function formatDate(date) {
 
 function NotificationsPage({ userType = "student" }) {
   const [notifications, setNotifications] = useState([]);
+  const [loadError, setLoadError] = useState("");
 
   const loadNotifications = async () => {
     const data = await apiRequest("/notifications");
+    const items = Array.isArray(data) ? data : [];
     setNotifications(
-      data.map((item) => ({
+      items.map((item) => ({
         id: item.id,
         title: item.title,
         description: item.description,
@@ -41,10 +43,14 @@ function NotificationsPage({ userType = "student" }) {
         icon: iconMap[item.type] || Bell,
       }))
     );
+    setLoadError("");
   };
 
   useEffect(() => {
-    loadNotifications().catch(() => null);
+    loadNotifications().catch((error) => {
+      setLoadError(error.message || "Could not load notifications.");
+      setNotifications([]);
+    });
   }, []);
 
   const unreadCount = useMemo(
@@ -55,16 +61,19 @@ function NotificationsPage({ userType = "student" }) {
   const handleMarkRead = async (id) => {
     await apiRequest(`/notifications/${id}/read`, { method: "PATCH" });
     setNotifications((prev) => prev.map((item) => (item.id === id ? { ...item, read: true } : item)));
+    window.dispatchEvent(new Event("notifications-updated"));
   };
 
   const handleDelete = async (id) => {
     await apiRequest(`/notifications/${id}`, { method: "DELETE" });
     setNotifications((prev) => prev.filter((item) => item.id !== id));
+    window.dispatchEvent(new Event("notifications-updated"));
   };
 
   const handleMarkAllRead = async () => {
     await apiRequest("/notifications/mark-all-read", { method: "PATCH" });
     setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    window.dispatchEvent(new Event("notifications-updated"));
   };
 
   return (
@@ -80,6 +89,10 @@ function NotificationsPage({ userType = "student" }) {
             <h3>Recent Notifications</h3>
             <p>Stay updated on your requests, matches, and messages.</p>
           </div>
+
+          {loadError ? (
+            <div className="notifications-load-error">{loadError}</div>
+          ) : null}
 
           {notifications.length > 0 ? (
             <NotificationsList notifications={notifications} onMarkRead={handleMarkRead} onDelete={handleDelete} />

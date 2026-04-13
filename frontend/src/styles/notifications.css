@@ -71,6 +71,16 @@
   padding: 0 10px 14px;
 }
 
+.notifications-load-error {
+  margin: 0 24px 18px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #9f1239;
+  font-size: 14px;
+}
+
 .notification-item {
   display: flex;
   align-items: flex-start;

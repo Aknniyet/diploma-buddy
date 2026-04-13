@@ -36,7 +36,7 @@ function BuddyCard({ buddy, onConnect }) {
         {(buddy.interests || []).map((tag) => <span key={tag} className="buddy-tag">{tag}</span>)}
       </div>
 
-      <div className="buddy-card-footer" style={{ alignItems: "center" }}>
+      <div className="buddy-card-footer">
         <div>
           <p>{buddy.spotsAvailable} spots available</p>
           <small>Matching score: {buddy.score}</small>
