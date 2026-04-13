@@ -1,12 +1,18 @@
 import bcrypt from "bcrypt";
 import { pool } from "../config/db.js";
 
-const ADMIN_EMAIL = "admin@kazakhbuddy.kz";
-const ADMIN_PASSWORD = "admin123";
-const ADMIN_NAME = "KazakhBuddy Admin";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@kazakhbuddy.kz";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_NAME = process.env.ADMIN_NAME || "KazakhBuddy Admin";
 
 async function seedAdmin() {
   try {
+    if (!ADMIN_PASSWORD) {
+      throw new Error(
+        "ADMIN_PASSWORD is missing. Add it to backend/.env before running db:seed-admin."
+      );
+    }
+
     const existingAdmin = await pool.query(
       `SELECT id, email
        FROM users
@@ -35,7 +41,7 @@ async function seedAdmin() {
 
     console.log("Admin account created successfully.");
     console.log(`Email: ${ADMIN_EMAIL}`);
-    console.log(`Password: ${ADMIN_PASSWORD}`);
+    console.log("Password: loaded from ADMIN_PASSWORD");
   } catch (error) {
     console.error("Seed admin error:", error.message);
     process.exitCode = 1;
