@@ -2,7 +2,7 @@ import { query } from '../config/db.js';
 
 export function findUserByEmail(email) {
   return query(
-    `SELECT id, full_name, email, password_hash, role, buddy_status
+    `SELECT id, full_name, email, password_hash, role, buddy_status, email_verified
      FROM users
      WHERE email = $1`,
     [email.toLowerCase()]
@@ -13,7 +13,7 @@ export function findUserProfileById(userId) {
   return query(
     `SELECT id, full_name, email, role, home_country, city, study_program,
             languages, hobbies, about_you, gender, gender_preference,
-            buddy_status, profile_photo_url, created_at
+            buddy_status, profile_photo_url, created_at, email_verified
      FROM users
      WHERE id = $1`,
     [userId]
@@ -24,9 +24,9 @@ export function createUser(userData) {
   return query(
     `INSERT INTO users (
         full_name, email, password_hash, role, home_country, city, study_program,
-        languages, hobbies, about_you, gender, gender_preference, buddy_status
+        languages, hobbies, about_you, gender, gender_preference, buddy_status, email_verified
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8::text[], $9::text[], $10, $11, $12, $13)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8::text[], $9::text[], $10, $11, $12, $13, $14)
      RETURNING id, full_name, email, role, buddy_status`,
     [
       userData.fullName,
@@ -42,6 +42,7 @@ export function createUser(userData) {
       userData.gender || null,
       userData.genderPreference || null,
       userData.buddyStatus,
+      userData.emailVerified ?? false,
     ]
   );
 }
@@ -98,4 +99,42 @@ export function updateBuddyStatus(userId, buddyStatus) {
      RETURNING id, full_name, email, role, buddy_status`,
     [userId, buddyStatus]
   );
+}
+
+export function createEmailCode(email, code, purpose) {
+  return query(
+    `INSERT INTO email_codes (email, code, purpose, expires_at)
+     VALUES ($1, $2, $3, NOW() + INTERVAL '10 minutes')`,
+    [email.toLowerCase(), code, purpose]
+  );
+}
+
+export function deleteEmailCodes(email, purpose) {
+  return query("DELETE FROM email_codes WHERE email = $1 AND purpose = $2", [
+    email.toLowerCase(),
+    purpose,
+  ]);
+}
+
+export function findValidEmailCode(email, code, purpose) {
+  return query(
+    `SELECT id
+     FROM email_codes
+     WHERE email = $1 AND code = $2 AND purpose = $3 AND expires_at > NOW()
+     LIMIT 1`,
+    [email.toLowerCase(), code, purpose]
+  );
+}
+
+export function markEmailVerified(email) {
+  return query("UPDATE users SET email_verified = TRUE WHERE email = $1", [
+    email.toLowerCase(),
+  ]);
+}
+
+export function updateUserPassword(email, passwordHash) {
+  return query("UPDATE users SET password_hash = $1 WHERE email = $2", [
+    passwordHash,
+    email.toLowerCase(),
+  ]);
 }

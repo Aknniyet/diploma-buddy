@@ -3,17 +3,18 @@ import "../../styles/adaptation-guide.css";
 import { CircleAlert, CircleCheck } from "lucide-react";
 import AccordionItem from "../../components/ui/AccordionItem";
 import { quickTips, guideSections } from "../../constants/adaptationGuideData";
+import { useI18n } from "../../context/I18nContext";
 
 function AdaptationGuidePage() {
+  const { t } = useI18n();
+
   return (
     <PublicLayout>
       <div className="adaptation-page">
         <section className="guide-hero">
           <div className="container">
-            <h1>Adaptation Guide for Kazakhstan</h1>
-            <p>
-              Your comprehensive guide to settling into student life in Kazakhstan.
-            </p>
+            <h1>{t("guide.hero.title")}</h1>
+            <p>{t("guide.hero.text")}</p>
           </div>
         </section>
 
@@ -22,14 +23,14 @@ function AdaptationGuidePage() {
             <div className="quick-tips-box">
               <div className="quick-tips-header">
                 <CircleAlert size={18} />
-                <h2>Quick Tips for Your First Week</h2>
+                <h2>{t("guide.quickTips.title")}</h2>
               </div>
 
               <ul className="tips-list">
                 {quickTips.map((tip, index) => (
                   <li key={index}>
                     <CircleCheck size={16} />
-                    <span>{tip}</span>
+                    <span>{t(tip)}</span>
                   </li>
                 ))}
               </ul>
@@ -47,8 +48,8 @@ function AdaptationGuidePage() {
                       </div>
 
                       <div>
-                        <h3>{section.title}</h3>
-                        <p>{section.subtitle}</p>
+                        <h3>{t(section.titleKey)}</h3>
+                        <p>{t(section.subtitleKey)}</p>
                       </div>
                     </div>
 
@@ -56,8 +57,8 @@ function AdaptationGuidePage() {
                       {section.items.map((item, itemIndex) => (
                         <AccordionItem
                           key={itemIndex}
-                          title={item.title}
-                          content={item.content}
+                          title={t(item.titleKey)}
+                          content={t(item.contentKey)}
                           link={item.link}
                           links={item.links}
                         />
@@ -68,15 +69,11 @@ function AdaptationGuidePage() {
               })}
             </div>
           </div>
-        </section>
+      </section>
           <section className="guide-help-section">
           <div className="container">
-            <h2>Need Personalized Help?</h2>
-            <p>
-              Sign up for KazakhBuddy and get matched with a local Kazakh
-              student who can guide you through each step of your adaptation
-              journey.
-            </p>
+            <h2>{t("guide.help.title")}</h2>
+            <p>{t("guide.help.text")}</p>
           </div>
         </section>
       </div>

@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   full_name VARCHAR(150) NOT NULL,
   email VARCHAR(150) NOT NULL UNIQUE,
@@ -12,60 +12,86 @@ CREATE TABLE users (
   about_you TEXT,
   gender VARCHAR(30),
   gender_preference VARCHAR(30),
-  buddy_status VARCHAR(30) NOT NULL DEFAULT 'not_applied' CHECK (
-    buddy_status IN ('not_applied', 'pending', 'approved', 'rejected')
-  ),
+  buddy_status VARCHAR(30) NOT NULL DEFAULT 'not_applied'
+    CHECK (buddy_status IN ('not_applied', 'pending', 'approved', 'rejected')),
   profile_photo_url TEXT,
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE buddy_requests (
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS profile_photo_url TEXT;
+
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS email_verified BOOLEAN;
+
+UPDATE users
+SET email_verified = TRUE
+WHERE email_verified IS NULL;
+
+ALTER TABLE users
+ALTER COLUMN email_verified SET DEFAULT FALSE;
+
+ALTER TABLE users
+ALTER COLUMN email_verified SET NOT NULL;
+
+CREATE TABLE IF NOT EXISTS email_codes (
+  id SERIAL PRIMARY KEY,
+  email VARCHAR(150) NOT NULL,
+  code VARCHAR(10) NOT NULL,
+  purpose VARCHAR(30) NOT NULL
+    CHECK (purpose IN ('verify_email', 'reset_password')),
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_codes_email_purpose
+ON email_codes(email, purpose);
+
+CREATE TABLE IF NOT EXISTS buddy_requests (
   id SERIAL PRIMARY KEY,
   international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   preferred_language VARCHAR(100),
   support_topics TEXT[] DEFAULT ARRAY[]::TEXT[],
   message TEXT,
-  status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (
-    status IN ('pending', 'accepted', 'declined', 'cancelled')
-  ),
+  status VARCHAR(30) NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'accepted', 'declined', 'cancelled')),
   created_at TIMESTAMP DEFAULT NOW(),
   responded_at TIMESTAMP
 );
 
-CREATE UNIQUE INDEX unique_pending_request_per_pair
+CREATE UNIQUE INDEX IF NOT EXISTS unique_pending_request_per_pair
 ON buddy_requests (international_student_id, buddy_id)
 WHERE status = 'pending';
 
-CREATE TABLE buddy_applications (
+CREATE TABLE IF NOT EXISTS buddy_applications (
   id SERIAL PRIMARY KEY,
   local_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   motivation TEXT,
   availability TEXT,
   max_buddies INTEGER DEFAULT 3,
-  status VARCHAR(30) NOT NULL DEFAULT 'approved' CHECK (
-    status IN ('pending', 'approved', 'rejected')
-  ),
+  status VARCHAR(30) NOT NULL DEFAULT 'approved'
+    CHECK (status IN ('pending', 'approved', 'rejected')),
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE buddy_matches (
+CREATE TABLE IF NOT EXISTS buddy_matches (
   id SERIAL PRIMARY KEY,
   international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  status VARCHAR(30) NOT NULL DEFAULT 'active' CHECK (
-    status IN ('active', 'completed', 'cancelled')
-  ),
+  status VARCHAR(30) NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'completed', 'cancelled')),
   created_at TIMESTAMP DEFAULT NOW(),
   UNIQUE (international_student_id, buddy_id, status)
 );
 
-CREATE UNIQUE INDEX one_active_match_per_student
+CREATE UNIQUE INDEX IF NOT EXISTS one_active_match_per_student
 ON buddy_matches (international_student_id)
 WHERE status = 'active';
 
-CREATE TABLE conversations (
+CREATE TABLE IF NOT EXISTS conversations (
   id SERIAL PRIMARY KEY,
   international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -73,7 +99,7 @@ CREATE TABLE conversations (
   UNIQUE (international_student_id, buddy_id)
 );
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
   id SERIAL PRIMARY KEY,
   conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
   sender_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -82,7 +108,7 @@ CREATE TABLE messages (
   is_read BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE events (
+CREATE TABLE IF NOT EXISTS events (
   id SERIAL PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
   description TEXT,
@@ -92,7 +118,7 @@ CREATE TABLE events (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE useful_information (
+CREATE TABLE IF NOT EXISTS useful_information (
   id SERIAL PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
   content TEXT NOT NULL,
@@ -100,7 +126,7 @@ CREATE TABLE useful_information (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
   id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   type VARCHAR(50) NOT NULL,
@@ -112,7 +138,7 @@ CREATE TABLE notifications (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE adaptation_checklist_tasks (
+CREATE TABLE IF NOT EXISTS adaptation_checklist_tasks (
   id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   category VARCHAR(50) NOT NULL,
@@ -123,10 +149,42 @@ CREATE TABLE adaptation_checklist_tasks (
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
-INSERT INTO events (title, description, event_date, location, category) VALUES
-('Welcome Meeting', 'Meet other students and learn how KazakhBuddy works.', NOW() + INTERVAL '3 days', 'AITU Main Hall', 'Orientation'),
-('Campus Tour', 'A local buddy will show the main university places.', NOW() + INTERVAL '7 days', 'Campus Entrance', 'Adaptation');
+INSERT INTO events (title, description, event_date, location, category)
+SELECT
+  'Welcome Meeting',
+  'Meet other students and learn how KazakhBuddy works.',
+  NOW() + INTERVAL '3 days',
+  'AITU Main Hall',
+  'Orientation'
+WHERE NOT EXISTS (
+  SELECT 1 FROM events WHERE title = 'Welcome Meeting'
+);
 
-INSERT INTO useful_information (title, content, category) VALUES
-('Academic Calendar', 'All important semester dates can be collected here later.', 'Academic'),
-('Migration Reminder', 'Keep copies of passport, visa and registration documents.', 'Documents');
+INSERT INTO events (title, description, event_date, location, category)
+SELECT
+  'Campus Tour',
+  'A local buddy will show the main university places.',
+  NOW() + INTERVAL '7 days',
+  'Campus Entrance',
+  'Adaptation'
+WHERE NOT EXISTS (
+  SELECT 1 FROM events WHERE title = 'Campus Tour'
+);
+
+INSERT INTO useful_information (title, content, category)
+SELECT
+  'Academic Calendar',
+  'All important semester dates can be collected here later.',
+  'Academic'
+WHERE NOT EXISTS (
+  SELECT 1 FROM useful_information WHERE title = 'Academic Calendar'
+);
+
+INSERT INTO useful_information (title, content, category)
+SELECT
+  'Migration Reminder',
+  'Keep copies of passport, visa and registration documents.',
+  'Documents'
+WHERE NOT EXISTS (
+  SELECT 1 FROM useful_information WHERE title = 'Migration Reminder'
+);

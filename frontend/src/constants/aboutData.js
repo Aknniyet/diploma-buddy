@@ -11,26 +11,26 @@ export const aboutFeatures = [
   {
     id: 1,
     icon: UserCheck,
-    title: "Buddy Matching",
-    text: "Connect international students with local student buddies for support and guidance.",
+    titleKey: "about.features.buddyMatching.title",
+    textKey: "about.features.buddyMatching.text",
   },
   {
     id: 2,
     icon: MessageSquare,
-    title: "Communication",
-    text: "Create a simple space for students to communicate and ask questions.",
+    titleKey: "about.features.communication.title",
+    textKey: "about.features.communication.text",
   },
   {
     id: 3,
     icon: ClipboardList,
-    title: "Checklist Support",
-    text: "Help students keep track of important adaptation steps and daily needs.",
+    titleKey: "about.features.checklistSupport.title",
+    textKey: "about.features.checklistSupport.text",
   },
   {
     id: 4,
     icon: Users,
-    title: "Community Building",
-    text: "Encourage stronger social and academic connections within the university environment.",
+    titleKey: "about.features.communityBuilding.title",
+    textKey: "about.features.communityBuilding.text",
   },
 ];
 
@@ -38,19 +38,19 @@ export const aboutValues = [
   {
     id: 1,
     icon: Heart,
-    title: "Hospitality",
-    text: "We believe every student should feel welcomed, respected, and supported from the beginning.",
+    titleKey: "about.values.hospitality.title",
+    textKey: "about.values.hospitality.text",
   },
   {
     id: 2,
     icon: Globe,
-    title: "Cultural Exchange",
-    text: "The platform encourages students from different backgrounds to learn from one another.",
+    titleKey: "about.values.culturalExchange.title",
+    textKey: "about.values.culturalExchange.text",
   },
   {
     id: 3,
     icon: Users,
-    title: "Community",
-    text: "KazakhBuddy is designed to strengthen friendship, trust, and communication across the student community.",
+    titleKey: "about.values.community.title",
+    textKey: "about.values.community.text",
   },
 ];

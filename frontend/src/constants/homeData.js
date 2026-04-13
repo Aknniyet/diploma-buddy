@@ -14,36 +14,36 @@ import {
 export const homeFeatures = [
   {
     icon: Users,
-    title: "Smart Matching",
-    text: "Our system helps match international students with buddies based on interests.",
+    titleKey: "home.features.smartMatching.title",
+    textKey: "home.features.smartMatching.text",
   },
   {
     icon: MessageSquare,
-    title: "Direct Messaging",
-    text: "Students can communicate directly with their buddy and ask questions about study, city life, and university.",
+    titleKey: "home.features.directMessaging.title",
+    textKey: "home.features.directMessaging.text",
   },
  
   {
     icon: CheckCircle,
-    title: "Adaptation Tracking",
-    text: "Use a simple checklist to track important steps like registration, transport, banking, and daily life tasks.",
+    titleKey: "home.features.adaptationTracking.title",
+    textKey: "home.features.adaptationTracking.text",
   },
     
   {
     icon: Globe,
-    title: "Cultural Exchange",
-    text: "Learn more about Kazakhstan, local traditions, and student life while building meaningful friendships.",
+    titleKey: "home.features.culturalExchange.title",
+    textKey: "home.features.culturalExchange.text",
   },
 
     {
       icon: Calendar,
-      title: "Event Planning",
-      text: "Join activities and meetings with other students to feel more connected to the university community.",
+      titleKey: "home.features.eventPlanning.title",
+      textKey: "home.features.eventPlanning.text",
     },
     {
       icon: Shield,
-      title: "Verified Students",
-      text: "All buddies are verified university students, which makes the platform safer and more trustworthy.",
+      titleKey: "home.features.verifiedStudents.title",
+      textKey: "home.features.verifiedStudents.text",
     },
 ];
 
@@ -51,26 +51,26 @@ export const homeSteps = [
    {
       number: "01",
       icon: UserPlus,
-      title: "Create Your Profile",
-      text: "Sign up and fill in your profile with your interests, language skills, and the support you need.",
+      titleKey: "home.steps.createProfile.title",
+      textKey: "home.steps.createProfile.text",
     },
     {
       number: "02",
       icon: Search,
-      title: "Find Your Buddy",
-      text: "Browse buddy profiles or let the system help you find a suitable match.",
+      titleKey: "home.steps.findBuddy.title",
+      textKey: "home.steps.findBuddy.text",
     },
     {
       number: "03",
       icon: MessagesSquare,
-      title: "Start Communication",
-      text: "Send a request, get accepted, and begin chatting with your buddy directly on the platform.",
+      titleKey: "home.steps.startCommunication.title",
+      textKey: "home.steps.startCommunication.text",
     },
     {
       number: "04",
       icon: Handshake,
-      title: "Meet and Adapt",
-      text: "Get support with documents, daily life, campus navigation, and social integration.",
+      titleKey: "home.steps.meetAndAdapt.title",
+      textKey: "home.steps.meetAndAdapt.text",
     },
 ];
 

@@ -84,76 +84,91 @@
 .hero-right {
   flex: 1;
   position: relative;
+  min-height: 430px;
 }
 
-.hero-card-bg {
-  width: 380px;
-  height: 220px;
-  background: #dff4f4;
-  border-radius: 20px;
-  position: absolute;
-  top: -20px;
-  right: 0;
-}
-
-.match-card {
-  width: 380px;
-  background: white;
-  padding: 28px;
-  border-radius: 18px;
+.hero-illustration {
   position: relative;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-}
-
-.match-card-header h3 {
-  font-size: 20px;
-  margin-bottom: 6px;
-}
-
-.match-card-header p {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-.match-profile {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.match-avatar {
-  width: 44px;
-  height: 44px;
-  background: #fde6cc;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-}
-
-.match-tags {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.match-tags span {
-  background: #e8f7f7;
-  color: #0f9aa8;
-  padding: 6px 12px;
-  border-radius: 14px;
-  font-size: 13px;
-}
-
-.match-btn {
+  height: 430px;
   width: 100%;
-  background: #0f9aa8;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 8px;
+  max-width: 520px;
+  margin-left: auto;
+}
+
+.hero-cutout-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.hero-cutout {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 505px;
+  max-width: none;
+  filter: none;
+}
+
+@media (max-width: 992px) {
+  .hero-content {
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  .hero-right {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .hero-illustration {
+    margin: 0 auto;
+    height: 410px;
+    max-width: 505px;
+  }
+
+  .hero-cutout {
+    width: 505px;
+    right: 50%;
+    top: 0;
+    transform: translateX(50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-section {
+    padding: 88px 0 72px 0;
+  }
+
+  .hero-title {
+    font-size: 48px;
+  }
+
+  .hero-description {
+    font-size: 17px;
+  }
+
+  .hero-buttons {
+    flex-wrap: wrap;
+  }
+
+  .hero-illustration {
+    height: 320px;
+    max-width: 100%;
+  }
+
+  .hero-cutout-wrap {
+    justify-content: center;
+  }
+
+  .hero-cutout {
+    right: 50%;
+    top: 0;
+    width: min(100%, 340px);
+    transform: translateX(50%);
+  }
 }
 
 /* FEATURES */
