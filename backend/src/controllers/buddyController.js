@@ -8,6 +8,7 @@ import {
   findRequestsCreatedByStudent,
   findStudentActiveMatch,
   findStudentForMatching,
+  findStudentPendingRequest,
   findStudentRequestStatuses,
   respondToBuddyRequest,
 } from '../repositories/buddyRepository.js';
@@ -29,15 +30,31 @@ export async function getAvailableBuddies(req, res) {
 
     const requestStatuses = await findStudentRequestStatuses(req.user.id);
     const statusMap = new Map(requestStatuses.rows.map((item) => [item.buddy_id, item.status]));
+    const pendingRequest = requestStatuses.rows.find((item) => item.status === 'pending');
+    const pendingRequestBuddyId = pendingRequest?.buddy_id || null;
 
-    const buddiesResult = await findAvailableBuddies(activeMatchBuddyId);
-    const buddyRows = activeMatchBuddyId
-      ? buddiesResult.rows.filter((buddy) => buddy.id === activeMatchBuddyId)
-      : buddiesResult.rows;
+    const hasActiveMatch = Boolean(activeMatchBuddyId);
+    const buddiesResult = await findAvailableBuddies(activeMatchBuddyId, hasActiveMatch);
+    const buddyRows = buddiesResult.rows;
 
     const buddies = buddyRows
-      .map((buddy) => formatBuddyCard(student, buddy, statusMap, activeMatchBuddyId))
-      .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+      .map((buddy) =>
+        formatBuddyCard(
+          student,
+          buddy,
+          statusMap,
+          activeMatchBuddyId,
+          hasActiveMatch,
+          pendingRequestBuddyId
+        )
+      )
+      .sort((a, b) => {
+        if (a.status === 'matched') return -1;
+        if (b.status === 'matched') return 1;
+        if (a.status === 'pending') return -1;
+        if (b.status === 'pending') return 1;
+        return b.score - a.score || a.name.localeCompare(b.name);
+      });
 
     return res.json(buddies);
   } catch (error) {
@@ -61,6 +78,13 @@ export async function createRequest(req, res) {
     const activeMatch = await findStudentActiveMatch(req.user.id);
     if (activeMatch.rows.length > 0) {
       return res.status(400).json({ message: 'You already have an active buddy.' });
+    }
+
+    const anyPendingRequest = await findStudentPendingRequest(req.user.id);
+    if (anyPendingRequest.rows.length > 0) {
+      return res.status(409).json({
+        message: 'You already have a pending buddy request. Please wait for a response before choosing another buddy.',
+      });
     }
 
     const buddyResult = await findBuddyCapacity(buddyId);
@@ -98,7 +122,7 @@ export async function createRequest(req, res) {
     }).catch(() => null);
 
     return res.status(201).json({
-      message: 'Your request has been sent. Please wait for the buddyвЂ™s response.',
+      message: 'Your request has been sent. Please wait for the buddy response.',
       request: result.rows[0],
     });
   } catch (error) {

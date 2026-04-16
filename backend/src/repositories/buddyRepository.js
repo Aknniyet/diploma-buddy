@@ -27,7 +27,18 @@ export function findStudentRequestStatuses(studentId) {
   );
 }
 
-export function findAvailableBuddies(activeMatchBuddyId = null) {
+export function findStudentPendingRequest(studentId) {
+  return query(
+    `SELECT id, buddy_id
+     FROM buddy_requests
+     WHERE international_student_id = $1 AND status = 'pending'
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [studentId]
+  );
+}
+
+export function findAvailableBuddies(activeMatchBuddyId = null, includeFullBuddies = false) {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
             u.about_you, u.gender, u.buddy_status, u.profile_photo_url,
@@ -36,10 +47,11 @@ export function findAvailableBuddies(activeMatchBuddyId = null) {
      LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
      WHERE u.role = 'local' AND u.buddy_status = 'approved'
      GROUP BY u.id
-     HAVING COUNT(m.id) FILTER (WHERE m.status = 'active') < 3
+     HAVING $2 = TRUE
+        OR COUNT(m.id) FILTER (WHERE m.status = 'active') < 3
         OR u.id = $1
      ORDER BY u.full_name ASC`,
-    [activeMatchBuddyId]
+    [activeMatchBuddyId, includeFullBuddies]
   );
 }
 

@@ -36,10 +36,25 @@ export function calculateBuddyScore(student, buddy) {
   return score;
 }
 
-export function formatBuddyCard(student, buddy, statusMap, activeMatchBuddyId) {
+export function formatBuddyCard(
+  student,
+  buddy,
+  statusMap,
+  activeMatchBuddyId,
+  hasActiveMatch = false,
+  pendingRequestBuddyId = null
+) {
   const activeStudents = Number(buddy.active_students_count || 0);
   const score = calculateBuddyScore(student, buddy);
   const isMatched = activeMatchBuddyId === buddy.id;
+  const requestStatus = statusMap.get(buddy.id) || null;
+  const status = isMatched
+    ? 'matched'
+    : hasActiveMatch
+    ? 'locked'
+    : pendingRequestBuddyId && pendingRequestBuddyId !== buddy.id
+    ? 'waiting'
+    : requestStatus;
 
   return {
     id: buddy.id,
@@ -53,7 +68,9 @@ export function formatBuddyCard(student, buddy, statusMap, activeMatchBuddyId) {
     spotsAvailable: Math.max(0, 3 - activeStudents),
     activeStudents,
     score,
-    status: isMatched ? 'matched' : statusMap.get(buddy.id) || null,
+    status,
+    hasActiveMatch,
+    hasPendingRequest: Boolean(pendingRequestBuddyId),
     avatar:
       buddy.profile_photo_url ||
       'https://cdn-icons-png.flaticon.com/512/149/149071.png',

@@ -66,6 +66,10 @@ CREATE UNIQUE INDEX IF NOT EXISTS unique_pending_request_per_pair
 ON buddy_requests (international_student_id, buddy_id)
 WHERE status = 'pending';
 
+CREATE UNIQUE INDEX IF NOT EXISTS one_pending_request_per_student
+ON buddy_requests (international_student_id)
+WHERE status = 'pending';
+
 CREATE TABLE IF NOT EXISTS buddy_applications (
   id SERIAL PRIMARY KEY,
   local_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

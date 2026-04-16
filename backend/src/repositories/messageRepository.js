@@ -10,6 +10,10 @@ export function findConversationsForUser(userId) {
             COALESCE((ARRAY_AGG(m.text ORDER BY m.created_at DESC))[1], '') AS last_message_text,
             COUNT(m.id) FILTER (WHERE m.sender_id <> $1 AND m.is_read = FALSE) AS unread_count
      FROM conversations c
+     JOIN buddy_matches bm
+       ON bm.international_student_id = c.international_student_id
+      AND bm.buddy_id = c.buddy_id
+      AND bm.status = 'active'
      LEFT JOIN users student ON student.id = c.international_student_id
      LEFT JOIN users buddy ON buddy.id = c.buddy_id
      LEFT JOIN messages m ON m.conversation_id = c.id
@@ -22,9 +26,13 @@ export function findConversationsForUser(userId) {
 
 export function findConversationForUser(conversationId, userId) {
   return query(
-    `SELECT *
-     FROM conversations
-     WHERE id = $1 AND (international_student_id = $2 OR buddy_id = $2)`,
+    `SELECT c.*
+     FROM conversations c
+     JOIN buddy_matches bm
+       ON bm.international_student_id = c.international_student_id
+      AND bm.buddy_id = c.buddy_id
+      AND bm.status = 'active'
+     WHERE c.id = $1 AND (c.international_student_id = $2 OR c.buddy_id = $2)`,
     [conversationId, userId]
   );
 }

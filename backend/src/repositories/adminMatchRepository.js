@@ -207,20 +207,54 @@ export async function reassignMatch(matchId, newBuddyId) {
 
     const match = matchResult.rows[0];
 
-    const activeStudentsResult = await client.query(
-      `SELECT COUNT(*)::int AS count
-       FROM buddy_matches
-       WHERE buddy_id = $1 AND status = 'active'`,
+    if (Number(match.buddy_id) === Number(newBuddyId)) {
+      throw new Error("SAME_BUDDY");
+    }
+
+    const newBuddyResult = await client.query(
+      `SELECT u.id, u.full_name,
+              COUNT(m.id) FILTER (WHERE m.status = 'active')::int AS active_students_count
+       FROM users u
+       LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
+       WHERE u.id = $1 AND u.role = 'local' AND u.buddy_status = 'approved'
+       GROUP BY u.id`,
       [newBuddyId]
     );
 
-    if (activeStudentsResult.rows[0].count >= 3) {
+    if (newBuddyResult.rows.length === 0) {
+      throw new Error("BUDDY_NOT_FOUND");
+    }
+
+    if (newBuddyResult.rows[0].active_students_count >= 3) {
       throw new Error("BUDDY_LIMIT_REACHED");
+    }
+
+    const matchPeopleResult = await client.query(
+      `SELECT s.full_name AS student_name,
+              old_buddy.full_name AS old_buddy_name
+       FROM buddy_matches bm
+       JOIN users s ON s.id = bm.international_student_id
+       JOIN users old_buddy ON old_buddy.id = bm.buddy_id
+       WHERE bm.id = $1`,
+      [matchId]
+    );
+
+    const otherActiveMatch = await client.query(
+      `SELECT id
+       FROM buddy_matches
+       WHERE international_student_id = $1
+         AND status = 'active'
+         AND id <> $2`,
+      [match.international_student_id, matchId]
+    );
+
+    if (otherActiveMatch.rows.length > 0) {
+      throw new Error("STUDENT_ALREADY_MATCHED");
     }
 
     const updatedMatch = await client.query(
       `UPDATE buddy_matches
-       SET buddy_id = $2
+       SET buddy_id = $2, status = 'active'
        WHERE id = $1
        RETURNING id, international_student_id, buddy_id, status, created_at`,
       [matchId, newBuddyId]
@@ -234,7 +268,13 @@ export async function reassignMatch(matchId, newBuddyId) {
     );
 
     await client.query("COMMIT");
-    return updatedMatch.rows[0];
+    return {
+      ...updatedMatch.rows[0],
+      old_buddy_id: match.buddy_id,
+      old_buddy_name: matchPeopleResult.rows[0]?.old_buddy_name || "Previous buddy",
+      new_buddy_name: newBuddyResult.rows[0].full_name,
+      student_name: matchPeopleResult.rows[0]?.student_name || "Student",
+    };
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;

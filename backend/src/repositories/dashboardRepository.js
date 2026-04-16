@@ -18,6 +18,10 @@ export function findStudentDashboardData(userId) {
     query(
       `SELECT COUNT(m.id)::int AS count
        FROM conversations c
+       JOIN buddy_matches bm
+         ON bm.international_student_id = c.international_student_id
+        AND bm.buddy_id = c.buddy_id
+        AND bm.status = 'active'
        JOIN messages m ON m.conversation_id = c.id
        WHERE (c.international_student_id = $1 OR c.buddy_id = $1)
          AND m.sender_id <> $1 AND m.is_read = FALSE`,
@@ -43,6 +47,10 @@ export function findBuddyDashboardData(userId) {
     query(
       `SELECT COUNT(m.id)::int AS count
        FROM conversations c
+       JOIN buddy_matches bm
+         ON bm.international_student_id = c.international_student_id
+        AND bm.buddy_id = c.buddy_id
+        AND bm.status = 'active'
        JOIN messages m ON m.conversation_id = c.id
        WHERE (c.international_student_id = $1 OR c.buddy_id = $1)
          AND m.sender_id <> $1 AND m.is_read = FALSE`,

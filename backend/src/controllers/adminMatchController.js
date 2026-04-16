@@ -13,6 +13,7 @@ import {
   updateMatchStatus,
 } from "../repositories/adminMatchRepository.js";
 import { updateBuddyStatus } from "../repositories/userRepository.js";
+import { createNotification } from "../repositories/notificationRepository.js";
 
 function ensureAdmin(req, res) {
   if (req.user.role !== "admin") {
@@ -250,10 +251,49 @@ export async function reassignMatchByAdmin(req, res) {
       });
     }
 
+    await Promise.all([
+      createNotification({
+        userId: result.international_student_id,
+        type: "match_reassigned",
+        title: "Your buddy was updated",
+        description: `Admin reassigned your buddy from ${result.old_buddy_name} to ${result.new_buddy_name}. You can now message your new buddy.`,
+        referenceType: "match",
+        referenceId: result.id,
+      }).catch(() => null),
+      createNotification({
+        userId: result.old_buddy_id,
+        type: "match_reassigned",
+        title: "Buddy assignment changed",
+        description: `${result.student_name} was reassigned to another buddy by admin.`,
+        referenceType: "match",
+        referenceId: result.id,
+      }).catch(() => null),
+      createNotification({
+        userId: result.buddy_id,
+        type: "match_reassigned",
+        title: "New student assigned",
+        description: `Admin assigned ${result.student_name} to you. You can now open Messages and start chatting.`,
+        referenceType: "match",
+        referenceId: result.id,
+      }).catch(() => null),
+    ]);
+
     return res.json(result);
   } catch (error) {
     if (error.message === "MATCH_NOT_FOUND") {
       return res.status(404).json({ message: "Match not found." });
+    }
+
+    if (error.message === "BUDDY_NOT_FOUND") {
+      return res.status(404).json({ message: "New buddy was not found or is not approved." });
+    }
+
+    if (error.message === "SAME_BUDDY") {
+      return res.status(400).json({ message: "This student is already assigned to selected buddy." });
+    }
+
+    if (error.message === "STUDENT_ALREADY_MATCHED") {
+      return res.status(400).json({ message: "This student already has another active buddy." });
     }
 
     if (error.message === "BUDDY_LIMIT_REACHED") {
