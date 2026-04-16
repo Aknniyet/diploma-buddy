@@ -18,6 +18,19 @@ function FindBuddiesPage() {
     try {
       const data = await apiRequest("/buddy/available");
       setBuddies(data);
+      const currentBuddy = data.find((buddy) => buddy.status === "matched");
+      if (currentBuddy) {
+        setAlertMessage(`Your current buddy is ${currentBuddy.name}. Other buddy requests are disabled while this match is active.`);
+        return;
+      }
+
+      const pendingBuddy = data.find((buddy) => buddy.status === "pending");
+      if (pendingBuddy) {
+        setAlertMessage(`Your request to ${pendingBuddy.name} is pending. Please wait for their response before choosing another buddy.`);
+        return;
+      }
+
+      setAlertMessage("");
     } catch (error) {
       setAlertMessage(error.message);
     }
@@ -63,7 +76,11 @@ function FindBuddiesPage() {
         </div>
         <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />
         <BuddyAlert message={alertMessage} />
-        <BuddyList buddies={filteredBuddies} searchValue={searchValue} onConnect={(buddy) => { setSelectedBuddy(buddy); setIsModalOpen(true); }} />
+        <BuddyList buddies={filteredBuddies} searchValue={searchValue} onConnect={(buddy) => {
+          if (buddy.status === "locked" || buddy.status === "matched" || buddy.status === "waiting") return;
+          setSelectedBuddy(buddy);
+          setIsModalOpen(true);
+        }} />
         <BuddyRequestModal buddy={selectedBuddy} isOpen={isModalOpen} onClose={() => { setSelectedBuddy(null); setIsModalOpen(false); }} onSend={handleSendRequest} />
       </section>
     </DashboardLayout>

@@ -2,11 +2,20 @@ import { BookOpen, Globe, MapPin, MessageSquare, CheckCircle2 } from "lucide-rea
 
 function BuddyCard({ buddy, onConnect }) {
   const status = buddy.status;
-  const isDisabled = status === "pending" || status === "matched" || buddy.spotsAvailable === 0;
+  const isDisabled =
+    status === "pending" ||
+    status === "matched" ||
+    status === "locked" ||
+    status === "waiting" ||
+    buddy.spotsAvailable === 0;
 
   const buttonLabel =
     status === "matched"
-      ? "Matched"
+      ? "Your Buddy"
+      : status === "locked"
+      ? "Unavailable"
+      : status === "waiting"
+      ? "Waiting"
       : status === "pending"
       ? "Pending"
       : buddy.spotsAvailable === 0
@@ -14,11 +23,14 @@ function BuddyCard({ buddy, onConnect }) {
       : "Connect";
 
   return (
-    <article className="buddy-card">
+    <article className={`buddy-card ${status === "matched" ? "buddy-card-current" : ""}`}>
       <div className="buddy-card-header">
         <img src={buddy.avatar} alt={buddy.name} className="buddy-card-avatar" />
         <div className="buddy-card-user-info">
-          <h3>{buddy.name}</h3>
+          <div className="buddy-card-title-row">
+            <h3>{buddy.name}</h3>
+            {status === "matched" ? <span className="current-buddy-badge">Your Buddy</span> : null}
+          </div>
           <div className="buddy-card-location">
             <MapPin size={14} />
             <span>{buddy.city}</span>
@@ -39,7 +51,15 @@ function BuddyCard({ buddy, onConnect }) {
       <div className="buddy-card-footer">
         <div>
           <p>{buddy.spotsAvailable} spots available</p>
-          <small>Matching score: {buddy.score}</small>
+          <small>
+            {status === "matched"
+              ? "You are currently matched with this buddy"
+              : status === "locked"
+              ? "You already have an active buddy"
+              : status === "waiting"
+              ? "You already have a pending request"
+              : `Matching score: ${buddy.score}`}
+          </small>
         </div>
         <button type="button" className={`connect-btn ${isDisabled ? "connected-btn" : ""}`} onClick={() => onConnect(buddy)} disabled={isDisabled}>
           {status === "matched" ? <CheckCircle2 size={16} /> : <MessageSquare size={16} />}

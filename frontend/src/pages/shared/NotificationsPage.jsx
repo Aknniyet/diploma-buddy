@@ -15,6 +15,7 @@ const iconMap = {
   request_accepted: CheckCircle2,
   request_declined: UserRoundX,
   match_created: UserCheck,
+  match_reassigned: UserCheck,
 };
 
 function formatDate(date) {
