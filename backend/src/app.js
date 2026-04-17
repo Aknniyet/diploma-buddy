@@ -18,7 +18,7 @@ console.log("CORS frontend URL:", env.frontendUrl);
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: env.frontendUrl,
     credentials: true,
   })
 );
