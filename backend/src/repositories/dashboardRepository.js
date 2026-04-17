@@ -56,6 +56,12 @@ export function findBuddyDashboardData(userId) {
          AND m.sender_id <> $1 AND m.is_read = FALSE`,
       [userId]
     ),
+    query(
+      `SELECT buddy_status, max_buddies
+       FROM users
+       WHERE id = $1`,
+      [userId]
+    ),
   ]);
 }
 

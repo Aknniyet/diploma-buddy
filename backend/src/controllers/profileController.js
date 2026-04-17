@@ -24,6 +24,7 @@ export async function updateMyProfile(req, res) {
       profilePhotoUrl: req.body.profilePhotoUrl,
       gender: req.body.gender,
       genderPreference: req.body.genderPreference,
+      maxBuddies: req.user.role === 'local' ? Number(req.body.maxBuddies) || null : null,
     });
 
     return res.json({

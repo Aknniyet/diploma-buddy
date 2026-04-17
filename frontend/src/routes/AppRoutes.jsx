@@ -20,6 +20,7 @@ import BuddyRequestsPage from "../pages/buddy/BuddyRequestsPage";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminEventsPage from "../pages/admin/AdminEventsPage";
 import AdminMatchesPage from "../pages/admin/AdminMatchesPage";
+import AdminBuddyProfilesPage from "../pages/admin/AdminBuddyProfilesPage";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 function AppRoutes() {
@@ -171,6 +172,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <AdminEventsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/buddies"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminBuddyProfilesPage />
           </ProtectedRoute>
         }
       />

@@ -41,14 +41,14 @@ export function findStudentPendingRequest(studentId) {
 export function findAvailableBuddies(activeMatchBuddyId = null, includeFullBuddies = false) {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
-            u.about_you, u.gender, u.buddy_status, u.profile_photo_url,
+            u.about_you, u.gender, u.buddy_status, u.max_buddies, u.profile_photo_url,
             COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count
      FROM users u
      LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
      WHERE u.role = 'local' AND u.buddy_status = 'approved'
      GROUP BY u.id
      HAVING $2 = TRUE
-        OR COUNT(m.id) FILTER (WHERE m.status = 'active') < 3
+        OR COUNT(m.id) FILTER (WHERE m.status = 'active') < u.max_buddies
         OR u.id = $1
      ORDER BY u.full_name ASC`,
     [activeMatchBuddyId, includeFullBuddies]
@@ -58,6 +58,7 @@ export function findAvailableBuddies(activeMatchBuddyId = null, includeFullBuddi
 export function findBuddyCapacity(buddyId) {
   return query(
     `SELECT u.id,
+            u.max_buddies,
             COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count
      FROM users u
      LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
@@ -160,7 +161,12 @@ export async function respondToBuddyRequest({ requestId, buddyId, action }) {
       [buddyId]
     );
 
-    if (activeStudentsResult.rows[0].count >= 3) {
+    const buddyCapacityResult = await client.query(
+      `SELECT max_buddies FROM users WHERE id = $1 AND role = 'local'`,
+      [buddyId]
+    );
+
+    if (activeStudentsResult.rows[0].count >= Number(buddyCapacityResult.rows[0]?.max_buddies || 3)) {
       throw new Error('BUDDY_LIMIT_REACHED');
     }
 

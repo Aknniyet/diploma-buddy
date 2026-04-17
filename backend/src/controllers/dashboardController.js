@@ -56,14 +56,16 @@ export async function getStudentDashboard(req, res) {
 
 export async function getBuddyDashboard(req, res) {
   try {
-    const [matchesResult, pendingResult, unreadResult] =
+    const [matchesResult, pendingResult, unreadResult, profileResult] =
       await findBuddyDashboardData(req.user.id);
+    const profile = profileResult.rows[0] || {};
 
     return res.json({
       activeStudents: matchesResult.rows[0]?.count || 0,
       pendingRequests: pendingResult.rows[0]?.count || 0,
       unreadMessages: unreadResult.rows[0]?.count || 0,
-      maxStudents: 3,
+      maxStudents: profile.max_buddies || 3,
+      buddyStatus: profile.buddy_status || "not_applied",
     });
   } catch (error) {
     console.error("Buddy dashboard error:", error.message);

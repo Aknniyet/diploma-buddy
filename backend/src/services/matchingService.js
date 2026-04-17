@@ -45,6 +45,7 @@ export function formatBuddyCard(
   pendingRequestBuddyId = null
 ) {
   const activeStudents = Number(buddy.active_students_count || 0);
+  const maxBuddies = Number(buddy.max_buddies || 3);
   const score = calculateBuddyScore(student, buddy);
   const isMatched = activeMatchBuddyId === buddy.id;
   const requestStatus = statusMap.get(buddy.id) || null;
@@ -65,8 +66,9 @@ export function formatBuddyCard(
     languages: (buddy.languages || []).join(', '),
     bio: buddy.about_you || 'This buddy has not added a bio yet.',
     interests: buddy.hobbies || [],
-    spotsAvailable: Math.max(0, 3 - activeStudents),
+    spotsAvailable: Math.max(0, maxBuddies - activeStudents),
     activeStudents,
+    maxBuddies,
     score,
     status,
     hasActiveMatch,

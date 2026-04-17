@@ -19,6 +19,16 @@
   color: #667085;
 }
 
+.local-review-alert {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+  font-size: 14px;
+}
+
 .local-overview-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

@@ -81,9 +81,31 @@
   background: #fcfefe;
 }
 
+.admin-profile-item,
+.admin-match-item {
+  align-items: stretch;
+}
+
+.admin-item-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-item-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
 .admin-list-item h4 {
   margin: 0 0 6px;
   font-size: 15px;
+}
+
+.admin-item-title-row h4 {
+  margin: 0;
 }
 
 .admin-list-item p {
@@ -105,6 +127,59 @@
   background: #eef6f6;
   border-radius: 999px;
   padding: 5px 10px;
+}
+
+.admin-status-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #eef6f6;
+  color: #0f766e;
+}
+
+.admin-status-pill.approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.admin-status-pill.rejected {
+  background: #ffe4e6;
+  color: #be123c;
+}
+
+.admin-status-pill.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.admin-status-pill.suspended,
+.admin-status-pill.request_pending {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.admin-status-pill.waiting_for_match {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.admin-status-pill.completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.admin-status-pill.cancelled {
+  background: #ffe4e6;
+  color: #be123c;
+}
+
+.admin-warning-text {
+  margin-top: 10px !important;
+  color: #b45309 !important;
+  font-size: 13px !important;
 }
 
 .admin-form {
@@ -147,15 +222,20 @@
   min-height: 88px;
 }
 
-.admin-match-item {
-  align-items: stretch;
+.admin-note-input.compact {
+  min-height: 68px;
 }
 
+.admin-action-panel,
 .admin-match-controls {
   min-width: 320px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.admin-action-panel.wide {
+  min-width: min(520px, 45vw);
 }
 
 .admin-form-actions,
@@ -176,6 +256,13 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+}
+
+.admin-primary-btn:disabled,
+.admin-secondary-btn:disabled,
+.admin-danger-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .admin-primary-btn {
@@ -205,13 +292,42 @@
   font-size: 14px;
 }
 
+.admin-error {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.admin-empty-state {
+  border: 1px dashed #d9e5e5;
+  border-radius: 16px;
+  padding: 20px;
+  color: #667085;
+  background: #fbfefe;
+  text-align: center;
+}
+
 @media (max-width: 1100px) {
   .admin-stats-grid,
   .admin-two-column {
     grid-template-columns: 1fr;
   }
 
-  .admin-match-controls {
+  .admin-action-panel,
+  .admin-match-controls,
+  .admin-action-panel.wide {
     min-width: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-list-item {
+    flex-direction: column;
+  }
+
+  .admin-inline-actions,
+  .admin-inline-actions button,
+  .admin-select {
+    width: 100%;
   }
 }

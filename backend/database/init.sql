@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS users (
   gender VARCHAR(30),
   gender_preference VARCHAR(30),
   buddy_status VARCHAR(30) NOT NULL DEFAULT 'not_applied'
-    CHECK (buddy_status IN ('not_applied', 'pending', 'approved', 'rejected')),
+    CHECK (buddy_status IN ('not_applied', 'pending', 'approved', 'rejected', 'suspended')),
+  max_buddies INTEGER NOT NULL DEFAULT 3,
   profile_photo_url TEXT,
   email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW(),
@@ -25,6 +26,16 @@ ADD COLUMN IF NOT EXISTS profile_photo_url TEXT;
 
 ALTER TABLE users
 ADD COLUMN IF NOT EXISTS email_verified BOOLEAN;
+
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS max_buddies INTEGER NOT NULL DEFAULT 3;
+
+ALTER TABLE users
+DROP CONSTRAINT IF EXISTS users_buddy_status_check;
+
+ALTER TABLE users
+ADD CONSTRAINT users_buddy_status_check
+CHECK (buddy_status IN ('not_applied', 'pending', 'approved', 'rejected', 'suspended'));
 
 UPDATE users
 SET email_verified = TRUE
@@ -87,9 +98,11 @@ CREATE TABLE IF NOT EXISTS buddy_matches (
   buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   status VARCHAR(30) NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'completed', 'cancelled')),
-  created_at TIMESTAMP DEFAULT NOW(),
-  UNIQUE (international_student_id, buddy_id, status)
+  created_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE buddy_matches
+DROP CONSTRAINT IF EXISTS buddy_matches_international_student_id_buddy_id_status_key;
 
 CREATE UNIQUE INDEX IF NOT EXISTS one_active_match_per_student
 ON buddy_matches (international_student_id)

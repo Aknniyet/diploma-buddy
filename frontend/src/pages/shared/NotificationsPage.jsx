@@ -16,6 +16,10 @@ const iconMap = {
   request_declined: UserRoundX,
   match_created: UserCheck,
   match_reassigned: UserCheck,
+  match_completed: CheckCircle2,
+  match_cancelled: UserRoundX,
+  buddy_profile_approved: UserCheck,
+  buddy_profile_rejected: UserRoundX,
 };
 
 function formatDate(date) {

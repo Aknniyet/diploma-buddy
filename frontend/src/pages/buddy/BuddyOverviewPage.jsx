@@ -24,6 +24,12 @@ function BuddyOverviewPage() {
           <p>Thank you for helping international students adapt.</p>
         </div>
 
+        {dashboard.buddyStatus && dashboard.buddyStatus !== "approved" ? (
+          <div className="local-review-alert">
+            Your buddy profile status is <strong>{dashboard.buddyStatus}</strong>. You can edit your profile, but you will appear in matching only after admin approval.
+          </div>
+        ) : null}
+
         <div className="local-overview-cards">
           <div className="dashboard-card local-stat-card">
             <h3 className="card-title">Active Students</h3>
@@ -45,7 +51,7 @@ function BuddyOverviewPage() {
         <div className="local-overview-bottom-grid">
           <div className="dashboard-card">
             <h3 className="card-title">Capacity</h3>
-            <p className="card-subtitle">You can support up to 3 active students at the same time.</p>
+            <p className="card-subtitle">You can support up to {dashboard.maxStudents} active students at the same time.</p>
           </div>
           <div className="dashboard-card">
             <h3 className="card-title">Action</h3>

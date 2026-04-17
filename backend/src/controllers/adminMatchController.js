@@ -1,12 +1,15 @@
 import { calculateBuddyScore, formatBuddyCard } from "../services/matchingService.js";
 import {
   adminApproveRequest,
+  createManualMatch,
   createAdminMatchNote,
   ensureAdminNotesTable,
   getActiveMatchesForAdmin,
   getAdminNotesForMatch,
   getApprovedBuddiesForAdmin,
+  getBuddyActiveMatchCount,
   getBuddyProfiles,
+  getMatchHistoryForAdmin,
   getPendingRequestsForAdmin,
   getUnmatchedStudents,
   reassignMatch,
@@ -61,7 +64,7 @@ export async function getAdminMatchesOverview(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const [, pendingResult, activeMatchesResult, studentsResult, buddiesResult, buddyProfilesResult] =
+    const [, pendingResult, activeMatchesResult, studentsResult, buddiesResult, buddyProfilesResult, matchHistoryResult] =
       await Promise.all([
         ensureAdminNotesTable(),
         getPendingRequestsForAdmin(),
@@ -69,8 +72,18 @@ export async function getAdminMatchesOverview(req, res) {
         getUnmatchedStudents(),
         getApprovedBuddiesForAdmin(),
         getBuddyProfiles(),
+        getMatchHistoryForAdmin(),
       ]);
     const approvedBuddies = buddiesResult.rows;
+    const cancelledBuddyByStudent = new Map();
+
+    matchHistoryResult.rows
+      .filter((match) => match.status === "cancelled")
+      .forEach((match) => {
+        const previous = cancelledBuddyByStudent.get(match.student_id) || new Set();
+        previous.add(match.buddy_id);
+        cancelledBuddyByStudent.set(match.student_id, previous);
+      });
 
     const pendingRequests = pendingResult.rows.map((item) => {
       const score = calculateBuddyScore(
@@ -96,6 +109,8 @@ export async function getAdminMatchesOverview(req, res) {
         buddyName: item.buddy_name,
         score,
         status: item.status,
+        buddyLoad: Number(item.active_students_count || 0),
+        buddyMax: Number(item.max_buddies || 3),
         message: item.message || "No message provided.",
         createdAt: item.created_at,
       };
@@ -103,7 +118,9 @@ export async function getAdminMatchesOverview(req, res) {
 
     const suggestedMatches = studentsResult.rows
       .map((student) => {
+        const cancelledBuddies = cancelledBuddyByStudent.get(student.id) || new Set();
         const ranked = approvedBuddies
+          .filter((buddy) => !cancelledBuddies.has(buddy.id))
           .map((buddy) => formatBuddyCard(student, buddy, new Map(), null))
           .filter((buddy) => buddy.spotsAvailable > 0)
           .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
@@ -130,14 +147,33 @@ export async function getAdminMatchesOverview(req, res) {
     return res.json({
       pendingRequests,
       activeMatches: activeMatchesResult.rows,
+      matchHistory: matchHistoryResult.rows,
+      unmatchedStudents: studentsResult.rows.map((student) => ({
+        id: student.id,
+        name: student.full_name,
+        country: student.home_country || "Not specified",
+        city: student.city || "Not specified",
+        program: student.study_program || "Not specified",
+        languages: student.languages || [],
+        interests: student.hobbies || [],
+        status: student.match_status,
+        registeredAt: student.created_at,
+      })),
       suggestedMatches,
       buddyProfiles: buddyProfilesResult.rows,
-      availableBuddies: approvedBuddies.map((item) => ({
-        id: item.id,
-        name: item.full_name,
-        activeStudents: Number(item.active_students_count || 0),
-        spotsAvailable: Math.max(0, 3 - Number(item.active_students_count || 0)),
-      })),
+      availableBuddies: approvedBuddies
+        .map((item) => ({
+          id: item.id,
+          name: item.full_name,
+          city: item.city || "Kazakhstan",
+          program: item.study_program || "Not specified",
+          languages: item.languages || [],
+          interests: item.hobbies || [],
+          activeStudents: Number(item.active_students_count || 0),
+          maxBuddies: Number(item.max_buddies || 3),
+          spotsAvailable: Math.max(0, Number(item.max_buddies || 3) - Number(item.active_students_count || 0)),
+        }))
+        .filter((buddy) => buddy.spotsAvailable > 0),
     });
   } catch (error) {
     console.error("Admin matches overview error:", error.message);
@@ -181,10 +217,24 @@ export async function changeBuddyStatusByAdmin(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const { buddyStatus } = req.body;
+    const { buddyStatus, reason } = req.body;
 
-    if (!["pending", "approved", "rejected", "not_applied"].includes(buddyStatus)) {
+    if (!["pending", "approved", "rejected", "suspended", "not_applied"].includes(buddyStatus)) {
       return res.status(400).json({ message: "Invalid buddy status." });
+    }
+
+    if (["rejected", "suspended"].includes(buddyStatus) && !reason?.trim()) {
+      return res.status(400).json({ message: "Reason is required." });
+    }
+
+    if (["rejected", "suspended"].includes(buddyStatus)) {
+      const activeMatches = await getBuddyActiveMatchCount(req.params.buddyId);
+
+      if (activeMatches.rows[0]?.count > 0) {
+        return res.status(400).json({
+          message: "This buddy still has active students. Reassign or close those matches before changing availability.",
+        });
+      }
     }
 
     const result = await updateBuddyStatus(req.params.buddyId, buddyStatus);
@@ -192,6 +242,23 @@ export async function changeBuddyStatusByAdmin(req, res) {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Buddy profile not found." });
     }
+
+    await createNotification({
+      userId: Number(req.params.buddyId),
+      type: buddyStatus === "approved" ? "buddy_profile_approved" : "buddy_profile_rejected",
+      title:
+        buddyStatus === "approved"
+          ? "Buddy profile approved"
+          : buddyStatus === "suspended"
+          ? "Buddy profile suspended"
+          : "Buddy profile rejected",
+      description:
+        buddyStatus === "approved"
+          ? "Your buddy profile was approved. Students can now send you buddy requests."
+          : `Your buddy profile status was changed to ${buddyStatus}. Reason: ${reason.trim()}`,
+      referenceType: "buddy_profile",
+      referenceId: Number(req.params.buddyId),
+    }).catch(() => null);
 
     return res.json(result.rows[0]);
   } catch (error) {
@@ -210,6 +277,10 @@ export async function changeMatchStatusByAdmin(req, res) {
       return res.status(400).json({ message: "Invalid match status." });
     }
 
+    if (["completed", "cancelled"].includes(status) && !note?.trim()) {
+      return res.status(400).json({ message: "Admin note is required for completing or cancelling a match." });
+    }
+
     const result = await updateMatchStatus(req.params.matchId, status);
 
     if (result.rows.length === 0) {
@@ -219,15 +290,111 @@ export async function changeMatchStatusByAdmin(req, res) {
     if (note?.trim()) {
       await createAdminMatchNote({
         matchId: Number(req.params.matchId),
-        note: note.trim(),
+        note: `${status.toUpperCase()}: ${note.trim()}`,
         createdBy: req.user.id,
       });
     }
+
+    const match = result.rows[0];
+    const notificationText =
+      status === "completed"
+        ? "Your buddy match was marked as completed by admin."
+        : status === "cancelled"
+        ? "Your buddy match was cancelled by admin. The student can request another buddy now."
+        : "Your buddy match was reactivated by admin.";
+
+    await Promise.all([
+      createNotification({
+        userId: match.international_student_id,
+        type: `match_${status}`,
+        title: status === "completed" ? "Match completed" : status === "cancelled" ? "Match cancelled" : "Match reactivated",
+        description: notificationText,
+        referenceType: "match",
+        referenceId: match.id,
+      }).catch(() => null),
+      createNotification({
+        userId: match.buddy_id,
+        type: `match_${status}`,
+        title: status === "completed" ? "Match completed" : status === "cancelled" ? "Match cancelled" : "Match reactivated",
+        description: notificationText,
+        referenceType: "match",
+        referenceId: match.id,
+      }).catch(() => null),
+    ]);
 
     return res.json(result.rows[0]);
   } catch (error) {
     console.error("Change match status error:", error.message);
     return res.status(500).json({ message: "Could not update match status." });
+  }
+}
+
+export async function createManualMatchByAdmin(req, res) {
+  try {
+    if (!ensureAdmin(req, res)) return;
+
+    const { studentId, buddyId, note } = req.body;
+
+    if (!studentId || !buddyId) {
+      return res.status(400).json({ message: "Student and buddy are required." });
+    }
+
+    const result = await createManualMatch({
+      studentId: Number(studentId),
+      buddyId: Number(buddyId),
+    });
+
+    if (note?.trim()) {
+      await createAdminMatchNote({
+        matchId: result.id,
+        note: `MANUAL MATCH: ${note.trim()}`,
+        createdBy: req.user.id,
+      });
+    }
+
+    await Promise.all([
+      createNotification({
+        userId: result.international_student_id,
+        type: "match_created",
+        title: "New buddy assigned",
+        description: `Admin assigned ${result.buddy_name} as your buddy. You can now start messaging.`,
+        referenceType: "match",
+        referenceId: result.id,
+      }).catch(() => null),
+      createNotification({
+        userId: result.buddy_id,
+        type: "match_created",
+        title: "New student assigned",
+        description: `Admin assigned ${result.student_name} to you. You can now start messaging.`,
+        referenceType: "match",
+        referenceId: result.id,
+      }).catch(() => null),
+    ]);
+
+    return res.status(201).json(result);
+  } catch (error) {
+    if (error.message === "PAIR_NOT_FOUND") {
+      return res.status(404).json({ message: "Student or buddy not found." });
+    }
+
+    if (error.message === "INVALID_STUDENT") {
+      return res.status(400).json({ message: "Selected student is not an international student." });
+    }
+
+    if (error.message === "BUDDY_NOT_FOUND") {
+      return res.status(404).json({ message: "Selected buddy is not approved." });
+    }
+
+    if (error.message === "BUDDY_LIMIT_REACHED") {
+      return res.status(400).json({ message: "Selected buddy is already at full capacity." });
+    }
+
+    if (error.message === "STUDENT_ALREADY_MATCHED") {
+      return res.status(400).json({ message: "Student already has an active buddy." });
+    }
+
+    console.error("Create manual match error:", error.message);
+    return res.status(500).json({ message: "Could not create manual match." });
   }
 }
 

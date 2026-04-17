@@ -35,7 +35,9 @@ export async function getAvailableBuddies(req, res) {
 
     const hasActiveMatch = Boolean(activeMatchBuddyId);
     const buddiesResult = await findAvailableBuddies(activeMatchBuddyId, hasActiveMatch);
-    const buddyRows = buddiesResult.rows;
+    const buddyRows = hasActiveMatch
+      ? buddiesResult.rows.filter((buddy) => buddy.id === activeMatchBuddyId)
+      : buddiesResult.rows;
 
     const buddies = buddyRows
       .map((buddy) =>
@@ -93,7 +95,8 @@ export async function createRequest(req, res) {
     }
 
     const activeStudentsCount = Number(buddyResult.rows[0].active_students_count || 0);
-    if (activeStudentsCount >= 3) {
+    const maxBuddies = Number(buddyResult.rows[0].max_buddies || 3);
+    if (activeStudentsCount >= maxBuddies) {
       return res.status(400).json({ message: 'This buddy already has the maximum number of students.' });
     }
 

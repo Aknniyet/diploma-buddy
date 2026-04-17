@@ -6,6 +6,7 @@ import {
   approveRequestByAdmin,
   changeBuddyStatusByAdmin,
   changeMatchStatusByAdmin,
+  createManualMatchByAdmin,
   getAdminMatchesOverview,
   getMatchNotesByAdmin,
   reassignMatchByAdmin,
@@ -16,6 +17,7 @@ const router = express.Router();
 router.get("/dashboard", authenticate, getAdminDashboard);
 router.get("/matches", authenticate, getAdminMatchesOverview);
 router.post("/requests/:requestId/approve", authenticate, approveRequestByAdmin);
+router.post("/matches/manual", authenticate, createManualMatchByAdmin);
 router.patch("/buddies/:buddyId/status", authenticate, changeBuddyStatusByAdmin);
 router.patch("/matches/:matchId/status", authenticate, changeMatchStatusByAdmin);
 router.patch("/matches/:matchId/reassign", authenticate, reassignMatchByAdmin);

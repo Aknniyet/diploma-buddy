@@ -28,6 +28,7 @@ function SignupPage() {
     aboutYou: "",
     gender: "",
     genderPreference: "no_preference",
+    maxBuddies: "3",
   });
 
   const handleChange = (e) => {
@@ -340,6 +341,24 @@ function SignupPage() {
                     onChange={handleChange}
                   />
                 </div>
+
+                {selectedRole === "local" && (
+                  <div className="form-group">
+                    <label htmlFor="maxBuddies">{t("signup.maxBuddies") || "Maximum buddies"}</label>
+                    <select
+                      id="maxBuddies"
+                      className="signup-select"
+                      name="maxBuddies"
+                      value={formData.maxBuddies}
+                      onChange={handleChange}
+                    >
+                      <option value="1">1 student</option>
+                      <option value="2">2 students</option>
+                      <option value="3">3 students</option>
+                    </select>
+                    <small>{t("signup.maxBuddiesHelp") || "You can change this later in your profile."}</small>
+                  </div>
+                )}
 
                 {error && <p className="signup-error-text">{error}</p>}
 

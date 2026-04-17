@@ -32,6 +32,7 @@ function ProfilePage({ userType = "student" }) {
       hobbies: (profile.hobbies || []).join(", "),
       aboutYou: profile.about_you || "",
       profilePhotoUrl: profile.profile_photo_url || "",
+      maxBuddies: String(profile.max_buddies || 3),
     });
   };
 
@@ -85,6 +86,18 @@ function ProfilePage({ userType = "student" }) {
         { id: 5, label: "Study Program", key: "studyProgram", value: rawProfile.study_program || "" },
         { id: 6, label: "Gender", key: "gender", value: rawProfile.gender || "" , type: "select", options: ["female", "male", "other"]},
         { id: 7, label: "Buddy Preference", key: "genderPreference", value: rawProfile.gender_preference || "no_preference", type: "select", options: ["no_preference", "female", "male", "other"] },
+        ...(isBuddy
+          ? [
+              {
+                id: 8,
+                label: "Maximum Students",
+                key: "maxBuddies",
+                value: String(rawProfile.max_buddies || 3),
+                type: "select",
+                options: ["1", "2", "3"],
+              },
+            ]
+          : []),
       ],
       sections: [
         {

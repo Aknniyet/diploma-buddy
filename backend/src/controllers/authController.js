@@ -31,6 +31,7 @@ export async function register(req, res) {
       aboutYou,
       gender,
       genderPreference,
+      maxBuddies,
     } = req.body;
 
     if (!fullName || !email || !password || !confirmPassword || !role) {
@@ -53,7 +54,7 @@ export async function register(req, res) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const buddyStatus = role === 'local' ? 'approved' : 'not_applied';
+    const buddyStatus = role === 'local' ? 'pending' : 'not_applied';
 
     const insertedUser = await createUser({
       fullName,
@@ -68,12 +69,13 @@ export async function register(req, res) {
       aboutYou,
       gender,
       genderPreference,
+      maxBuddies: Number(maxBuddies) || 3,
       buddyStatus,
       emailVerified: true,
     });
 
     if (role === 'local') {
-      await createBuddyApplication(insertedUser.rows[0].id, aboutYou).catch(() => null);
+      await createBuddyApplication(insertedUser.rows[0].id, aboutYou, 'Flexible', Number(maxBuddies) || 3).catch(() => null);
     }
 
     return res.status(201).json({
@@ -102,6 +104,7 @@ export async function registerStart(req, res) {
       aboutYou,
       gender,
       genderPreference,
+      maxBuddies,
     } = req.body;
 
     if (!fullName || !email || !password || !confirmPassword || !role) {
@@ -150,6 +153,7 @@ export async function registerStart(req, res) {
         aboutYou,
         gender,
         genderPreference,
+        maxBuddies,
       },
     });
   } catch (error) {
@@ -202,6 +206,7 @@ export async function registerVerify(req, res) {
       aboutYou,
       gender,
       genderPreference,
+      maxBuddies,
     } = req.body;
 
     if (!code || !fullName || !email || !password || !confirmPassword || !role) {
@@ -229,7 +234,7 @@ export async function registerVerify(req, res) {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const buddyStatus = role === 'local' ? 'approved' : 'not_applied';
+    const buddyStatus = role === 'local' ? 'pending' : 'not_applied';
 
     const insertedUser = await createUser({
       fullName,
@@ -244,12 +249,13 @@ export async function registerVerify(req, res) {
       aboutYou,
       gender,
       genderPreference,
+      maxBuddies: Number(maxBuddies) || 3,
       buddyStatus,
       emailVerified: true,
     });
 
     if (role === 'local') {
-      await createBuddyApplication(insertedUser.rows[0].id, aboutYou).catch(() => null);
+      await createBuddyApplication(insertedUser.rows[0].id, aboutYou, 'Flexible', Number(maxBuddies) || 3).catch(() => null);
     }
 
     await deleteEmailCodes(normalizedEmail, 'verify_email');
@@ -349,6 +355,7 @@ export async function login(req, res) {
         email: user.email,
         role: user.role,
         buddy_status: user.buddy_status,
+        max_buddies: user.max_buddies,
       },
     });
   } catch (error) {

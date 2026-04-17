@@ -2,7 +2,7 @@ import { query } from '../config/db.js';
 
 export function findUserByEmail(email) {
   return query(
-    `SELECT id, full_name, email, password_hash, role, buddy_status, email_verified
+    `SELECT id, full_name, email, password_hash, role, buddy_status, max_buddies, email_verified
      FROM users
      WHERE email = $1`,
     [email.toLowerCase()]
@@ -13,7 +13,7 @@ export function findUserProfileById(userId) {
   return query(
     `SELECT id, full_name, email, role, home_country, city, study_program,
             languages, hobbies, about_you, gender, gender_preference,
-            buddy_status, profile_photo_url, created_at, email_verified
+            buddy_status, max_buddies, profile_photo_url, created_at, email_verified
      FROM users
      WHERE id = $1`,
     [userId]
@@ -24,10 +24,10 @@ export function createUser(userData) {
   return query(
     `INSERT INTO users (
         full_name, email, password_hash, role, home_country, city, study_program,
-        languages, hobbies, about_you, gender, gender_preference, buddy_status, email_verified
+        languages, hobbies, about_you, gender, gender_preference, buddy_status, max_buddies, email_verified
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8::text[], $9::text[], $10, $11, $12, $13, $14)
-     RETURNING id, full_name, email, role, buddy_status`,
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8::text[], $9::text[], $10, $11, $12, $13, $14, $15)
+     RETURNING id, full_name, email, role, buddy_status, max_buddies`,
     [
       userData.fullName,
       userData.email.toLowerCase(),
@@ -42,17 +42,18 @@ export function createUser(userData) {
       userData.gender || null,
       userData.genderPreference || null,
       userData.buddyStatus,
+      userData.maxBuddies || 3,
       userData.emailVerified ?? false,
     ]
   );
 }
 
-export function createBuddyApplication(userId, motivation, availability = 'Flexible') {
+export function createBuddyApplication(userId, motivation, availability = 'Flexible', maxBuddies = 3) {
   return query(
     `INSERT INTO buddy_applications (local_student_id, motivation, availability, max_buddies, status)
-     VALUES ($1, $2, $3, 3, 'approved')
+     VALUES ($1, $2, $3, $4, 'pending')
      ON CONFLICT DO NOTHING`,
-    [userId, motivation || null, availability]
+    [userId, motivation || null, availability, maxBuddies]
   );
 }
 
@@ -69,11 +70,12 @@ export function updateUserProfile(userId, profileData) {
          profile_photo_url = COALESCE($8, profile_photo_url),
          gender = COALESCE($9, gender),
          gender_preference = COALESCE($10, gender_preference),
+         max_buddies = COALESCE($11, max_buddies),
          updated_at = NOW()
-     WHERE id = $11
+     WHERE id = $12
      RETURNING id, full_name, email, role, home_country, city, study_program,
                languages, hobbies, about_you, gender, gender_preference,
-               buddy_status, profile_photo_url`,
+               buddy_status, max_buddies, profile_photo_url`,
     [
       profileData.fullName || null,
       profileData.homeCountry || null,
@@ -85,6 +87,7 @@ export function updateUserProfile(userId, profileData) {
       profileData.profilePhotoUrl || null,
       profileData.gender || null,
       profileData.genderPreference || null,
+      profileData.maxBuddies || null,
       userId,
     ]
   );

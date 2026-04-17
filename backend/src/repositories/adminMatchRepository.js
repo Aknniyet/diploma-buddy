@@ -15,10 +15,14 @@ export async function ensureAdminNotesTable() {
 
 export function getBuddyProfiles() {
   return query(
-    `SELECT id, full_name, email, city, study_program, buddy_status, created_at
-     FROM users
-     WHERE role = 'local'
-     ORDER BY created_at DESC`
+    `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
+            u.about_you, u.buddy_status, u.max_buddies, u.created_at,
+            COUNT(m.id) FILTER (WHERE m.status = 'active')::int AS active_students_count
+     FROM users u
+     LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
+     WHERE u.role = 'local'
+     GROUP BY u.id
+     ORDER BY u.created_at DESC`
   );
 }
 
@@ -29,6 +33,7 @@ export function getPendingRequestsForAdmin() {
             s.languages AS student_languages, s.hobbies AS student_hobbies, s.gender_preference,
             b.id AS buddy_id, b.full_name AS buddy_name, b.study_program AS buddy_program,
             b.languages AS buddy_languages, b.hobbies AS buddy_hobbies, b.gender,
+            b.max_buddies,
             COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count
      FROM buddy_requests br
      JOIN users s ON s.id = br.international_student_id
@@ -62,7 +67,16 @@ export function getActiveMatchesForAdmin() {
 
 export function getUnmatchedStudents() {
   return query(
-    `SELECT u.id, u.full_name, u.study_program, u.languages, u.hobbies, u.gender_preference
+    `SELECT u.id, u.full_name, u.home_country, u.city, u.study_program, u.languages, u.hobbies,
+            u.gender_preference, u.created_at,
+            CASE
+              WHEN EXISTS (
+                SELECT 1 FROM buddy_requests br
+                WHERE br.international_student_id = u.id AND br.status = 'pending'
+              )
+              THEN 'request_pending'
+              ELSE 'waiting_for_match'
+            END AS match_status
      FROM users u
      WHERE u.role = 'international'
        AND NOT EXISTS (
@@ -77,7 +91,7 @@ export function getUnmatchedStudents() {
 export function getApprovedBuddiesForAdmin() {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
-            u.about_you, u.gender, u.buddy_status, u.profile_photo_url,
+            u.about_you, u.gender, u.buddy_status, u.max_buddies, u.profile_photo_url,
             COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count
      FROM users u
      LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
@@ -112,13 +126,16 @@ export async function adminApproveRequest({ requestId, adminId }) {
     }
 
     const activeStudentsResult = await client.query(
-      `SELECT COUNT(*)::int AS count
-       FROM buddy_matches
-       WHERE buddy_id = $1 AND status = 'active'`,
+      `SELECT u.max_buddies,
+              COUNT(m.id) FILTER (WHERE m.status = 'active')::int AS count
+       FROM users u
+       LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
+       WHERE u.id = $1
+       GROUP BY u.id`,
       [buddyRequest.buddy_id]
     );
 
-    if (activeStudentsResult.rows[0].count >= 3) {
+    if (activeStudentsResult.rows[0].count >= Number(activeStudentsResult.rows[0].max_buddies || 3)) {
       throw new Error("BUDDY_LIMIT_REACHED");
     }
 
@@ -179,12 +196,130 @@ export async function adminApproveRequest({ requestId, adminId }) {
 
 export async function updateMatchStatus(matchId, status) {
   return query(
-    `UPDATE buddy_matches
+    `UPDATE buddy_matches bm
      SET status = $2
-     WHERE id = $1
-     RETURNING id, international_student_id, buddy_id, status, created_at`,
+     FROM users s, users b
+     WHERE bm.id = $1
+       AND s.id = bm.international_student_id
+       AND b.id = bm.buddy_id
+     RETURNING bm.id, bm.international_student_id, bm.buddy_id, bm.status, bm.created_at,
+               s.full_name AS student_name, b.full_name AS buddy_name`,
     [matchId, status]
   );
+}
+
+export function getMatchHistoryForAdmin() {
+  return query(
+    `SELECT bm.id, bm.status, bm.created_at,
+            s.id AS student_id, s.full_name AS student_name,
+            b.id AS buddy_id, b.full_name AS buddy_name,
+            COALESCE(notes.note_count, 0) AS note_count
+     FROM buddy_matches bm
+     JOIN users s ON s.id = bm.international_student_id
+     JOIN users b ON b.id = bm.buddy_id
+     LEFT JOIN (
+       SELECT match_id, COUNT(*)::int AS note_count
+       FROM admin_match_notes
+       WHERE match_id IS NOT NULL
+       GROUP BY match_id
+     ) notes ON notes.match_id = bm.id
+     WHERE bm.status IN ('completed', 'cancelled')
+     ORDER BY bm.created_at DESC
+     LIMIT 30`
+  );
+}
+
+export function getBuddyActiveMatchCount(buddyId) {
+  return query(
+    `SELECT COUNT(*)::int AS count
+     FROM buddy_matches
+     WHERE buddy_id = $1 AND status = 'active'`,
+    [buddyId]
+  );
+}
+
+export async function createManualMatch({ studentId, buddyId }) {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const peopleResult = await client.query(
+      `SELECT
+         s.id AS student_id, s.full_name AS student_name, s.role AS student_role,
+         b.id AS buddy_id, b.full_name AS buddy_name, b.role AS buddy_role, b.buddy_status, b.max_buddies,
+         COUNT(m.id) FILTER (WHERE m.status = 'active')::int AS active_students_count
+       FROM users s
+       CROSS JOIN users b
+       LEFT JOIN buddy_matches m ON m.buddy_id = b.id AND m.status = 'active'
+       WHERE s.id = $1 AND b.id = $2
+       GROUP BY s.id, b.id`,
+      [studentId, buddyId]
+    );
+
+    if (peopleResult.rows.length === 0) {
+      throw new Error("PAIR_NOT_FOUND");
+    }
+
+    const pair = peopleResult.rows[0];
+
+    if (pair.student_role !== "international") {
+      throw new Error("INVALID_STUDENT");
+    }
+
+    if (pair.buddy_role !== "local" || pair.buddy_status !== "approved") {
+      throw new Error("BUDDY_NOT_FOUND");
+    }
+
+    if (pair.active_students_count >= Number(pair.max_buddies || 3)) {
+      throw new Error("BUDDY_LIMIT_REACHED");
+    }
+
+    const studentActiveMatch = await client.query(
+      `SELECT id
+       FROM buddy_matches
+       WHERE international_student_id = $1 AND status = 'active'`,
+      [studentId]
+    );
+
+    if (studentActiveMatch.rows.length > 0) {
+      throw new Error("STUDENT_ALREADY_MATCHED");
+    }
+
+    const matchResult = await client.query(
+      `INSERT INTO buddy_matches (international_student_id, buddy_id, status)
+       VALUES ($1, $2, 'active')
+       RETURNING id, international_student_id, buddy_id, status, created_at`,
+      [studentId, buddyId]
+    );
+
+    await client.query(
+      `INSERT INTO conversations (international_student_id, buddy_id)
+       VALUES ($1, $2)
+       ON CONFLICT (international_student_id, buddy_id) DO NOTHING`,
+      [studentId, buddyId]
+    );
+
+    await client.query(
+      `UPDATE buddy_requests
+       SET status = 'cancelled', responded_at = NOW()
+       WHERE international_student_id = $1 AND status = 'pending'`,
+      [studentId]
+    );
+
+    await client.query("COMMIT");
+
+    return {
+      ...matchResult.rows[0],
+      student_name: pair.student_name,
+      buddy_name: pair.buddy_name,
+    };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export async function reassignMatch(matchId, newBuddyId) {
@@ -213,6 +348,7 @@ export async function reassignMatch(matchId, newBuddyId) {
 
     const newBuddyResult = await client.query(
       `SELECT u.id, u.full_name,
+              u.max_buddies,
               COUNT(m.id) FILTER (WHERE m.status = 'active')::int AS active_students_count
        FROM users u
        LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
@@ -225,7 +361,7 @@ export async function reassignMatch(matchId, newBuddyId) {
       throw new Error("BUDDY_NOT_FOUND");
     }
 
-    if (newBuddyResult.rows[0].active_students_count >= 3) {
+    if (newBuddyResult.rows[0].active_students_count >= Number(newBuddyResult.rows[0].max_buddies || 3)) {
       throw new Error("BUDDY_LIMIT_REACHED");
     }
 
