@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Users } from "lucide-react";
 import "../../styles/login.css";
 import { useAuth } from "../../context/AuthContext";
 import { isValidEmail } from "../../utils/email";
 import { useI18n } from "../../context/I18nContext";
-import LanguageSwitcher from "../../components/common/LanguageSwitcher";
+import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -81,12 +80,11 @@ function LoginPage() {
   return (
     <div className="login-page">
       <div className="login-wrapper">
-        <LanguageSwitcher className="auth-language-switcher" />
         <Link to="/" className="login-brand">
-          <div className="login-brand-icon">
-            <Users size={22} />
-          </div>
-          <h1>KazakhBuddy</h1>
+          <img src={logo} alt="KazakhBuddy logo" className="auth-brand-logo" />
+          <h1>
+            Kazakh<span>Buddy</span>
+          </h1>
         </Link>
 
         <div className="login-card">

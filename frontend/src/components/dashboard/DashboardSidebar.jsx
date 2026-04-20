@@ -1,9 +1,10 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { LogOut, Users, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { sidebarLinks } from "../../constants/dashboardData";
 import { localSidebarLinks } from "../../constants/localDashboardData";
 import { adminSidebarLinks } from "../../constants/adminDashboardData";
 import { useAuth } from "../../context/AuthContext";
+import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
 
 function DashboardSidebar({
   sidebarType = "student",
@@ -48,8 +49,10 @@ function DashboardSidebar({
         <div>
           <div className="dashboard-sidebar-mobile-header">
             <Link to="/" className="sidebar-logo" onClick={onClose}>
-              <div className="logo-icon"><Users size={18} /></div>
-              <span>KazakhBuddy</span>
+              <img src={logo} alt="KazakhBuddy logo" className="sidebar-logo-mark" />
+              <span>
+                Kazakh<span>Buddy</span>
+              </span>
             </Link>
             <button
               type="button"

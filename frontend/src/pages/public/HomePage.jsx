@@ -2,7 +2,7 @@ import PublicLayout from "../../layouts/PublicLayout";
 import "../../styles/home.css";
 import { useNavigate } from "react-router-dom";
 import { homeFeatures, homeSteps } from "../../constants/homeData";
-import heroFigmaRight from "../../assets/hero-figma-right.png";
+import heroStudents from "../../assets/hero-students-warm.png";
 import { useI18n } from "../../context/I18nContext";
 
 function HomePage() {
@@ -60,7 +60,7 @@ function HomePage() {
               <div className="hero-illustration">
                 <div className="hero-cutout-wrap">
                   <img
-                    src={heroFigmaRight}
+                    src={heroStudents}
                     alt={t("home.heroAlt")}
                     className="hero-cutout"
                   />

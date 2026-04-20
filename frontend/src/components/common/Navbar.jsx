@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import "../../styles/navbar.css";
-import logo from "../../assets/kazakhbuddy-logo.png";
+import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
 import { useI18n } from "../../context/I18nContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 

@@ -29,20 +29,20 @@
   opacity: 0.85;
 }
 
-.signup-brand-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #0f9aa8;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.auth-brand-logo {
+  width: 58px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .signup-brand h1 {
   font-size: 28px;
   color: #111827;
+}
+
+.signup-brand h1 span {
+  color: #0f9aa8;
 }
 
 .signup-card {

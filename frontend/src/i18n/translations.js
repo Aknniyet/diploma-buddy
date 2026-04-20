@@ -1,3 +1,5 @@
+import { guideTranslations } from "./guideTranslations";
+
 export const translations = {
   en: {
     language: { en: "EN", ru: "RU", kz: "KZ" },
@@ -286,6 +288,7 @@ export const translations = {
         },
       },
     },
+    guide: guideTranslations.en,
     home: {
       badge: "Connecting Students in Kazakhstan",
       title1: "Your Journey",
@@ -727,6 +730,7 @@ export const translations = {
         },
       },
     },
+    guide: guideTranslations.ru,
     home: {
       badge: "Соединяем студентов в Казахстане",
       title1: "Ваш путь",
@@ -1167,6 +1171,7 @@ export const translations = {
         },
       },
     },
+    guide: guideTranslations.kz,
     home: {
       badge: "Қазақстандағы студенттерді байланыстырамыз",
       title1: "Сіздің сапарыңыз",

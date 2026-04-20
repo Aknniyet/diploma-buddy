@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Globe, MapPin, Users, ChevronLeft, ChevronRight } from "lucide-react";
+import { Globe, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import "../../styles/signup.css";
 import { apiRequest } from "../../lib/api";
 import { isValidEmail } from "../../utils/email";
 import { useI18n } from "../../context/I18nContext";
-import LanguageSwitcher from "../../components/common/LanguageSwitcher";
+import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -98,12 +98,11 @@ function SignupPage() {
   return (
     <div className="signup-page">
       <div className="signup-wrapper">
-        <LanguageSwitcher className="auth-language-switcher" />
         <Link to="/" className="signup-brand">
-          <div className="signup-brand-icon">
-            <Users size={22} />
-          </div>
-          <h1>KazakhBuddy</h1>
+          <img src={logo} alt="KazakhBuddy logo" className="auth-brand-logo" />
+          <h1>
+            Kazakh<span>Buddy</span>
+          </h1>
         </Link>
 
         <div className="signup-card">
