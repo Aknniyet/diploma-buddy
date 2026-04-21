@@ -1,375 +1,114 @@
 .adaptation-page {
   width: 100%;
-  background:
-    radial-gradient(circle at 82% 8%, rgba(244, 210, 61, 0.16), transparent 24%),
-    linear-gradient(180deg, #f6fbfb 0%, #eef7f7 100%);
-  color: #111827;
+  background-color: #f4f9f9;
 }
 
 .guide-hero {
-  padding: 92px 0 44px;
-}
-
-.guide-hero-content {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-  align-items: center;
-  gap: 48px;
-  min-height: 360px;
-  padding: 54px;
-  border: 1px solid rgba(15, 154, 168, 0.12);
-  border-radius: 34px;
-  background:
-    radial-gradient(circle at 82% 26%, rgba(246, 217, 76, 0.34), transparent 24%),
-    radial-gradient(circle at 68% 68%, rgba(15, 154, 168, 0.14), transparent 30%),
-    linear-gradient(135deg, #e7f7f7 0%, #ffffff 52%, #fff8d7 100%);
-  box-shadow: 0 28px 70px rgba(15, 99, 112, 0.12);
-  position: relative;
-  overflow: hidden;
-}
-
-.guide-hero-content::after {
-  content: "";
-  position: absolute;
-  right: 70px;
-  top: 54px;
-  width: 250px;
-  height: 210px;
-  opacity: 0.24;
-  background-image: radial-gradient(circle, #dcbf2f 0 5px, transparent 6px);
-  background-size: 28px 28px;
-  pointer-events: none;
-}
-
-.guide-hero-copy,
-.guide-hero-card {
-  position: relative;
-  z-index: 1;
-}
-
-.guide-eyebrow,
-.guide-section-heading span {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: #ddf4f4;
-  color: #0f7580;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
+  padding: 90px 0 70px;
+  text-align: center;
 }
 
 .guide-hero h1 {
-  max-width: 760px;
-  margin: 22px 0 20px;
-  font-size: clamp(44px, 5vw, 70px);
-  line-height: 1.02;
-  letter-spacing: -0.055em;
+  font-size: 44px;
+  line-height: 1.1;
+  margin-bottom: 20px;
   color: #111827;
 }
 
 .guide-hero p {
-  max-width: 680px;
-  font-size: 18px;
+  max-width: 820px;
+  margin: 0 auto;
+  font-size: 16px;
   line-height: 1.8;
-  color: #5f6b7a;
-}
-
-.guide-hero-card {
-  padding: 30px;
-  border: 1px solid rgba(15, 154, 168, 0.12);
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(12px);
-}
-
-.guide-hero-card span {
-  color: #0f9aa8;
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.guide-hero-card h2 {
-  margin: 14px 0 10px;
-  font-size: 26px;
-  line-height: 1.18;
-}
-
-.guide-hero-card p {
-  font-size: 15px;
-  line-height: 1.7;
-}
-
-.guide-hero-link,
-.guide-help-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 22px;
-  padding: 13px 18px;
-  border-radius: 12px;
-  background: #0f9aa8;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 800;
-  text-decoration: none;
+  color: #6b7280;
 }
 
 .guide-content {
-  padding: 70px 0 60px;
+  padding-bottom: 20x;
 }
 
-.guide-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-  margin-bottom: 72px;
+.quick-tips-box {
+  background: #F6F8F5;
+  border: 1px solid #f0d7be;
+  border-radius: 20px;
+  padding: 28px 30px;
+  margin-bottom: 40px;
 }
 
-.guide-stat {
+.quick-tips-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 92px;
-  padding: 22px;
-  border: 1px solid #d9ebeb;
-  border-radius: 22px;
-  background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.05);
-}
-
-.guide-stat svg {
-  color: #0f9aa8;
-  flex-shrink: 0;
-}
-
-.guide-stat strong {
-  display: block;
-  font-size: 24px;
-  color: #111827;
-}
-
-.guide-stat span {
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.quick-start-section,
-.roadmap-section,
-.guide-details-section {
+  gap: 10px;
   margin-bottom: 22px;
+  color: #8b5e34;
 }
 
-.guide-section-heading {
-  max-width: 760px;
-  margin-bottom: 30px;
-}
-
-.guide-section-heading.compact {
-  max-width: 700px;
-}
-
-.guide-section-heading h2 {
-  margin: 16px 0 12px;
-  font-size: clamp(34px, 4vw, 46px);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-}
-
-.guide-section-heading p {
-  color: #6b7280;
-  font-size: 17px;
-  line-height: 1.75;
-}
-
-.quick-start-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.quick-start-card {
-  min-height: 188px;
-  padding: 24px;
-  border: 1px solid #dceaea;
-  border-radius: 26px;
-  background: #ffffff;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.06);
-}
-
-.quick-start-card.featured {
-  color: #ffffff;
-  background:
-    radial-gradient(circle at 90% 0%, rgba(246, 217, 76, 0.28), transparent 32%),
-    linear-gradient(135deg, #0f9aa8 0%, #3fb3bd 100%);
-  border-color: transparent;
-}
-
-.quick-start-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 28px;
-}
-
-.quick-start-top span {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 14px;
-  background: #e8f7f7;
-  color: #0f9aa8;
-  font-weight: 900;
-}
-
-.quick-start-top svg {
-  color: #0f9aa8;
-}
-
-.quick-start-card.featured .quick-start-top span {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.quick-start-card.featured .quick-start-top svg {
-  color: #ffffff;
-}
-
-.quick-start-card h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  line-height: 1.25;
-}
-
-.quick-start-card p {
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.65;
-}
-
-.quick-start-card.featured p {
-  color: rgba(255, 255, 255, 0.86);
-}
-
-.roadmap-line {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 22px;
-  position: relative;
-}
-
-.roadmap-line::before {
-  content: "";
-  position: absolute;
-  left: 9%;
-  right: 9%;
-  top: 41px;
-  height: 3px;
-  border-radius: 999px;
-  background: #b8dddd;
-}
-
-.roadmap-card {
-  position: relative;
-  padding: 74px 24px 26px;
-  border: 1px solid #dceaea;
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.84);
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
-}
-
-.roadmap-number {
-  position: absolute;
-  top: 18px;
-  left: 24px;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: #0f9aa8;
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 900;
-}
-
-.roadmap-card:nth-child(3) .roadmap-number {
-  background: #f0cf43;
-  color: #6f5300;
-}
-
-.roadmap-card h3 {
-  margin-bottom: 10px;
+.quick-tips-header h2 {
   font-size: 20px;
 }
 
-.roadmap-card p {
-  color: #6b7280;
-  font-size: 14px;
+.tips-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.tips-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #4b5563;
   line-height: 1.7;
+}
+
+.tips-list li svg {
+  color: #0f9aa8;
+  margin-top: 4px;
+  flex-shrink: 0;
 }
 
 .guide-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
 }
 
 .guide-card {
-  padding: 26px;
-  border: 1px solid #dceaea;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.055);
+  background: #ffffff;
+  border: 1px solid #dde7e7;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
 .guide-card-header {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
 .guide-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 17px;
-  background: #e8f7f7;
+  width: 40px;
+  height: 40px;
+  background: #e6f7f7;
   color: #0f9aa8;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.guide-tag {
-  display: inline-flex;
-  margin-bottom: 9px;
-  padding: 5px 10px;
-  border-radius: 999px;
-  background: #fff4c9;
-  color: #9a7100;
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .guide-card-header h3 {
-  margin-bottom: 8px;
-  font-size: 21px;
-  line-height: 1.2;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: #111827;
 }
 
 .guide-card-header p {
-  color: #6b7280;
   font-size: 14px;
+  color: #6b7280;
   line-height: 1.6;
 }
 
@@ -378,47 +117,30 @@
   flex-direction: column;
 }
 
-.accordion-item {
-  border-bottom: 1px solid #dbe5e5;
+.guide-help-section {
+  padding: 60px 0;
+  text-align: center;
 }
 
-.accordion-item:last-child {
-  border-bottom: none;
-}
-
-.accordion-header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 17px 0;
-  border: none;
-  background: transparent;
+.guide-help-section h2 {
+  font-size: 30px;
+  margin-bottom: 14px;
   color: #111827;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 800;
-  text-align: left;
 }
 
-.accordion-header svg {
+.guide-help-section p {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.7;
   color: #6b7280;
-  flex-shrink: 0;
-}
-
-.accordion-content {
-  padding: 0 0 18px;
-  color: #4b5563;
-  font-size: 14px;
-  line-height: 1.9;
 }
 
 .calendar-link {
   display: inline-block;
-  margin-top: 8px;
-  color: #0f9aa8;
-  font-weight: 800;
+  margin-top: 6px;
+  color: #0ea5e9;
+  font-weight: 500;
   text-decoration: none;
 }
 
@@ -427,115 +149,77 @@
 }
 
 .links-list {
+  margin-top: 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 8px;
 }
 
-.guide-help-section {
-  padding: 70px 0 86px;
-  text-align: center;
-}
+@media (max-width: 992px) {
+  .guide-hero h1 {
+    font-size: 42px;
+  }
 
-.guide-help-section .container {
-  max-width: 820px;
-  padding: 48px 34px;
-  border-radius: 32px;
-  background:
-    radial-gradient(circle at 85% 20%, rgba(246, 217, 76, 0.25), transparent 24%),
-    linear-gradient(135deg, #0f9aa8 0%, #277f8c 100%);
-  color: #ffffff;
-  box-shadow: 0 26px 60px rgba(15, 99, 112, 0.18);
-}
-
-.guide-help-icon {
-  display: grid;
-  place-items: center;
-  width: 50px;
-  height: 50px;
-  margin: 0 auto 18px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.guide-help-section h2 {
-  margin-bottom: 14px;
-  font-size: 34px;
-}
-
-.guide-help-section p {
-  max-width: 650px;
-  margin: 0 auto;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: 16px;
-  line-height: 1.75;
-}
-
-.guide-help-button {
-  background: #ffffff;
-  color: #0f7580;
-}
-
-@media (max-width: 1100px) {
-  .guide-hero-content {
+  .guide-grid {
     grid-template-columns: 1fr;
-    padding: 42px;
-  }
-
-  .quick-start-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .roadmap-line,
-  .guide-grid,
-  .guide-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .roadmap-line::before {
-    display: none;
   }
 }
 
 @media (max-width: 768px) {
   .guide-hero {
-    padding: 70px 0 34px;
-  }
-
-  .guide-hero-content {
-    padding: 30px 24px;
-    border-radius: 26px;
+    padding: 70px 0 50px;
   }
 
   .guide-hero h1 {
-    font-size: 42px;
+    font-size: 34px;
   }
 
-  .guide-hero p {
+  .guide-hero p,
+  .guide-help-section p {
     font-size: 16px;
   }
 
-  .guide-stats,
-  .quick-start-grid,
-  .roadmap-line,
-  .guide-grid {
-    grid-template-columns: 1fr;
+  .quick-tips-box,
+  .guide-card {
+    padding: 22px;
   }
 
-  .quick-start-section,
-  .roadmap-section,
-  .guide-details-section {
-    margin-bottom: 58px;
+  .guide-card-header h3 {
+    font-size: 22px;
   }
 
-  .guide-section-heading h2 {
+  .guide-help-section h2 {
     font-size: 32px;
   }
+}
 
-  .guide-card,
-  .quick-start-card,
-  .roadmap-card {
-    border-radius: 22px;
-  }
+.accordion-item {
+  border-bottom: 1px solid #dbe5e5;
+}
+
+.accordion-header {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+}
+
+.accordion-header svg {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.accordion-content {
+  padding: 0 0 18px 0;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.9;
 }
