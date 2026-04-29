@@ -3,14 +3,17 @@ import {
   findAvailableBuddies,
   findBuddyCapacity,
   findIncomingRequestsForBuddy,
+  findBuddyFeedbackOverview,
   findMyMatches,
   findPendingRequestBetween,
+  findStudentMatchedBuddy,
   findRequestsCreatedByStudent,
   findStudentActiveMatch,
   findStudentForMatching,
   findStudentPendingRequest,
   findStudentRequestStatuses,
   respondToBuddyRequest,
+  upsertBuddyFeedback,
 } from '../repositories/buddyRepository.js';
 import { formatBuddyCard } from '../services/matchingService.js';
 import { createNotification } from '../repositories/notificationRepository.js';
@@ -34,7 +37,7 @@ export async function getAvailableBuddies(req, res) {
     const pendingRequestBuddyId = pendingRequest?.buddy_id || null;
 
     const hasActiveMatch = Boolean(activeMatchBuddyId);
-    const buddiesResult = await findAvailableBuddies(activeMatchBuddyId, hasActiveMatch);
+    const buddiesResult = await findAvailableBuddies(activeMatchBuddyId, hasActiveMatch, req.user.id);
     const buddyRows = hasActiveMatch
       ? buddiesResult.rows.filter((buddy) => buddy.id === activeMatchBuddyId)
       : buddiesResult.rows;
@@ -246,5 +249,74 @@ export async function getMyMatches(req, res) {
   } catch (error) {
     console.error('Get matches error:', error.message);
     return res.status(500).json({ message: 'Could not load matches.' });
+  }
+}
+
+export async function saveBuddyFeedback(req, res) {
+  try {
+    if (req.user.role !== 'international') {
+      return res.status(403).json({ message: 'Only international students can leave feedback.' });
+    }
+
+    const { buddyId, rating, comment } = req.body;
+
+    if (!buddyId) {
+      return res.status(400).json({ message: 'Buddy id is required.' });
+    }
+
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
+
+    const cleanComment = comment?.trim() || '';
+
+    if (cleanComment.length < 4) {
+      return res.status(400).json({ message: 'Please write a short feedback comment.' });
+    }
+
+    if (cleanComment.length > 500) {
+      return res.status(400).json({ message: 'Feedback should be 500 characters or less.' });
+    }
+
+    const activeMatch = await findStudentMatchedBuddy(req.user.id, Number(buddyId));
+
+    if (activeMatch.rows.length === 0) {
+      return res.status(403).json({ message: 'You can leave feedback only for your current buddy.' });
+    }
+
+    const result = await upsertBuddyFeedback(req.user.id, Number(buddyId), rating, cleanComment);
+    const studentResult = await findUserProfileById(req.user.id);
+    const studentName = studentResult.rows[0]?.full_name || 'A student';
+
+    await createNotification({
+      userId: Number(buddyId),
+      type: 'feedback_received',
+      title: 'New buddy feedback',
+      description: `${studentName} left you a ${rating}/5 review.`,
+      referenceType: 'buddy_feedback',
+      referenceId: result.rows[0].id,
+    }).catch(() => null);
+
+    return res.status(201).json({
+      message: 'Feedback saved successfully.',
+      feedback: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Save buddy feedback error:', error.message);
+    return res.status(500).json({ message: 'Could not save feedback.' });
+  }
+}
+
+export async function getMyFeedbackOverview(req, res) {
+  try {
+    if (req.user.role !== 'local') {
+      return res.status(403).json({ message: 'Only buddies can view feedback overview.' });
+    }
+
+    const result = await findBuddyFeedbackOverview(req.user.id);
+    return res.json(result.rows[0] || { average_rating: 0, feedback_count: 0, recent_reviews: [] });
+  } catch (error) {
+    console.error('Buddy feedback overview error:', error.message);
+    return res.status(500).json({ message: 'Could not load feedback overview.' });
   }
 }

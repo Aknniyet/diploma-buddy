@@ -67,7 +67,7 @@ export function updateUserProfile(userId, profileData) {
          languages = COALESCE($5::text[], languages),
          hobbies = COALESCE($6::text[], hobbies),
          about_you = COALESCE($7, about_you),
-         profile_photo_url = COALESCE($8, profile_photo_url),
+         profile_photo_url = $8,
          gender = COALESCE($9, gender),
          gender_preference = COALESCE($10, gender_preference),
          max_buddies = COALESCE($11, max_buddies),
@@ -84,7 +84,7 @@ export function updateUserProfile(userId, profileData) {
       profileData.languages,
       profileData.hobbies,
       profileData.aboutYou || null,
-      profileData.profilePhotoUrl || null,
+      profileData.profilePhotoUrl ?? null,
       profileData.gender || null,
       profileData.genderPreference || null,
       profileData.maxBuddies || null,
@@ -140,4 +140,14 @@ export function updateUserPassword(email, passwordHash) {
     passwordHash,
     email.toLowerCase(),
   ]);
+}
+
+export function findCommunityNotificationRecipients(excludeUserId) {
+  return query(
+    `SELECT id
+     FROM users
+     WHERE role IN ('international', 'local')
+       AND id <> $1`,
+    [excludeUserId]
+  );
 }

@@ -73,6 +73,10 @@ export function formatBuddyCard(
     status,
     hasActiveMatch,
     hasPendingRequest: Boolean(pendingRequestBuddyId),
+    averageRating: Number(buddy.average_rating || 0),
+    feedbackCount: Number(buddy.feedback_count || 0),
+    currentUserRating: buddy.current_user_rating ? Number(buddy.current_user_rating) : null,
+    currentUserComment: buddy.current_user_comment || "",
     avatar:
       buddy.profile_photo_url ||
       'https://cdn-icons-png.flaticon.com/512/149/149071.png',

@@ -108,6 +108,20 @@ CREATE UNIQUE INDEX IF NOT EXISTS one_active_match_per_student
 ON buddy_matches (international_student_id)
 WHERE status = 'active';
 
+CREATE TABLE IF NOT EXISTS buddy_feedback (
+  id SERIAL PRIMARY KEY,
+  buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  comment TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (buddy_id, student_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_buddy_feedback_buddy_id
+ON buddy_feedback(buddy_id, created_at DESC);
+
 CREATE TABLE IF NOT EXISTS conversations (
   id SERIAL PRIMARY KEY,
   international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -154,6 +168,48 @@ CREATE TABLE IF NOT EXISTS notifications (
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS community_posts (
+  id SERIAL PRIMARY KEY,
+  author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title VARCHAR(180) NOT NULL,
+  description TEXT NOT NULL,
+  category VARCHAR(60) NOT NULL DEFAULT 'hangout',
+  location VARCHAR(160),
+  meeting_time TIMESTAMP,
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE community_posts
+ADD COLUMN IF NOT EXISTS image_url TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_community_posts_created_at
+ON community_posts(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS community_post_interests (
+  id SERIAL PRIMARY KEY,
+  post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (post_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS community_comments (
+  id SERIAL PRIMARY KEY,
+  post_id INTEGER NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+  author_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  text TEXT NOT NULL,
+  image_url TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE community_comments
+ADD COLUMN IF NOT EXISTS image_url TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_community_comments_post_id
+ON community_comments(post_id, created_at);
 
 CREATE TABLE IF NOT EXISTS adaptation_checklist_tasks (
   id SERIAL PRIMARY KEY,

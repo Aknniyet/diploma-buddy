@@ -55,3 +55,12 @@ export function createNotification({
     [userId, type, title, description, referenceType, referenceId]
   );
 }
+
+export function deleteNotificationsByReference(referenceType, referenceId) {
+  return query(
+    `DELETE FROM notifications
+     WHERE reference_type = $1 AND reference_id = $2
+     RETURNING id`,
+    [referenceType, referenceId]
+  );
+}
