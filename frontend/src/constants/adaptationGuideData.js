@@ -400,6 +400,48 @@ export const guideSections = [
             },
           ],
         },
+        {
+          titleKey: "guide.sections.universityLife.items.map.title",
+          contentKey: "guide.sections.universityLife.items.map.content",
+          links: [
+            {
+              label: "Open AITU Map",
+              url: "http://aitumap.webspace.cat/",
+            },
+          ],
+        },
+        {
+          titleKey: "guide.sections.universityLife.items.news.title",
+          contentKey: "guide.sections.universityLife.items.news.content",
+          links: [
+            {
+              label: "Telegram: DSVR News",
+              url: "https://t.me/DSVR_News",
+            },
+            {
+              label: "Telegram: AITU Info",
+              url: "https://t.me/aitu2020info",
+            },
+            {
+              label: "Instagram: Astana IT University",
+              url: "https://www.instagram.com/astana_it_university?igsh=YjJtNGllbWxyMGc5",
+            },
+            {
+              label: "Instagram: AITU Live",
+              url: "https://www.instagram.com/aitu_live?igsh=MXhwcmZ0ZzRsdnR6Zg==",
+            },
+          ],
+        },
+        {
+          titleKey: "guide.sections.universityLife.items.buddyChat.title",
+          contentKey: "guide.sections.universityLife.items.buddyChat.content",
+          links: [
+            {
+              label: "Join Buddy General Chat",
+              url: "https://t.me/+FnA5PUYIqvBhNjcy",
+            },
+          ],
+        },
       ],
     },
 ];

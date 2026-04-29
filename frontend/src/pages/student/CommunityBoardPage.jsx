@@ -260,8 +260,10 @@ function CommunityBoardPage() {
     setExpandedComments((current) => ({ ...current, [postId]: !current[postId] }));
   };
 
+  const sidebarType = user?.role === "local" ? "buddy" : "student";
+
   return (
-    <DashboardLayout title="Community Board">
+    <DashboardLayout title="Community Board" sidebarType={sidebarType}>
       <section className="community-page">
         <div className="community-feed-header community-feed-heading">
           <div>
