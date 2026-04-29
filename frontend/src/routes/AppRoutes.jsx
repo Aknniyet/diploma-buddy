@@ -14,6 +14,7 @@ import EventsPage from "../pages/shared/EventsPage";
 import StudentOverview from "../pages/student/StudentOverview";
 import FindBuddiesPage from "../pages/student/FindBuddiesPage";
 import AdaptationChecklistPage from "../pages/student/AdaptationChecklistPage";
+import CommunityBoardPage from "../pages/student/CommunityBoardPage";
 import BuddyOverviewPage from "../pages/buddy/BuddyOverviewPage";
 import MyBuddiesPage from "../pages/buddy/MyBuddiesPage";
 import BuddyRequestsPage from "../pages/buddy/BuddyRequestsPage";
@@ -125,6 +126,15 @@ function AppRoutes() {
       />
 
       <Route
+        path="/student/community"
+        element={
+          <ProtectedRoute allowedRoles={["international"]}>
+            <CommunityBoardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/buddy/events"
         element={
           <ProtectedRoute allowedRoles={["local"]}>
@@ -132,6 +142,16 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/buddy/community"
+        element={
+          <ProtectedRoute allowedRoles={["local"]}>
+            <CommunityBoardPage />
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/buddy/overview"
         element={

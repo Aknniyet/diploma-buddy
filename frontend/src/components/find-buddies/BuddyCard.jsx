@@ -1,6 +1,6 @@
-import { BookOpen, Globe, MapPin, MessageSquare, CheckCircle2 } from "lucide-react";
+import { BookOpen, Globe, MapPin, MessageSquare, CheckCircle2, Star } from "lucide-react";
 
-function BuddyCard({ buddy, onConnect }) {
+function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
   const status = buddy.status;
   const isDisabled =
     status === "pending" ||
@@ -43,6 +43,16 @@ function BuddyCard({ buddy, onConnect }) {
         <div className="buddy-detail-row"><Globe size={14} /><span>{buddy.languages || "Not specified"}</span></div>
       </div>
 
+      <div className="buddy-rating-row">
+        <div className="buddy-rating-badge">
+          <Star size={14} fill="currentColor" />
+          <span>{buddy.averageRating ? buddy.averageRating.toFixed(1) : "New"}</span>
+        </div>
+        <small>
+          {buddy.feedbackCount > 0 ? `${buddy.feedbackCount} review${buddy.feedbackCount > 1 ? "s" : ""}` : "No reviews yet"}
+        </small>
+      </div>
+
       <p className="buddy-card-bio">{buddy.bio}</p>
       <div className="buddy-tags">
         {(buddy.interests || []).map((tag) => <span key={tag} className="buddy-tag">{tag}</span>)}
@@ -61,10 +71,19 @@ function BuddyCard({ buddy, onConnect }) {
               : `Matching score: ${buddy.score}`}
           </small>
         </div>
-        <button type="button" className={`connect-btn ${isDisabled ? "connected-btn" : ""}`} onClick={() => onConnect(buddy)} disabled={isDisabled}>
-          {status === "matched" ? <CheckCircle2 size={16} /> : <MessageSquare size={16} />}
-          <span>{buttonLabel}</span>
-        </button>
+        <div className="buddy-card-actions">
+          <button type="button" className={`connect-btn ${isDisabled ? "connected-btn" : ""}`} onClick={() => onConnect(buddy)} disabled={isDisabled}>
+            {status === "matched" ? <CheckCircle2 size={16} /> : <MessageSquare size={16} />}
+            <span>{buttonLabel}</span>
+          </button>
+
+          {status === "matched" ? (
+            <button type="button" className="feedback-btn" onClick={() => onLeaveFeedback?.(buddy)}>
+              <Star size={16} />
+              <span>{buddy.currentUserRating ? "Edit Feedback" : "Leave Feedback"}</span>
+            </button>
+          ) : null}
+        </div>
       </div>
     </article>
   );

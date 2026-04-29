@@ -117,6 +117,13 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  object-fit: cover;
+}
+
+.sidebar-user-avatar.image {
+  background: transparent;
 }
 
 .sidebar-user h4 {
@@ -221,6 +228,15 @@ button {
   height: 38px;
   border-radius: 999px;
   object-fit: cover;
+}
+
+.topbar-avatar-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f9c9c;
+  color: #ffffff;
+  font-weight: 700;
 }
 
 .dashboard-content {

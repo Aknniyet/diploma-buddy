@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell, CheckCircle2, MessageCircle, UserCheck, UserRoundX } from "lucide-react";
+import { Bell, CheckCircle2, MessageCircle, Star, UserCheck, UserRoundX } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import NotificationsHeader from "../../components/notifications/NotificationsHeader";
 import NotificationsToolbar from "../../components/notifications/NotificationsToolbar";
@@ -10,9 +10,11 @@ import "../../styles/notifications.css";
 
 const iconMap = {
   new_message: MessageCircle,
+  community_post: Bell,
   request_sent: Bell,
   request_received: Bell,
   request_accepted: CheckCircle2,
+  feedback_received: Star,
   request_declined: UserRoundX,
   match_created: UserCheck,
   match_reassigned: UserCheck,

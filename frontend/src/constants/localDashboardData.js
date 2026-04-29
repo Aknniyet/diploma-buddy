@@ -6,6 +6,7 @@ import {
   MessageSquare,
   User,
   UserPlus,
+  UsersRound,
 } from "lucide-react";
 
 export const localSidebarLinks = [
@@ -35,18 +36,24 @@ export const localSidebarLinks = [
   },
   {
     id: 5,
+    label: "Community Board",
+    path: "/buddy/community",
+    icon: UsersRound,
+  },
+  {
+    id: 6,
     label: "Events",
     path: "/buddy/events",
     icon: CalendarDays,
   },
   {
-    id: 6,
+    id: 7,
     label: "Notifications",
     path: "/buddy/notifications",
     icon: Bell,
   },
   {
-    id: 7,
+    id: 8,
     label: "Profile",
     path: "/buddy/profile",
     icon: User,

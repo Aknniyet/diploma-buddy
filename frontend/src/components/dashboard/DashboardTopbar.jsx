@@ -80,9 +80,13 @@ function DashboardTopbar({
             {hasUnreadNotifications ? <span className="notification-dot" /> : null}
           </Link>
         ) : null}
-        <div className="topbar-avatar" style={{ display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>
-          {initials}
-        </div>
+        {user?.profile_photo_url ? (
+          <img src={user.profile_photo_url} alt={displayName} className="topbar-avatar" />
+        ) : (
+          <div className="topbar-avatar topbar-avatar-initials">
+            {initials}
+          </div>
+        )}
       </div>
     </header>
   );

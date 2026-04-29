@@ -1,6 +1,6 @@
 import BuddyCard from "./BuddyCard";
 
-function BuddyList({ buddies = [], onConnect, searchValue = "" }) {
+function BuddyList({ buddies = [], onConnect, onLeaveFeedback, searchValue = "" }) {
   if (buddies.length === 0) {
     const isSearching = searchValue.trim().length > 0;
     return (
@@ -11,7 +11,18 @@ function BuddyList({ buddies = [], onConnect, searchValue = "" }) {
     );
   }
 
-  return <div className="buddy-grid">{buddies.map((buddy) => <BuddyCard key={buddy.id} buddy={buddy} onConnect={onConnect} />)}</div>;
+  return (
+    <div className="buddy-grid">
+      {buddies.map((buddy) => (
+        <BuddyCard
+          key={buddy.id}
+          buddy={buddy}
+          onConnect={onConnect}
+          onLeaveFeedback={onLeaveFeedback}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default BuddyList;

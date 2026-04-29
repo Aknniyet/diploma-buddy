@@ -83,7 +83,11 @@ function DashboardSidebar({
         </div>
         <div className="sidebar-bottom">
           <div className="sidebar-user">
-            <div className="sidebar-user-avatar">{initials}</div>
+            {user?.profile_photo_url ? (
+              <img src={user.profile_photo_url} alt={displayName} className="sidebar-user-avatar image" />
+            ) : (
+              <div className="sidebar-user-avatar">{initials}</div>
+            )}
             <div>
               <h4>{displayName}</h4>
               <p>{roleLabel}</p>

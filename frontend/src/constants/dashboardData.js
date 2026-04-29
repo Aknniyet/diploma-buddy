@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   Bell,
   User,
+  UsersRound,
 } from "lucide-react";
 
 export const sidebarLinks = [
@@ -35,18 +36,24 @@ export const sidebarLinks = [
   },
   {
     id: 5,
+    label: "Community Board",
+    path: "/student/community",
+    icon: UsersRound,
+  },
+  {
+    id: 6,
     label: "Events",
     path: "/student/events",
     icon: CalendarDays,
   },
   {
-    id: 6,
+    id: 7,
     label: "Notifications",
     path: "/student/notifications",
     icon: Bell,
   },
   {
-    id: 7,
+    id: 8,
     label: "Profile",
     path: "/student/profile",
     icon: User,

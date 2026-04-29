@@ -45,6 +45,28 @@ function ProfilePage({ userType = "student" }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePhotoChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setMessage("Please choose an image file.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormData((prev) => ({ ...prev, profilePhotoUrl: reader.result }));
+      setMessage("");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePhotoRemove = () => {
+    setFormData((prev) => ({ ...prev, profilePhotoUrl: "" }));
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
     setMessage("");
@@ -128,6 +150,15 @@ function ProfilePage({ userType = "student" }) {
     };
   }, [isBuddy, rawProfile]);
 
+  const displayProfile = useMemo(() => {
+    if (!profile || !formData) return profile;
+
+    return {
+      ...profile,
+      avatar: formData.profilePhotoUrl || "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+    };
+  }, [formData, profile]);
+
   return (
     <DashboardLayout title="Profile" sidebarType={isBuddy ? "buddy" : "student"}>
       <section className="profile-page">
@@ -153,7 +184,12 @@ function ProfilePage({ userType = "student" }) {
         {message ? <div className="profile-status-message">{message}</div> : null}
         {profile && formData ? (
           <div className="profile-layout">
-            <ProfileSummaryCard profile={profile} />
+            <ProfileSummaryCard
+              profile={displayProfile}
+              isEditing={isEditing}
+              onPhotoChange={handlePhotoChange}
+              onPhotoRemove={handlePhotoRemove}
+            />
             <ProfileInfoCard profile={profile} formData={formData} isEditing={isEditing} onChange={handleChange} />
           </div>
         ) : (
