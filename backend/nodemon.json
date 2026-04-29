@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "js,json",
+  "ignore": ["node_modules", "package-lock.json", ".env"],
+  "delay": "500ms"
+}

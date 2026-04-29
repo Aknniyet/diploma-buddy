@@ -7,6 +7,25 @@ import { isValidEmail } from "../../utils/email";
 import { useI18n } from "../../context/I18nContext";
 import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
 
+const STUDY_PROGRAMS = [
+  "Software Engineering",
+  "Computer Science",
+  "Mathematical and Computational Science",
+  "Big Data Analysis",
+  "Cybersecurity",
+  "Smart Security Technologies",
+  "Industrial Internet of Things",
+  "Electronic Engineering",
+  "Smart Technologies",
+  "Digital Technologies in Nuclear Power Engineering",
+  "IT Management",
+  "IT Entrepreneurship",
+  "AI Business",
+  "Media Technologies",
+  "Digital Journalism",
+  "Digital Public Administration",
+];
+
 function SignupPage() {
   const navigate = useNavigate();
   const { t } = useI18n();
@@ -80,6 +99,7 @@ function SignupPage() {
         body: JSON.stringify({
           role: selectedRole,
           ...formData,
+          homeCountry: selectedRole === "local" ? "Kazakhstan" : formData.homeCountry,
         }),
       });
 
@@ -269,17 +289,19 @@ function SignupPage() {
 
             {step === 3 && (
               <div className="signup-step-content">
-                <div className="form-group">
-                  <label htmlFor="homeCountry">{t("common.homeCountry")}</label>
-                  <input
-                    id="homeCountry"
-                    name="homeCountry"
-                    type="text"
-                    placeholder={t("signup.homeCountryPlaceholder")}
-                    value={formData.homeCountry}
-                    onChange={handleChange}
-                  />
-                </div>
+                {selectedRole === "international" && (
+                  <div className="form-group">
+                    <label htmlFor="homeCountry">{t("common.homeCountry")}</label>
+                    <input
+                      id="homeCountry"
+                      name="homeCountry"
+                      type="text"
+                      placeholder={t("signup.homeCountryPlaceholder")}
+                      value={formData.homeCountry}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
 
                 <div className="form-group">
                   <label htmlFor="city">{t("common.city")}</label>
@@ -295,14 +317,20 @@ function SignupPage() {
 
                 <div className="form-group">
                   <label htmlFor="studyProgram">{t("common.studyProgram")}</label>
-                  <input
+                  <select
                     id="studyProgram"
                     name="studyProgram"
-                    type="text"
-                    placeholder={t("signup.studyProgramPlaceholder")}
+                    className="signup-select"
                     value={formData.studyProgram}
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="">{t("signup.studyProgramPlaceholder")}</option>
+                    {STUDY_PROGRAMS.map((program) => (
+                      <option key={program} value={program}>
+                        {program}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="form-group">

@@ -15,6 +15,8 @@ import {
   updateUserPassword,
 } from '../repositories/userRepository.js';
 
+const LOCAL_BUDDY_HOME_COUNTRY = 'Kazakhstan';
+
 export async function register(req, res) {
   try {
     const {
@@ -55,13 +57,14 @@ export async function register(req, res) {
 
     const passwordHash = await bcrypt.hash(password, 10);
     const buddyStatus = role === 'local' ? 'pending' : 'not_applied';
+    const normalizedHomeCountry = role === 'local' ? LOCAL_BUDDY_HOME_COUNTRY : homeCountry;
 
     const insertedUser = await createUser({
       fullName,
       email,
       passwordHash,
       role,
-      homeCountry,
+      homeCountry: normalizedHomeCountry,
       city,
       studyProgram,
       languages: normalizeArray(languages),
@@ -145,7 +148,7 @@ export async function registerStart(req, res) {
         password,
         confirmPassword,
         role,
-        homeCountry,
+        homeCountry: role === 'local' ? LOCAL_BUDDY_HOME_COUNTRY : homeCountry,
         city,
         studyProgram,
         languages,
@@ -235,13 +238,14 @@ export async function registerVerify(req, res) {
 
     const passwordHash = await bcrypt.hash(password, 10);
     const buddyStatus = role === 'local' ? 'pending' : 'not_applied';
+    const normalizedHomeCountry = role === 'local' ? LOCAL_BUDDY_HOME_COUNTRY : homeCountry;
 
     const insertedUser = await createUser({
       fullName,
       email: normalizedEmail,
       passwordHash,
       role,
-      homeCountry,
+      homeCountry: normalizedHomeCountry,
       city,
       studyProgram,
       languages: normalizeArray(languages),
