@@ -5,8 +5,12 @@ import {
   findMessagesInConversation,
   markMessagesAsRead,
 } from '../repositories/messageRepository.js';
-import { createNotification } from '../repositories/notificationRepository.js';
+import { env } from "../config/env.js";
+import { findRecentNotification } from "../repositories/notificationRepository.js";
+import { createNotification } from '../services/notificationService.js';
 import { findUserProfileById } from '../repositories/userRepository.js';
+
+const MESSAGE_EMAIL_COOLDOWN_MINUTES = 15;
 
 function formatMessageTime(dateValue) {
   return new Date(dateValue).toLocaleTimeString("en-GB", {
@@ -87,6 +91,14 @@ export async function sendMessage(req, res) {
         : conversation.international_student_id;
     const senderResult = await findUserProfileById(req.user.id);
     const senderName = senderResult.rows[0]?.full_name || 'A user';
+    const recentNotificationResult = await findRecentNotification({
+      userId: recipientId,
+      type: "new_message",
+      referenceType: "conversation",
+      referenceId: Number(conversationId),
+      withinMinutes: MESSAGE_EMAIL_COOLDOWN_MINUTES,
+    });
+    const shouldSendEmail = recentNotificationResult.rows.length === 0;
 
     await createNotification({
       userId: recipientId,
@@ -95,6 +107,11 @@ export async function sendMessage(req, res) {
       description: `${senderName} sent you a new message.`,
       referenceType: 'conversation',
       referenceId: Number(conversationId),
+      sendEmail: shouldSendEmail,
+      actionUrl:
+        conversation.buddy_id === recipientId
+          ? `${env.frontendUrl}/buddy/messages`
+          : `${env.frontendUrl}/student/messages`,
     }).catch(() => null);
 
     return res.status(201).json({

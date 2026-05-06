@@ -11,6 +11,8 @@ import "../../styles/notifications.css";
 const iconMap = {
   new_message: MessageCircle,
   community_post: Bell,
+  event_created: Bell,
+  event_reminder: Bell,
   request_sent: Bell,
   request_received: Bell,
   request_accepted: CheckCircle2,

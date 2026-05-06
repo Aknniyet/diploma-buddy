@@ -5,6 +5,10 @@ import {
   findEventById,
   updateEvent,
 } from '../repositories/contentRepository.js';
+import { deleteNotificationsByReference } from "../repositories/notificationRepository.js";
+import { findCommunityNotificationRecipients } from "../repositories/userRepository.js";
+import { createNotification } from "../services/notificationService.js";
+import { processEventReminders } from "../services/eventReminderService.js";
 
 function ensureAdmin(req, res) {
   if (req.user.role !== "admin") {
@@ -17,6 +21,7 @@ function ensureAdmin(req, res) {
 
 export async function getEvents(_req, res) {
   try {
+    await processEventReminders();
     const result = await findAllEvents();
     return res.json(result.rows);
   } catch (error) {
@@ -27,6 +32,7 @@ export async function getEvents(_req, res) {
 
 export async function getEventDetails(req, res) {
   try {
+    await processEventReminders();
     const result = await findEventById(req.params.eventId);
 
     if (result.rows.length === 0) {
@@ -57,6 +63,22 @@ export async function createEventByAdmin(req, res) {
       location: location?.trim(),
       category: category?.trim(),
     });
+
+    const recipients = await findCommunityNotificationRecipients(req.user.id).catch(() => ({ rows: [] }));
+    const eventTitle = result.rows[0].title;
+
+    await Promise.all(
+      recipients.rows.map((recipient) =>
+        createNotification({
+          userId: recipient.id,
+          type: "event_created",
+          title: "New event published",
+          description: `A new event "${eventTitle}" was added to the platform.`,
+          referenceType: "event",
+          referenceId: result.rows[0].id,
+        }).catch(() => null)
+      )
+    );
 
     return res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -98,11 +120,14 @@ export async function deleteEventByAdmin(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const result = await deleteEvent(req.params.eventId);
+    const eventId = Number(req.params.eventId);
+    const result = await deleteEvent(eventId);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Event not found." });
     }
+
+    await deleteNotificationsByReference("event", eventId).catch(() => null);
 
     return res.json({ message: "Event deleted." });
   } catch (error) {

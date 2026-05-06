@@ -16,7 +16,7 @@ import {
   updateMatchStatus,
 } from "../repositories/adminMatchRepository.js";
 import { updateBuddyStatus } from "../repositories/userRepository.js";
-import { createNotification } from "../repositories/notificationRepository.js";
+import { createNotification } from "../services/notificationService.js";
 
 function ensureAdmin(req, res) {
   if (req.user.role !== "admin") {

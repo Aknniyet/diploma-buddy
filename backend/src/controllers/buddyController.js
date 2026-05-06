@@ -16,7 +16,7 @@ import {
   upsertBuddyFeedback,
 } from '../repositories/buddyRepository.js';
 import { formatBuddyCard } from '../services/matchingService.js';
-import { createNotification } from '../repositories/notificationRepository.js';
+import { createNotification } from '../services/notificationService.js';
 import { findUserProfileById } from '../repositories/userRepository.js';
 
 export async function getAvailableBuddies(req, res) {
