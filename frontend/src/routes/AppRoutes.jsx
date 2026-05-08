@@ -11,6 +11,7 @@ import MessagesPage from "../pages/shared/MessagesPage";
 import NotificationsPage from "../pages/shared/NotificationsPage";
 import ProfilePage from "../pages/shared/ProfilePage";
 import EventsPage from "../pages/shared/EventsPage";
+import AssistantPage from "../pages/shared/AssistantPage";
 import StudentOverview from "../pages/student/StudentOverview";
 import FindBuddiesPage from "../pages/student/FindBuddiesPage";
 import AdaptationChecklistPage from "../pages/student/AdaptationChecklistPage";
@@ -135,6 +136,15 @@ function AppRoutes() {
       />
 
       <Route
+        path="/student/assistant"
+        element={
+          <ProtectedRoute allowedRoles={["international"]}>
+            <AssistantPage userType="student" />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/buddy/events"
         element={
           <ProtectedRoute allowedRoles={["local"]}>
@@ -148,6 +158,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["local"]}>
             <CommunityBoardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/buddy/assistant"
+        element={
+          <ProtectedRoute allowedRoles={["local"]}>
+            <AssistantPage userType="buddy" />
           </ProtectedRoute>
         }
       />

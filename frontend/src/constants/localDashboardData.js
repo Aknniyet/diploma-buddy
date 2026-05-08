@@ -7,6 +7,7 @@ import {
   User,
   UserPlus,
   UsersRound,
+  Bot,
 } from "lucide-react";
 
 export const localSidebarLinks = [
@@ -48,12 +49,18 @@ export const localSidebarLinks = [
   },
   {
     id: 7,
+    label: "AI Assistant",
+    path: "/buddy/assistant",
+    icon: Bot,
+  },
+  {
+    id: 8,
     label: "Notifications",
     path: "/buddy/notifications",
     icon: Bell,
   },
   {
-    id: 8,
+    id: 9,
     label: "Profile",
     path: "/buddy/profile",
     icon: User,

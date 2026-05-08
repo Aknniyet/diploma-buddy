@@ -12,6 +12,7 @@ import checklistRoutes from "./routes/checklistRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import communityRoutes from "./routes/communityRoutes.js";
+import assistantRoutes from "./routes/assistantRoutes.js";
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use("/api/checklist", checklistRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/community", communityRoutes);
+app.use("/api/assistant", assistantRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: `Route ${req.method} ${req.originalUrl} not found.` });

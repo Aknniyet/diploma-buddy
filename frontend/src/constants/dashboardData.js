@@ -7,6 +7,7 @@ import {
   Bell,
   User,
   UsersRound,
+  Bot,
 } from "lucide-react";
 
 export const sidebarLinks = [
@@ -48,12 +49,18 @@ export const sidebarLinks = [
   },
   {
     id: 7,
+    label: "AI Assistant",
+    path: "/student/assistant",
+    icon: Bot,
+  },
+  {
+    id: 8,
     label: "Notifications",
     path: "/student/notifications",
     icon: Bell,
   },
   {
-    id: 8,
+    id: 9,
     label: "Profile",
     path: "/student/profile",
     icon: User,
