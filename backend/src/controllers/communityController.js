@@ -18,17 +18,37 @@ import { findCommunityNotificationRecipients, findUserProfileById } from "../rep
 const allowedCategories = ["hangout", "study", "sports", "food", "question", "city"];
 
 function ensureCommunityMember(req, res) {
-  if (!["international", "local"].includes(req.user.role)) {
-    res.status(403).json({ message: "Community board is available for students and buddies." });
-    return false;
-  }
+  return findUserProfileById(req.user.id)
+    .then((result) => {
+      const member = result.rows[0];
 
-  return true;
+      if (!member) {
+        res.status(404).json({ message: "User not found." });
+        return null;
+      }
+
+      if (!["international", "local"].includes(member.role)) {
+        res.status(403).json({ message: "Community board is available for students and buddies." });
+        return null;
+      }
+
+      if (member.role === "local" && member.buddy_status !== "approved") {
+        res.status(403).json({ message: "Community board is available only for approved buddies." });
+        return null;
+      }
+
+      return member;
+    })
+    .catch((error) => {
+      console.error("Community membership check error:", error.message);
+      res.status(500).json({ message: "Could not verify community access." });
+      return null;
+    });
 }
 
 export async function getCommunityPosts(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const result = await findCommunityPosts(req.user.id);
     return res.json(result.rows);
@@ -40,7 +60,7 @@ export async function getCommunityPosts(req, res) {
 
 export async function createCommunityPostByStudent(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const { title, description, category, location, meetingTime, imageUrl } = req.body;
     const cleanTitle = title?.trim();
@@ -86,7 +106,7 @@ export async function createCommunityPostByStudent(req, res) {
 
 export async function updateCommunityPostByAuthor(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const { postId } = req.params;
     const { title, description, category, location, meetingTime, imageUrl } = req.body;
@@ -120,7 +140,7 @@ export async function updateCommunityPostByAuthor(req, res) {
 
 export async function deleteCommunityPostByAuthor(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const postId = Number(req.params.postId);
     const result = await deleteCommunityPost(postId, req.user.id);
@@ -140,7 +160,7 @@ export async function deleteCommunityPostByAuthor(req, res) {
 
 export async function toggleCommunityInterest(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const { postId } = req.params;
     const { interested } = req.body;
@@ -169,7 +189,7 @@ export async function toggleCommunityInterest(req, res) {
 
 export async function createCommunityCommentByMember(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const { postId } = req.params;
     const { text, imageUrl } = req.body;
@@ -198,7 +218,7 @@ export async function createCommunityCommentByMember(req, res) {
 
 export async function deleteCommunityCommentByAuthor(req, res) {
   try {
-    if (!ensureCommunityMember(req, res)) return;
+    if (!(await ensureCommunityMember(req, res))) return;
 
     const result = await deleteCommunityComment(req.params.commentId, req.user.id);
 

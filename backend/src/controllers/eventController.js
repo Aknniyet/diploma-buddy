@@ -5,6 +5,7 @@ import {
   findEventById,
   updateEvent,
 } from '../repositories/contentRepository.js';
+import { findUserProfileById } from '../repositories/userRepository.js';
 
 function ensureAdmin(req, res) {
   if (req.user.role !== "admin") {
@@ -15,8 +16,31 @@ function ensureAdmin(req, res) {
   return true;
 }
 
-export async function getEvents(_req, res) {
+async function ensureEventViewer(req, res) {
+  const result = await findUserProfileById(req.user.id);
+  const user = result.rows[0];
+
+  if (!user) {
+    res.status(404).json({ message: "User not found." });
+    return null;
+  }
+
+  if (user.role === "admin" || user.role === "international") {
+    return user;
+  }
+
+  if (user.role === "local" && user.buddy_status === "approved") {
+    return user;
+  }
+
+  res.status(403).json({ message: "Events are available only for approved buddies." });
+  return null;
+}
+
+export async function getEvents(req, res) {
   try {
+    if (!(await ensureEventViewer(req, res))) return;
+
     const result = await findAllEvents();
     return res.json(result.rows);
   } catch (error) {
@@ -27,6 +51,8 @@ export async function getEvents(_req, res) {
 
 export async function getEventDetails(req, res) {
   try {
+    if (!(await ensureEventViewer(req, res))) return;
+
     const result = await findEventById(req.params.eventId);
 
     if (result.rows.length === 0) {

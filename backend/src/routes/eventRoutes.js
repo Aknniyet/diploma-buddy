@@ -10,8 +10,8 @@ import {
 
 const router = express.Router();
 
-router.get('/', getEvents);
-router.get('/:eventId', getEventDetails);
+router.get('/', authenticate, getEvents);
+router.get('/:eventId', authenticate, getEventDetails);
 router.post('/', authenticate, createEventByAdmin);
 router.patch('/:eventId', authenticate, updateEventByAdmin);
 router.delete('/:eventId', authenticate, deleteEventByAdmin);

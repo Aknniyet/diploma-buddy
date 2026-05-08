@@ -146,7 +146,10 @@ export function findCommunityNotificationRecipients(excludeUserId) {
   return query(
     `SELECT id
      FROM users
-     WHERE role IN ('international', 'local')
+     WHERE (
+             role = 'international'
+             OR (role = 'local' AND buddy_status = 'approved')
+           )
        AND id <> $1`,
     [excludeUserId]
   );

@@ -59,6 +59,7 @@ function formatDate(value) {
 
 function CommunityBoardPage() {
   const { user } = useAuth();
+  const hasCommunityAccess = user?.role !== "local" || user?.buddy_status === "approved";
   const [posts, setPosts] = useState([]);
   const [form, setForm] = useState(initialForm);
   const [editingPostId, setEditingPostId] = useState(null);
@@ -79,8 +80,15 @@ function CommunityBoardPage() {
   };
 
   useEffect(() => {
+    if (!hasCommunityAccess) {
+      setPosts([]);
+      setError("");
+      setIsLoading(false);
+      return;
+    }
+
     loadPosts();
-  }, []);
+  }, [hasCommunityAccess]);
 
   const updateForm = (event) => {
     const { name, value } = event.target;
@@ -270,14 +278,22 @@ function CommunityBoardPage() {
             <h2>Community feed</h2>
             <p>Active plans, questions, and quick updates from students and buddies.</p>
           </div>
-          <button type="button" className="community-open-composer" onClick={openCreateComposer}>
-            <Plus size={18} />
-            New post
-          </button>
+          {hasCommunityAccess ? (
+            <button type="button" className="community-open-composer" onClick={openCreateComposer}>
+              <Plus size={18} />
+              New post
+            </button>
+          ) : null}
         </div>
 
         <div className="community-feed">
-          {isLoading ? (
+          {!hasCommunityAccess ? (
+            <div className="community-empty-card">
+              <MessageCircle size={28} />
+              <h3>No posts yet</h3>
+              <p>Community Board will become available after admin approval.</p>
+            </div>
+          ) : isLoading ? (
             <div className="community-empty-card">Loading community posts...</div>
           ) : posts.length === 0 ? (
             <div className="community-empty-card">
