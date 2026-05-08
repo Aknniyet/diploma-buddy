@@ -149,6 +149,16 @@ CREATE TABLE IF NOT EXISTS events (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS event_reminder_deliveries (
+  id SERIAL PRIMARY KEY,
+  event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reminder_type VARCHAR(30) NOT NULL
+    CHECK (reminder_type IN ('24_hours', '2_hours')),
+  created_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (event_id, user_id, reminder_type)
+);
+
 CREATE TABLE IF NOT EXISTS useful_information (
   id SERIAL PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
@@ -217,10 +227,26 @@ CREATE TABLE IF NOT EXISTS adaptation_checklist_tasks (
   category VARCHAR(50) NOT NULL,
   title VARCHAR(200) NOT NULL,
   description TEXT NOT NULL,
+  priority VARCHAR(20) DEFAULT 'medium',
+  timeframe VARCHAR(80),
+  action_label VARCHAR(120),
+  action_url TEXT,
   is_completed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE adaptation_checklist_tasks
+ADD COLUMN IF NOT EXISTS priority VARCHAR(20) DEFAULT 'medium';
+
+ALTER TABLE adaptation_checklist_tasks
+ADD COLUMN IF NOT EXISTS timeframe VARCHAR(80);
+
+ALTER TABLE adaptation_checklist_tasks
+ADD COLUMN IF NOT EXISTS action_label VARCHAR(120);
+
+ALTER TABLE adaptation_checklist_tasks
+ADD COLUMN IF NOT EXISTS action_url TEXT;
 
 INSERT INTO events (title, description, event_date, location, category)
 SELECT

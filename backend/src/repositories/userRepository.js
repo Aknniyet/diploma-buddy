@@ -151,3 +151,11 @@ export function findCommunityNotificationRecipients(excludeUserId) {
     [excludeUserId]
   );
 }
+
+export function findStudentAndBuddyRecipients() {
+  return query(
+    `SELECT id, role
+     FROM users
+     WHERE role IN ('international', 'local')`
+  );
+}

@@ -56,6 +56,33 @@ export function createNotification({
   );
 }
 
+export function findRecentNotification({
+  userId,
+  type,
+  referenceType = null,
+  referenceId = null,
+  withinMinutes = 15,
+}) {
+  return query(
+    `SELECT id, created_at
+     FROM notifications
+     WHERE user_id = $1
+       AND type = $2
+       AND (
+         ($3::varchar IS NULL AND reference_type IS NULL)
+         OR reference_type = $3
+       )
+       AND (
+         ($4::int IS NULL AND reference_id IS NULL)
+         OR reference_id = $4
+       )
+       AND created_at >= NOW() - ($5 * INTERVAL '1 minute')
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [userId, type, referenceType, referenceId, withinMinutes]
+  );
+}
+
 export function deleteNotificationsByReference(referenceType, referenceId) {
   return query(
     `DELETE FROM notifications

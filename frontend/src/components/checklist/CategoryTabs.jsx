@@ -1,9 +1,11 @@
-function CategoryTabs({ categories, selectedCategory, onSelectCategory }) {
+function CategoryTabs({ categories, tasks = [], selectedCategory, onSelectCategory }) {
   return (
     <div className="checklist-categories-grid">
       {categories.map((category) => {
         const Icon = category.icon;
         const isActive = selectedCategory === category.id;
+        const categoryTasks = tasks.filter((task) => task.category === category.id);
+        const completedCount = categoryTasks.filter((task) => task.completed).length;
 
         return (
           <button
@@ -21,6 +23,9 @@ function CategoryTabs({ categories, selectedCategory, onSelectCategory }) {
             </div>
 
             <h4>{category.title}</h4>
+            <p>
+              {completedCount}/{categoryTasks.length || 0} done
+            </p>
           </button>
         );
       })}

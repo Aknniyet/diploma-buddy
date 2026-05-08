@@ -115,6 +115,7 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
           <Send size={18} />
         </button>
       </form>
+
     </div>
   );
 }

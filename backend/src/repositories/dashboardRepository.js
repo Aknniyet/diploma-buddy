@@ -67,7 +67,7 @@ export function findBuddyDashboardData(userId) {
 
 export function findStudentChecklistTasks(userId) {
   return query(
-    `SELECT id, category, title, description, is_completed
+    `SELECT id, category, title, description, priority, timeframe, action_label, action_url, is_completed
      FROM adaptation_checklist_tasks
      WHERE user_id = $1
      ORDER BY id ASC`,

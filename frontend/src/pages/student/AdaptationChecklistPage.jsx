@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import ProgressOverviewCard from "../../components/checklist/ProgressOverviewCard";
 import CategoryTabs from "../../components/checklist/CategoryTabs";
@@ -8,6 +9,7 @@ import { apiRequest } from "../../lib/api";
 import "../../styles/checklist.css";
 
 function AdaptationChecklistPage() {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("documents");
   const [tasks, setTasks] = useState([]);
 
@@ -21,8 +23,14 @@ function AdaptationChecklistPage() {
     return Math.round((completedTasks / tasks.length) * 100);
   }, [tasks]);
 
+  const completedTasksCount = useMemo(
+    () => tasks.filter((task) => task.completed).length,
+    [tasks]
+  );
+
   const selectedCategoryData = checklistCategories.find((item) => item.id === selectedCategory);
   const selectedTasks = tasks.filter((task) => task.category === selectedCategory);
+  const nextRecommendedTask = tasks.find((task) => !task.completed) || null;
 
   const handleToggleTask = async (taskId) => {
     const response = await apiRequest(`/checklist/${taskId}/toggle`, { method: "PATCH" });
@@ -38,11 +46,26 @@ function AdaptationChecklistPage() {
         </div>
 
         <div className="checklist-main-card">
-          <ProgressOverviewCard totalProgress={totalProgress} />
-          <CategoryTabs categories={checklistCategories} selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
+          <ProgressOverviewCard
+            totalProgress={totalProgress}
+            completedTasksCount={completedTasksCount}
+            totalTasksCount={tasks.length}
+            nextRecommendedTask={nextRecommendedTask}
+          />
+          <CategoryTabs
+            categories={checklistCategories}
+            tasks={tasks}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
         </div>
 
-        <ChecklistSectionCard category={selectedCategoryData} tasks={selectedTasks} onToggleTask={handleToggleTask} />
+        <ChecklistSectionCard
+          category={selectedCategoryData}
+          tasks={selectedTasks}
+          onToggleTask={handleToggleTask}
+          onOpenAction={(url) => navigate(url)}
+        />
       </section>
     </DashboardLayout>
   );

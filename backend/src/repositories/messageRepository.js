@@ -66,3 +66,14 @@ export function createMessage(conversationId, senderId, text) {
     [conversationId, senderId, text]
   );
 }
+
+export function countUnreadMessagesForUserInConversation(conversationId, userId) {
+  return query(
+    `SELECT COUNT(*)::int AS count
+     FROM messages
+     WHERE conversation_id = $1
+       AND sender_id <> $2
+       AND is_read = FALSE`,
+    [conversationId, userId]
+  );
+}

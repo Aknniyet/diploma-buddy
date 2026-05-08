@@ -541,6 +541,7 @@ function CommunityBoardPage() {
             </form>
           </div>
         )}
+
       </section>
     </DashboardLayout>
   );

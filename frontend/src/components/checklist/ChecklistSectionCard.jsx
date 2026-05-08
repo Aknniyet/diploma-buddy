@@ -1,6 +1,6 @@
 import { Check, FileText } from "lucide-react";
 
-function ChecklistSectionCard({ category, tasks, onToggleTask }) {
+function ChecklistSectionCard({ category, tasks, onToggleTask, onOpenAction = () => {} }) {
   const completedCount = tasks.filter((task) => task.completed).length;
 
   return (
@@ -26,21 +26,34 @@ function ChecklistSectionCard({ category, tasks, onToggleTask }) {
 
       <div className="checklist-tasks">
         {tasks.map((task) => (
-          <button
-            type="button"
-            key={task.id}
-            className={task.completed ? "checklist-task completed" : "checklist-task"}
-            onClick={() => onToggleTask(task.id)}
-          >
-            <div className="task-check">{task.completed ? <Check size={14} /> : null}</div>
+          <div key={task.id} className={task.completed ? "checklist-task completed" : "checklist-task"}>
+            <button type="button" className="task-main-area" onClick={() => onToggleTask(task.id)}>
+              <div className="task-check">{task.completed ? <Check size={14} /> : null}</div>
 
-            <div className="task-content">
-              <h4>{task.title}</h4>
-              <p>{task.description}</p>
-            </div>
+              <div className="task-content">
+                <div className="task-title-row">
+                  <h4>{task.title}</h4>
+                  {task.priority ? (
+                    <span className={`checklist-priority-badge ${task.priority}`}>{task.priority}</span>
+                  ) : null}
+                </div>
+                {task.timeframe ? <div className="task-timeframe">{task.timeframe}</div> : null}
+                <p>{task.description}</p>
+              </div>
 
-            <div className="task-action-text">{task.completed ? "Completed" : "Mark complete"}</div>
-          </button>
+              <div className="task-action-text">{task.completed ? "Completed" : "Mark complete"}</div>
+            </button>
+
+            {task.action_url ? (
+              <button
+                type="button"
+                className="task-link-button"
+                onClick={() => onOpenAction(task.action_url)}
+              >
+                {task.action_label || "Open"}
+              </button>
+            ) : null}
+          </div>
         ))}
       </div>
     </div>
