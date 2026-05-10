@@ -39,10 +39,18 @@ function AdaptationChecklistPage() {
 
         <div className="checklist-main-card">
           <ProgressOverviewCard totalProgress={totalProgress} />
-          <CategoryTabs categories={checklistCategories} selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
+          <CategoryTabs
+            categories={checklistCategories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
         </div>
 
-        <ChecklistSectionCard category={selectedCategoryData} tasks={selectedTasks} onToggleTask={handleToggleTask} />
+        <ChecklistSectionCard
+          category={selectedCategoryData}
+          tasks={selectedTasks}
+          onToggleTask={handleToggleTask}
+        />
       </section>
     </DashboardLayout>
   );

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
+import { formatAstanaDate } from "../../utils/datetime";
 import "../../styles/admin.css";
 
 function EmptyAdminState({ text }) {
@@ -131,7 +132,7 @@ function AdminMatchesPage() {
                       <span>{student.program}</span>
                       <span>{student.languages?.length ? student.languages.join(", ") : "Languages not set"}</span>
                       <span>{student.interests?.length ? student.interests.join(", ") : "Interests not set"}</span>
-                      <span>Registered: {new Date(student.registeredAt).toLocaleDateString("en-GB")}</span>
+                      <span>Registered: {formatAstanaDate(student.registeredAt)}</span>
                     </div>
                   </div>
                 </article>
@@ -179,7 +180,7 @@ function AdminMatchesPage() {
                     <p>{request.message}</p>
                     <div className="admin-meta">
                       <span>Score: {request.score}</span>
-                      <span>{new Date(request.createdAt).toLocaleDateString("en-GB")}</span>
+                      <span>{formatAstanaDate(request.createdAt)}</span>
                     </div>
                   </div>
 
@@ -251,7 +252,7 @@ function AdminMatchesPage() {
                       <h4>{match.student_name} {"=>"} {match.buddy_name}</h4>
                       <p>Active pairing. Chat is available while this match stays active.</p>
                       <div className="admin-meta">
-                        <span>Created: {new Date(match.created_at).toLocaleDateString("en-GB")}</span>
+                        <span>Created: {formatAstanaDate(match.created_at)}</span>
                         <span>Notes: {match.note_count}</span>
                       </div>
                     </div>
@@ -333,7 +334,7 @@ function AdminMatchesPage() {
                       This pair is no longer active. If it was cancelled, the student can be matched with another buddy.
                     </p>
                     <div className="admin-meta">
-                      <span>Created: {new Date(match.created_at).toLocaleDateString("en-GB")}</span>
+                      <span>Created: {formatAstanaDate(match.created_at)}</span>
                       <span>Notes: {match.note_count}</span>
                     </div>
                   </div>

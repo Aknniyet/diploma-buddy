@@ -56,3 +56,35 @@ export function findAllUsefulInfo() {
      ORDER BY created_at DESC`
   );
 }
+
+export function findUpcomingEventsForReminders() {
+  return query(
+    `SELECT id, title, event_date, location
+     FROM events
+     WHERE event_date > NOW()
+       AND event_date <= NOW() + INTERVAL '24 hours'
+     ORDER BY event_date ASC`
+  );
+}
+
+export function hasEventReminderBeenSent(eventId, userId, reminderType) {
+  return query(
+    `SELECT id
+     FROM event_reminder_deliveries
+     WHERE event_id = $1
+       AND user_id = $2
+       AND reminder_type = $3
+     LIMIT 1`,
+    [eventId, userId, reminderType]
+  );
+}
+
+export function markEventReminderSent(eventId, userId, reminderType) {
+  return query(
+    `INSERT INTO event_reminder_deliveries (event_id, user_id, reminder_type)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (event_id, user_id, reminder_type) DO NOTHING
+     RETURNING id`,
+    [eventId, userId, reminderType]
+  );
+}

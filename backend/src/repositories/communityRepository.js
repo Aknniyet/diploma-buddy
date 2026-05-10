@@ -10,7 +10,7 @@ export function findCommunityPosts(userId) {
        p.location,
        p.meeting_time,
        p.image_url,
-       p.created_at,
+       p.created_at AT TIME ZONE 'UTC' AS created_at,
        u.id AS author_id,
        u.full_name AS author_name,
        u.role AS author_role,
@@ -22,7 +22,7 @@ export function findCommunityPosts(userId) {
              'id', c.id,
              'text', c.text,
              'image_url', c.image_url,
-             'created_at', c.created_at,
+             'created_at', c.created_at AT TIME ZONE 'UTC',
              'author_id', cu.id,
              'author_name', cu.full_name,
              'author_role', cu.role,
@@ -53,7 +53,8 @@ export function createCommunityPost(userId, postData) {
        author_id, title, description, category, location, meeting_time, image_url
      )
      VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING id, title, description, category, location, meeting_time, image_url, created_at`,
+     RETURNING id, title, description, category, location, meeting_time, image_url,
+               created_at AT TIME ZONE 'UTC' AS created_at`,
     [
       userId,
       postData.title,
@@ -91,7 +92,8 @@ export function createCommunityComment(postId, userId, text) {
     `WITH inserted AS (
        INSERT INTO community_comments (post_id, author_id, text, image_url)
        VALUES ($1, $2, $3, $4)
-       RETURNING id, post_id, author_id, text, image_url, created_at
+       RETURNING id, post_id, author_id, text, image_url,
+                 created_at AT TIME ZONE 'UTC' AS created_at
      )
      SELECT
        inserted.id,
@@ -119,7 +121,8 @@ export function updateCommunityPost(postId, userId, postData) {
          image_url = $6,
          updated_at = NOW()
      WHERE id = $7 AND author_id = $8
-     RETURNING id, title, description, category, location, meeting_time, image_url, created_at`,
+     RETURNING id, title, description, category, location, meeting_time, image_url,
+               created_at AT TIME ZONE 'UTC' AS created_at`,
     [
       postData.title,
       postData.description,

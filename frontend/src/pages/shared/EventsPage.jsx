@@ -3,6 +3,7 @@ import { CalendarDays } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+import { formatAstanaShortDateTime } from "../../utils/datetime";
 import "../../styles/events.css";
 
 function EventsPage({ userType = "student" }) {
@@ -10,16 +11,32 @@ function EventsPage({ userType = "student" }) {
   const hasEventsAccess = userType !== "buddy" || user?.buddy_status === "approved";
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadEvents = async () => {
     if (!hasEventsAccess) {
       setEvents([]);
+      setError("");
       return;
     }
 
-    apiRequest("/events")
-      .then((data) => setEvents(Array.isArray(data) ? data : []))
-      .catch(() => null);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const data = await apiRequest("/events");
+      setEvents(Array.isArray(data) ? data : []);
+    } catch (requestError) {
+      setEvents([]);
+      setError(requestError?.message || "Could not load events right now.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadEvents().catch(() => null);
   }, [hasEventsAccess]);
 
   const filteredEvents = useMemo(() => {
@@ -59,19 +76,37 @@ function EventsPage({ userType = "student" }) {
               <h3>No events yet</h3>
               <p>Upcoming events will become available after admin approval.</p>
             </div>
+          ) : isLoading ? (
+            <div className="events-empty-card">
+              <CalendarDays size={28} />
+              <h3>Loading events</h3>
+              <p>Please wait a moment while we load the latest activities.</p>
+            </div>
+          ) : error ? (
+            <div className="events-empty-card">
+              <CalendarDays size={28} />
+              <h3>Could not load events</h3>
+              <p>{error}</p>
+              <button type="button" className="events-retry-btn" onClick={() => loadEvents().catch(() => null)}>
+                Try again
+              </button>
+            </div>
+          ) : filteredEvents.length === 0 ? (
+            <div className="events-empty-card">
+              <CalendarDays size={28} />
+              <h3>{search.trim() ? "No matching events" : "No events published yet"}</h3>
+              <p>
+                {search.trim()
+                  ? "Try a different keyword for title, location, or category."
+                  : "Events will appear here as soon as an administrator publishes them."}
+              </p>
+            </div>
           ) : (
             filteredEvents.map((item) => (
               <article className="event-card" key={item.id}>
                 <div className="event-card-top">
                   <span className="event-badge">{item.category || "General"}</span>
-                  <span className="event-date">
-                    {new Date(item.event_date).toLocaleString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
+                  <span className="event-date">{formatAstanaShortDateTime(item.event_date)}</span>
                 </div>
 
                 <h3>{item.title}</h3>

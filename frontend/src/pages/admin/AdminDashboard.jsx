@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
+import { formatAstanaDate } from "../../utils/datetime";
 import "../../styles/admin.css";
 
 function AdminDashboard() {
@@ -62,7 +63,7 @@ function AdminDashboard() {
                     <p>{user.email}</p>
                     <div className="admin-meta">
                       <span>{user.role}</span>
-                      <span>{new Date(user.created_at).toLocaleDateString("en-GB")}</span>
+                      <span>{formatAstanaDate(user.created_at)}</span>
                     </div>
                   </div>
                 </article>
@@ -83,7 +84,7 @@ function AdminDashboard() {
                     <h4>{request.student_name} {"=>"} {request.buddy_name}</h4>
                     <p>Status: {request.status}</p>
                     <div className="admin-meta">
-                      <span>{new Date(request.created_at).toLocaleDateString("en-GB")}</span>
+                      <span>{formatAstanaDate(request.created_at)}</span>
                     </div>
                   </div>
                 </article>

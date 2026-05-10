@@ -13,7 +13,7 @@ export function getAdminStats() {
 
 export function getRecentUsers(limit = 5) {
   return query(
-    `SELECT id, full_name, email, role, created_at
+    `SELECT id, full_name, email, role, created_at AT TIME ZONE 'UTC' AS created_at
      FROM users
      ORDER BY created_at DESC
      LIMIT $1`,
@@ -23,7 +23,7 @@ export function getRecentUsers(limit = 5) {
 
 export function getRecentBuddyRequests(limit = 5) {
   return query(
-    `SELECT br.id, br.status, br.created_at,
+    `SELECT br.id, br.status, br.created_at AT TIME ZONE 'UTC' AS created_at,
             s.full_name AS student_name,
             b.full_name AS buddy_name
      FROM buddy_requests br

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+import { formatAstanaShortDateTime } from "../../utils/datetime";
 import "../../styles/local-dashboard.css";
 
 function BuddyOverviewPage() {
@@ -65,12 +66,7 @@ function BuddyOverviewPage() {
                   <div key={event.id} className="recent-message-content">
                     <h4>{event.title}</h4>
                     <p>
-                      {new Date(event.event_date).toLocaleString("en-GB", {
-                        day: "2-digit",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {formatAstanaShortDateTime(event.event_date)}
                       {" · "}
                       {event.location || "Location TBD"}
                     </p>

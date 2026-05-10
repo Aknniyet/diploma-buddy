@@ -1,27 +1,7 @@
 import { Send } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSavedUser } from "../../lib/api";
-
-function formatDateLabel(dateValue) {
-  const date = new Date(dateValue);
-  const today = new Date();
-
-  const isToday = date.toDateString() === today.toDateString();
-
-  const yesterday = new Date();
-  yesterday.setDate(today.getDate() - 1);
-
-  const isYesterday = date.toDateString() === yesterday.toDateString();
-
-  if (isToday) return "Today";
-  if (isYesterday) return "Yesterday";
-
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
+import { formatAstanaRelativeDateLabel, formatAstanaTime, getAstanaDateKey } from "../../utils/datetime";
 
 function ChatWindow({ conversation, messages, onSendMessage }) {
   const [text, setText] = useState("");
@@ -61,8 +41,9 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
       <div className="chat-messages">
         {messages.map((message) => {
           const rawDate = message.date || message.createdAt || message.created_at;
-          const currentDate = rawDate ? new Date(rawDate).toDateString() : null;
+          const currentDate = rawDate ? getAstanaDateKey(rawDate) : null;
           const showDateDivider = currentDate && currentDate !== lastDate;
+          const messageTime = rawDate ? formatAstanaTime(rawDate) : message.time;
 
           if (currentDate) {
             lastDate = currentDate;
@@ -77,7 +58,7 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
             <div key={message.id}>
               {showDateDivider && (
                 <div className="chat-date-divider">
-                  {formatDateLabel(rawDate)}
+                  {formatAstanaRelativeDateLabel(rawDate)}
                 </div>
               )}
 
@@ -90,7 +71,7 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
               >
                 <div className="chat-bubble">
                   <p>{message.text}</p>
-                  <span>{message.time}</span>
+                  <span>{messageTime || message.time}</span>
                 </div>
               </div>
             </div>
@@ -115,6 +96,7 @@ function ChatWindow({ conversation, messages, onSendMessage }) {
           <Send size={18} />
         </button>
       </form>
+
     </div>
   );
 }

@@ -6,7 +6,7 @@ export function findConversationsForUser(userId) {
             CASE WHEN $1 = c.international_student_id THEN buddy.full_name ELSE student.full_name END AS partner_name,
             CASE WHEN $1 = c.international_student_id THEN buddy.role ELSE student.role END AS partner_role,
             CASE WHEN $1 = c.international_student_id THEN buddy.profile_photo_url ELSE student.profile_photo_url END AS partner_avatar,
-            MAX(m.created_at) AS last_message_at,
+            MAX(m.created_at AT TIME ZONE 'UTC') AS last_message_at,
             COALESCE((ARRAY_AGG(m.text ORDER BY m.created_at DESC))[1], '') AS last_message_text,
             COUNT(m.id) FILTER (WHERE m.sender_id <> $1 AND m.is_read = FALSE) AS unread_count
      FROM conversations c
@@ -39,7 +39,7 @@ export function findConversationForUser(conversationId, userId) {
 
 export function findMessagesInConversation(conversationId) {
   return query(
-    `SELECT m.id, m.text, m.created_at, m.sender_id,
+    `SELECT m.id, m.text, m.created_at AT TIME ZONE 'UTC' AS created_at, m.sender_id,
             u.full_name AS sender_name
      FROM messages m
      JOIN users u ON u.id = m.sender_id
@@ -62,7 +62,18 @@ export function createMessage(conversationId, senderId, text) {
   return query(
     `INSERT INTO messages (conversation_id, sender_id, text)
      VALUES ($1, $2, $3)
-     RETURNING id, text, created_at`,
+     RETURNING id, text, created_at AT TIME ZONE 'UTC' AS created_at`,
     [conversationId, senderId, text]
+  );
+}
+
+export function countUnreadMessagesForUserInConversation(conversationId, userId) {
+  return query(
+    `SELECT COUNT(*)::int AS count
+     FROM messages
+     WHERE conversation_id = $1
+       AND sender_id <> $2
+       AND is_read = FALSE`,
+    [conversationId, userId]
   );
 }

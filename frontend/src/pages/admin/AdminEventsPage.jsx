@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
+import { formatAstanaDateTime, toAstanaDateTimeInputValue } from "../../utils/datetime";
 import "../../styles/admin.css";
 
 const initialForm = {
@@ -12,12 +13,7 @@ const initialForm = {
 };
 
 function formatInputDate(dateValue) {
-  const date = new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return "";
-
-  const offset = date.getTimezoneOffset();
-  const normalized = new Date(date.getTime() - offset * 60000);
-  return normalized.toISOString().slice(0, 16);
+  return toAstanaDateTimeInputValue(dateValue);
 }
 
 function AdminEventsPage() {
@@ -50,7 +46,7 @@ function AdminEventsPage() {
       method,
       body: JSON.stringify({
         ...form,
-        eventDate: new Date(form.eventDate).toISOString(),
+        eventDate: form.eventDate,
       }),
     });
 
@@ -172,7 +168,7 @@ function AdminEventsPage() {
                     <h4>{item.title}</h4>
                     <p>{item.description || "No description provided."}</p>
                     <div className="admin-meta">
-                      <span>{new Date(item.event_date).toLocaleString("en-GB")}</span>
+                      <span>{formatAstanaDateTime(item.event_date)}</span>
                       <span>{item.location || "Location TBD"}</span>
                       <span>{item.category || "General"}</span>
                     </div>

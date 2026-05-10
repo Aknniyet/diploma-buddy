@@ -10,9 +10,9 @@ import {
   updateCommunityPost,
 } from "../repositories/communityRepository.js";
 import {
-  createNotification,
   deleteNotificationsByReference,
 } from "../repositories/notificationRepository.js";
+import { createNotification } from "../services/notificationService.js";
 import { findCommunityNotificationRecipients, findUserProfileById } from "../repositories/userRepository.js";
 
 const allowedCategories = ["hangout", "study", "sports", "food", "question", "city"];

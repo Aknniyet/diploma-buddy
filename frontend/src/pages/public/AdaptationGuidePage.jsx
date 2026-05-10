@@ -1,9 +1,9 @@
-import PublicLayout from "../../layouts/PublicLayout";
-import "../../styles/adaptation-guide.css";
 import { CircleAlert, CircleCheck } from "lucide-react";
+import PublicLayout from "../../layouts/PublicLayout";
 import AccordionItem from "../../components/ui/AccordionItem";
 import { quickTips, guideSections } from "../../constants/adaptationGuideData";
 import { useI18n } from "../../context/I18nContext";
+import "../../styles/adaptation-guide.css";
 
 function AdaptationGuidePage() {
   const { t } = useI18n();
@@ -69,8 +69,8 @@ function AdaptationGuidePage() {
               })}
             </div>
           </div>
-      </section>
-          <section className="guide-help-section">
+        </section>
+        <section className="guide-help-section">
           <div className="container">
             <h2>{t("guide.help.title")}</h2>
             <p>{t("guide.help.text")}</p>

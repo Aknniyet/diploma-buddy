@@ -6,11 +6,14 @@ import NotificationsToolbar from "../../components/notifications/NotificationsTo
 import NotificationsList from "../../components/notifications/NotificationsList";
 import NotificationsEmptyState from "../../components/notifications/NotificationsEmptyState";
 import { apiRequest } from "../../lib/api";
+import { formatAstanaShortDateTime } from "../../utils/datetime";
 import "../../styles/notifications.css";
 
 const iconMap = {
   new_message: MessageCircle,
   community_post: Bell,
+  event_created: Bell,
+  event_reminder: Bell,
   request_sent: Bell,
   request_received: Bell,
   request_accepted: CheckCircle2,
@@ -25,12 +28,7 @@ const iconMap = {
 };
 
 function formatDate(date) {
-  return new Date(date).toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatAstanaShortDateTime(date);
 }
 
 function NotificationsPage({ userType = "student" }) {

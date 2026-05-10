@@ -13,6 +13,7 @@ import {
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+import { formatAstanaShortDateTime, toAstanaDateTimeInputValue } from "../../utils/datetime";
 import "../../styles/community.css";
 
 const categories = [
@@ -49,12 +50,7 @@ const initialForm = {
 function formatDate(value) {
   if (!value) return "Flexible time";
 
-  return new Date(value).toLocaleString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatAstanaShortDateTime(value);
 }
 
 function CommunityBoardPage() {
@@ -136,7 +132,7 @@ function CommunityBoardPage() {
       description: post.description || "",
       category: post.category || "hangout",
       location: post.location || "",
-      meetingTime: post.meeting_time ? post.meeting_time.slice(0, 16) : "",
+      meetingTime: toAstanaDateTimeInputValue(post.meeting_time),
       imageUrl: post.image_url || "",
     });
     setError("");
@@ -300,9 +296,6 @@ function CommunityBoardPage() {
               <MessageCircle size={28} />
               <h3>No posts yet</h3>
               <p>Be the first to invite someone for a walk, coffee, study session, or movie.</p>
-              <button type="button" onClick={openCreateComposer}>
-                Create first post
-              </button>
             </div>
           ) : (
             posts.map((post) => (
@@ -333,21 +326,25 @@ function CommunityBoardPage() {
                   </div>
                 </div>
 
-                {post.author_id === user?.id && (
-                  <div className="community-owner-actions">
-                    <button type="button" onClick={() => openEditComposer(post)}>
-                      <Edit3 size={15} />
-                      Edit
-                    </button>
-                    <button type="button" className="danger" onClick={() => handleDeletePost(post)}>
-                      <Trash2 size={15} />
-                      Delete
-                    </button>
+                <div className="community-post-content-header">
+                  <div className="community-post-copy">
+                    <h3>{post.title}</h3>
+                    <p>{post.description}</p>
                   </div>
-                )}
 
-                <h3>{post.title}</h3>
-                <p>{post.description}</p>
+                  {post.author_id === user?.id ? (
+                    <div className="community-owner-actions">
+                      <button type="button" onClick={() => openEditComposer(post)}>
+                        <Edit3 size={15} />
+                        Edit
+                      </button>
+                      <button type="button" className="danger" onClick={() => handleDeletePost(post)}>
+                        <Trash2 size={15} />
+                        Delete
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
 
                 {post.image_url && (
                   <img src={post.image_url} alt={post.title} className="community-post-image" />
@@ -557,6 +554,7 @@ function CommunityBoardPage() {
             </form>
           </div>
         )}
+
       </section>
     </DashboardLayout>
   );

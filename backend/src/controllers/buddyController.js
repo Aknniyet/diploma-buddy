@@ -16,8 +16,9 @@ import {
   upsertBuddyFeedback,
 } from '../repositories/buddyRepository.js';
 import { formatBuddyCard } from '../services/matchingService.js';
-import { createNotification } from '../repositories/notificationRepository.js';
+import { createNotification } from '../services/notificationService.js';
 import { findUserProfileById } from '../repositories/userRepository.js';
+import { formatAstanaDate } from "../utils/datetime.js";
 
 export async function getAvailableBuddies(req, res) {
   try {
@@ -161,7 +162,7 @@ export async function getIncomingRequests(req, res) {
       program: item.study_program || 'Not specified',
       interests: item.hobbies || [],
       message: item.message || 'No message provided.',
-      date: new Date(item.created_at).toLocaleDateString(),
+      date: formatAstanaDate(item.created_at),
       avatar:
         item.profile_photo_url ||
         'https://cdn-icons-png.flaticon.com/512/149/149071.png',
