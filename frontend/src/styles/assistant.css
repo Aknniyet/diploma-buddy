@@ -1,14 +1,14 @@
 .assistant-page {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
 }
 
 .assistant-hero {
   background: linear-gradient(135deg, #e8f7f5 0%, #ffffff 100%);
   border: 1px solid #d8eeeb;
-  border-radius: 20px;
-  padding: 18px 20px;
+  border-radius: 24px;
+  padding: 28px;
 }
 
 .assistant-eyebrow {
@@ -16,62 +16,57 @@
   align-items: center;
   gap: 8px;
   color: #087f84;
-  font-weight: 500;
-  font-size: 12px;
-  margin-bottom: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .assistant-hero h1 {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   color: #102a43;
-  font-size: 20px;
-  line-height: 1.2;
+  font-size: 32px;
 }
 
 .assistant-hero p {
   margin: 0;
   color: #667085;
-  max-width: 620px;
-  line-height: 1.5;
-  font-size: 14px;
+  max-width: 700px;
+  line-height: 1.6;
 }
 
 .assistant-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 230px;
-  gap: 16px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 20px;
 }
 
 .assistant-chat-card,
 .assistant-suggestions {
   background: #ffffff;
   border: 1px solid #edf1f4;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.06);
 }
 
 .assistant-chat-card {
-  height: 540px;
+  min-height: 560px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .assistant-messages {
   flex: 1;
-  min-height: 0;
-  padding: 16px;
+  padding: 22px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .assistant-message {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   max-width: 82%;
 }
 
@@ -81,9 +76,9 @@
 }
 
 .assistant-message-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
   background: #e8f7f5;
@@ -98,11 +93,10 @@
 
 .assistant-message-content {
   background: #f8fafc;
-  border-radius: 16px;
-  padding: 12px 14px;
+  border-radius: 18px;
+  padding: 14px 16px;
   color: #344054;
-  line-height: 1.5;
-  font-size: 14px;
+  line-height: 1.55;
 }
 
 .assistant-message-user .assistant-message-content {
@@ -119,7 +113,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .assistant-actions button,
@@ -128,9 +122,8 @@
   background: #ffffff;
   color: #087f84;
   border-radius: 999px;
-  padding: 7px 11px;
+  padding: 8px 12px;
   font-weight: 700;
-  font-size: 13px;
   cursor: pointer;
 }
 
@@ -141,17 +134,17 @@
 
 .assistant-input-row {
   display: flex;
-  gap: 10px;
-  padding: 12px 14px;
+  gap: 12px;
+  padding: 16px;
   border-top: 1px solid #edf1f4;
 }
 
 .assistant-input-row input {
   flex: 1;
   border: 1px solid #d0d5dd;
-  border-radius: 14px;
-  padding: 11px 13px;
-  font-size: 14px;
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 15px;
   outline: none;
 }
 
@@ -162,15 +155,14 @@
 
 .assistant-input-row button {
   border: none;
-  border-radius: 14px;
+  border-radius: 16px;
   background: #087f84;
   color: #ffffff;
-  padding: 0 16px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  min-width: 118px;
   cursor: pointer;
 }
 
@@ -180,26 +172,128 @@
 }
 
 .assistant-suggestions {
-  padding: 16px;
+  padding: 20px;
   height: fit-content;
 }
 
 .assistant-suggestions h3 {
-  margin: 0 0 12px;
+  margin: 0 0 14px;
   color: #102a43;
-  font-size: 16px;
 }
 
 .assistant-starter-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .assistant-starter-list button {
-  border-radius: 14px;
+  border-radius: 16px;
   text-align: left;
-  padding: 10px 12px;
+  padding: 12px 14px;
+}
+
+.assistant-sidebar-divider {
+  height: 1px;
+  background: #edf1f4;
+  margin: 18px 0 14px;
+}
+
+.assistant-clear-chat-button {
+  width: 100%;
+  border: 1px solid #f1b8b8;
+  background: #fffafa;
+  color: #b42318;
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.assistant-clear-chat-button:hover {
+  background: #fee4e2;
+  border-color: #f97066;
+}
+
+.assistant-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(15, 23, 42, 0.42);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.assistant-confirm-modal {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #edf1f4;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+  padding: 24px;
+}
+
+.assistant-confirm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #fee4e2;
+  color: #b42318;
+  margin-bottom: 16px;
+}
+
+.assistant-confirm-modal h2 {
+  margin: 0 0 8px;
+  color: #102a43;
+  font-size: 22px;
+}
+
+.assistant-confirm-modal p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.assistant-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.assistant-confirm-actions button {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.assistant-confirm-cancel {
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #344054;
+}
+
+.assistant-confirm-cancel:hover {
+  background: #f8fafc;
+}
+
+.assistant-confirm-clear {
+  border: 1px solid #d92d20;
+  background: #d92d20;
+  color: #ffffff;
+}
+
+.assistant-confirm-clear:hover {
+  background: #b42318;
+  border-color: #b42318;
 }
 
 @media (max-width: 1000px) {
@@ -207,11 +301,22 @@
     grid-template-columns: 1fr;
   }
 
-  .assistant-chat-card {
-    height: 500px;
-  }
-
   .assistant-message {
     max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .assistant-confirm-modal {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .assistant-confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .assistant-confirm-actions button {
+    width: 100%;
   }
 }

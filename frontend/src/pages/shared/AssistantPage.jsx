@@ -1,9 +1,21 @@
-import { useState } from "react";
-import { Bot, Send, Sparkles, UserRound } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Bot, Send, Sparkles, Trash2, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import "../../styles/assistant.css";
+
+const INITIAL_ASSISTANT_MESSAGE = {
+  id: 1,
+  sender: "assistant",
+  text:
+    "Hi! I am your KazakhBuddy assistant. Ask me about adaptation, documents, checklist, events, or buddy matching.",
+  actions: [],
+};
+
+function getChatStorageKey(userType) {
+  return `kazakhbuddy-assistant-chat-${userType}`;
+}
 
 const starterQuestions = [
   "What should I do next?",
@@ -20,15 +32,30 @@ function AssistantPage({ userType = "student" }) {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [chat, setChat] = useState([
-    {
-      id: 1,
-      sender: "assistant",
-      text:
-        "Hi! I am your KazakhBuddy assistant. Ask me about adaptation, documents, checklist, events, or buddy matching.",
-      actions: [],
-    },
-  ]);
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const chatStorageKey = getChatStorageKey(userType);
+
+  const [chat, setChat] = useState(() => {
+    try {
+      const savedChat = localStorage.getItem(chatStorageKey);
+
+      if (!savedChat) {
+        return [INITIAL_ASSISTANT_MESSAGE];
+      }
+
+      const parsedChat = JSON.parse(savedChat);
+
+      return Array.isArray(parsedChat) && parsedChat.length > 0
+        ? parsedChat
+        : [INITIAL_ASSISTANT_MESSAGE];
+    } catch {
+      return [INITIAL_ASSISTANT_MESSAGE];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(chatStorageKey, JSON.stringify(chat));
+  }, [chat, chatStorageKey]);
 
   const sendMessage = async (text = message) => {
     const trimmed = text.trim();
@@ -80,6 +107,13 @@ function AssistantPage({ userType = "student" }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     sendMessage();
+  };
+
+  const clearChat = () => {
+    setChat([INITIAL_ASSISTANT_MESSAGE]);
+    setMessage("");
+    localStorage.removeItem(chatStorageKey);
+    setIsClearModalOpen(false);
   };
 
   return (
@@ -172,8 +206,54 @@ function AssistantPage({ userType = "student" }) {
                 </button>
               ))}
             </div>
+
+            <div className="assistant-sidebar-divider" />
+
+            <button
+              type="button"
+              className="assistant-clear-chat-button"
+              onClick={() => setIsClearModalOpen(true)}
+            >
+              <Trash2 size={16} />
+              <span>Clear Chat</span>
+            </button>
           </aside>
         </div>
+
+        {isClearModalOpen ? (
+          <div className="assistant-modal-backdrop" role="presentation">
+            <div
+              className="assistant-confirm-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="assistant-clear-title"
+            >
+              <div className="assistant-confirm-icon">
+                <Trash2 size={20} />
+              </div>
+              <div>
+                <h2 id="assistant-clear-title">Clear conversation?</h2>
+                <p>Are you sure you want to clear this conversation?</p>
+              </div>
+              <div className="assistant-confirm-actions">
+                <button
+                  type="button"
+                  className="assistant-confirm-cancel"
+                  onClick={() => setIsClearModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="assistant-confirm-clear"
+                  onClick={clearChat}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </section>
     </DashboardLayout>
   );
