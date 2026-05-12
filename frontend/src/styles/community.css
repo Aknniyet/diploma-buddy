@@ -131,15 +131,14 @@
   place-items: center;
   border-radius: 999px;
   color: #ffffff;
-  font-weight: 700;
+  background: #0f9c9c;
 }
 
 .community-author-avatar {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  background: linear-gradient(135deg, #0f9aa8, #37bbb9);
-  box-shadow: 0 10px 22px rgba(15, 154, 168, 0.18);
+  font-size: 15px;
 }
 
 .community-author-avatar.image,
@@ -406,8 +405,6 @@
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  background: #ffeec7;
-  color: #a16207;
   font-size: 12px;
 }
 
@@ -549,6 +546,97 @@
   z-index: 1200;
 }
 
+.community-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(15, 23, 42, 0.42);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.community-confirm-modal {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #edf1f4;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+  padding: 24px;
+}
+
+.community-confirm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #fee4e2;
+  color: #b42318;
+  margin-bottom: 16px;
+}
+
+.community-confirm-modal h2 {
+  margin: 0 0 8px;
+  color: #102a43;
+  font-size: 22px;
+}
+
+.community-confirm-modal p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.community-confirm-error {
+  margin-top: 14px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.community-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.community-confirm-actions button {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font: inherit;
+}
+
+.community-confirm-cancel {
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #344054;
+}
+
+.community-confirm-cancel:hover {
+  background: #f8fafc;
+}
+
+.community-confirm-delete {
+  border: 1px solid #d92d20;
+  background: #d92d20;
+  color: #ffffff;
+}
+
+.community-confirm-delete:hover {
+  background: #b42318;
+  border-color: #b42318;
+}
+
+.community-confirm-delete:disabled,
+.community-confirm-cancel:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .community-modal {
   width: min(700px, 100%);
   padding: 20px;
@@ -663,6 +751,19 @@
   }
 
   .community-open-composer {
+    width: 100%;
+  }
+
+  .community-confirm-modal {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .community-confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .community-confirm-actions button {
     width: 100%;
   }
 }

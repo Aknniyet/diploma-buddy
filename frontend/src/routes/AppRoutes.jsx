@@ -11,11 +11,11 @@ import MessagesPage from "../pages/shared/MessagesPage";
 import NotificationsPage from "../pages/shared/NotificationsPage";
 import ProfilePage from "../pages/shared/ProfilePage";
 import EventsPage from "../pages/shared/EventsPage";
-import AssistantPage from "../pages/shared/AssistantPage";
+import CommunityBoardPage from "../pages/shared/CommunityBoardPage";
 import StudentOverview from "../pages/student/StudentOverview";
+import AssistantPage from "../pages/student/AssistantPage";
 import FindBuddiesPage from "../pages/student/FindBuddiesPage";
 import AdaptationChecklistPage from "../pages/student/AdaptationChecklistPage";
-import CommunityBoardPage from "../pages/student/CommunityBoardPage";
 import BuddyOverviewPage from "../pages/buddy/BuddyOverviewPage";
 import MyBuddiesPage from "../pages/buddy/MyBuddiesPage";
 import BuddyRequestsPage from "../pages/buddy/BuddyRequestsPage";
@@ -130,7 +130,7 @@ function AppRoutes() {
         path="/student/community"
         element={
           <ProtectedRoute allowedRoles={["international"]}>
-            <CommunityBoardPage />
+            <CommunityBoardPage userType="student" />
           </ProtectedRoute>
         }
       />
@@ -157,7 +157,7 @@ function AppRoutes() {
         path="/buddy/community"
         element={
           <ProtectedRoute allowedRoles={["local"]}>
-            <CommunityBoardPage />
+            <CommunityBoardPage userType="buddy" />
           </ProtectedRoute>
         }
       />
