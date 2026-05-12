@@ -154,44 +154,6 @@
   overflow-wrap: anywhere;
 }
 
-.buddy-card-compatibility {
-  background: #f7fdfd;
-  border: 1px solid #d6eceb;
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin-bottom: 14px;
-}
-
-.buddy-card-compatibility-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.buddy-card-compatibility-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: #0f172a;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.buddy-card-compatibility-header strong {
-  font-size: 18px;
-  color: #087f84;
-}
-
-.buddy-card-compatibility-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 12px;
-  color: #667085;
-  font-size: 12px;
-}
-
 .buddy-card-details {
   display: flex;
   flex-direction: column;

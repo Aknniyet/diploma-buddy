@@ -9,7 +9,6 @@ import {
   findStudentMatchedBuddy,
   findRequestsCreatedByStudent,
   findStudentActiveMatch,
-  findStudentForMatching,
   findStudentPendingRequest,
   findStudentRequestStatuses,
   respondToBuddyRequest,
@@ -25,9 +24,6 @@ export async function getAvailableBuddies(req, res) {
     if (req.user.role !== 'international') {
       return res.status(403).json({ message: 'Only international students can browse buddies.' });
     }
-
-    const studentResult = await findStudentForMatching(req.user.id);
-    const student = studentResult.rows[0];
 
     const studentActiveMatch = await findStudentActiveMatch(req.user.id);
     const activeMatchBuddyId = studentActiveMatch.rows[0]?.buddy_id || null;
@@ -46,7 +42,6 @@ export async function getAvailableBuddies(req, res) {
     const buddies = buddyRows
       .map((buddy) =>
         formatBuddyCard(
-          student,
           buddy,
           statusMap,
           activeMatchBuddyId,
@@ -59,7 +54,7 @@ export async function getAvailableBuddies(req, res) {
         if (b.status === 'matched') return 1;
         if (a.status === 'pending') return -1;
         if (b.status === 'pending') return 1;
-        return b.score - a.score || a.name.localeCompare(b.name);
+        return b.spotsAvailable - a.spotsAvailable || a.name.localeCompare(b.name);
       });
 
     return res.json(buddies);

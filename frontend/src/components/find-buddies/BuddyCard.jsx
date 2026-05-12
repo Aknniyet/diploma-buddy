@@ -1,8 +1,7 @@
-import { BookOpen, Globe, MapPin, MessageSquare, CheckCircle2, Sparkles, Star } from "lucide-react";
+import { BookOpen, Globe, MapPin, MessageSquare, CheckCircle2, Star } from "lucide-react";
 
 function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
   const status = buddy.status;
-  const compatibility = buddy.compatibility || {};
   const isDisabled =
     status === "pending" ||
     status === "matched" ||
@@ -44,20 +43,6 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
         <div className="buddy-detail-row"><Globe size={14} /><span>{buddy.languages || "Not specified"}</span></div>
       </div>
 
-      <div className="buddy-card-compatibility">
-        <div className="buddy-card-compatibility-header">
-          <span className="buddy-card-compatibility-label">
-            <Sparkles size={14} />
-            AI compatibility
-          </span>
-          <strong>{compatibility.label ?? "0%"}</strong>
-        </div>
-        <div className="buddy-card-compatibility-meta">
-          <span>Shared languages: {compatibility.sharedLanguagesCount ?? 0}</span>
-          <span>Shared interests: {compatibility.sharedInterestsCount ?? 0}</span>
-        </div>
-      </div>
-
       <div className="buddy-rating-row">
         <div className="buddy-rating-badge">
           <Star size={14} fill="currentColor" />
@@ -83,7 +68,7 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
               ? "You already have an active buddy"
               : status === "waiting"
               ? "You already have a pending request"
-              : `Rule-based score: ${buddy.score} - Compatibility: ${compatibility.label ?? "0%"}`}
+              : "Review their profile before sending a request"}
           </small>
         </div>
         <div className="buddy-card-actions">

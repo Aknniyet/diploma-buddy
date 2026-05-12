@@ -163,15 +163,6 @@ function AppRoutes() {
       />
 
       <Route
-        path="/buddy/assistant"
-        element={
-          <ProtectedRoute allowedRoles={["local"]}>
-            <AssistantPage userType="buddy" />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
         path="/buddy/overview"
         element={
           <ProtectedRoute allowedRoles={["local"]}>

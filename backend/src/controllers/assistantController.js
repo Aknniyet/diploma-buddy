@@ -5,16 +5,18 @@ export async function chatWithAssistant(req, res) {
   try {
     const { message } = req.body;
 
+    if (req.user.role !== "international") {
+      return res.status(403).json({
+        message: "Assistant is available only for international students.",
+      });
+    }
+
     if (!message || !message.trim()) {
       return res.status(400).json({ message: "Message is required." });
     }
 
-    let checklistTasks = [];
-
-    if (req.user.role === "international") {
-      const result = await getChecklistTasksByUserId(req.user.id);
-      checklistTasks = result.rows;
-    }
+    const result = await getChecklistTasksByUserId(req.user.id);
+    const checklistTasks = result.rows;
 
     const reply = await generateGeminiAssistantReply(message, req.user, checklistTasks);
 

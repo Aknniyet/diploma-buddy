@@ -179,7 +179,6 @@ function AdminMatchesPage() {
                     <h4>{request.studentName} {"=>"} {request.buddyName}</h4>
                     <p>{request.message}</p>
                     <div className="admin-meta">
-                      <span>Score: {request.score}</span>
                       <span>{formatAstanaDate(request.createdAt)}</span>
                     </div>
                   </div>
@@ -206,10 +205,7 @@ function AdminMatchesPage() {
                 <article className="admin-list-item admin-match-item" key={item.studentId}>
                   <div className="admin-item-main">
                     <h4>{item.studentName} {"=>"} {item.buddyName}</h4>
-                    <p>{item.reasons?.length ? item.reasons.join(" | ") : "Recommended by compatibility score."}</p>
-                    <div className="admin-meta">
-                      <span>Score: {item.score}</span>
-                    </div>
+                    <p>{item.reasons?.length ? item.reasons.join(" | ") : "Available buddy with open capacity."}</p>
                   </div>
 
                   <div className="admin-action-panel">
