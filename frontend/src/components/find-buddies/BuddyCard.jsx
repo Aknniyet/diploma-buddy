@@ -8,6 +8,7 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
     status === "locked" ||
     status === "waiting" ||
     buddy.spotsAvailable === 0;
+  const isAvailable = !isDisabled;
 
   const buttonLabel =
     status === "matched"
@@ -68,11 +69,16 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
               ? "You already have an active buddy"
               : status === "waiting"
               ? "You already have a pending request"
-              : "Review their profile before sending a request"}
+              : `Matching score: ${buddy.score}`}
           </small>
         </div>
         <div className="buddy-card-actions">
-          <button type="button" className={`connect-btn ${isDisabled ? "connected-btn" : ""}`} onClick={() => onConnect(buddy)} disabled={isDisabled}>
+          <button
+            type="button"
+            className={`connect-btn ${isAvailable ? "connect-btn-primary" : "connected-btn"}`}
+            onClick={() => onConnect(buddy)}
+            disabled={isDisabled}
+          >
             {status === "matched" ? <CheckCircle2 size={16} /> : <MessageSquare size={16} />}
             <span>{buttonLabel}</span>
           </button>

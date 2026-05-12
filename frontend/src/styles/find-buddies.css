@@ -258,37 +258,50 @@
 
 .connect-btn {
   border: none;
-  border-radius: 12px;
-  background: #0f9c9c;
+  border-radius: 14px;
   color: white;
-  height: 38px;
-  width: 138px;
-  padding: 0 14px;
+  min-height: 40px;
+  min-width: 148px;
+  padding: 0 18px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   cursor: pointer;
   font-size: 13px;
-  font-weight: 500;
-  transition: 0.2s ease;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.connect-btn:hover {
-  background: #44a7a9;
+.connect-btn svg {
+  opacity: 0.88;
+  flex-shrink: 0;
+}
+
+.connect-btn-primary {
+  background: linear-gradient(135deg, #0f9c9c, #14868b);
+  box-shadow: 0 10px 22px rgba(15, 156, 156, 0.18);
+}
+
+.connect-btn-primary:hover {
+  background: linear-gradient(135deg, #109494, #13797e);
+  transform: translateY(-1px);
 }
 
 .connect-btn:disabled {
-  opacity: 0.8;
+  opacity: 0.88;
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 
 .connected-btn {
-  background: #8fbfc0;
+  background: #a5c9ca;
 }
 
 .connected-btn:hover {
-  background: #8fbfc0;
+  background: #a5c9ca;
 }
 
 .feedback-btn {
@@ -296,8 +309,8 @@
   border-radius: 12px;
   background: #ffffff;
   color: #0f172a;
-  width: 138px;
-  min-height: 38px;
+  width: 148px;
+  min-height: 40px;
   padding: 0 14px;
   display: inline-flex;
   align-items: center;
@@ -513,6 +526,11 @@
   }
 
   .connect-btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .feedback-btn {
     width: 100%;
   }
   

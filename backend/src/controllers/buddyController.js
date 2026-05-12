@@ -9,6 +9,7 @@ import {
   findStudentMatchedBuddy,
   findRequestsCreatedByStudent,
   findStudentActiveMatch,
+  findStudentForMatching,
   findStudentPendingRequest,
   findStudentRequestStatuses,
   respondToBuddyRequest,
@@ -25,10 +26,13 @@ export async function getAvailableBuddies(req, res) {
       return res.status(403).json({ message: 'Only international students can browse buddies.' });
     }
 
-    const studentActiveMatch = await findStudentActiveMatch(req.user.id);
+    const [studentResult, studentActiveMatch, requestStatuses] = await Promise.all([
+      findStudentForMatching(req.user.id),
+      findStudentActiveMatch(req.user.id),
+      findStudentRequestStatuses(req.user.id),
+    ]);
+    const student = studentResult.rows[0] || null;
     const activeMatchBuddyId = studentActiveMatch.rows[0]?.buddy_id || null;
-
-    const requestStatuses = await findStudentRequestStatuses(req.user.id);
     const statusMap = new Map(requestStatuses.rows.map((item) => [item.buddy_id, item.status]));
     const pendingRequest = requestStatuses.rows.find((item) => item.status === 'pending');
     const pendingRequestBuddyId = pendingRequest?.buddy_id || null;
@@ -42,6 +46,7 @@ export async function getAvailableBuddies(req, res) {
     const buddies = buddyRows
       .map((buddy) =>
         formatBuddyCard(
+          student,
           buddy,
           statusMap,
           activeMatchBuddyId,
@@ -54,7 +59,7 @@ export async function getAvailableBuddies(req, res) {
         if (b.status === 'matched') return 1;
         if (a.status === 'pending') return -1;
         if (b.status === 'pending') return 1;
-        return b.spotsAvailable - a.spotsAvailable || a.name.localeCompare(b.name);
+        return b.score - a.score || a.name.localeCompare(b.name);
       });
 
     return res.json(buddies);

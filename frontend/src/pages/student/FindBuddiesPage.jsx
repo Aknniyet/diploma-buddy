@@ -90,7 +90,7 @@ function FindBuddiesPage() {
       <section className="find-buddies-page">
         <div className="find-buddies-header">
           <h1>Find a Buddy</h1>
-          <p>Browse approved buddies with available support capacity.</p>
+          <p>Browse approved buddies sorted by compatibility score.</p>
         </div>
         <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />
         <BuddyAlert message={alertMessage} />

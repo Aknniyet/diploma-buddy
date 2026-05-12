@@ -1,4 +1,4 @@
-import { formatBuddyCard } from "../services/matchingService.js";
+import { calculateBuddyScore, formatBuddyCard } from "../services/matchingService.js";
 import {
   adminApproveRequest,
   createManualMatch,
@@ -85,27 +85,45 @@ export async function getAdminMatchesOverview(req, res) {
         cancelledBuddyByStudent.set(match.student_id, previous);
       });
 
-    const pendingRequests = pendingResult.rows.map((item) => ({
-      id: item.id,
-      studentId: item.student_id,
-      studentName: item.student_name,
-      buddyId: item.buddy_id,
-      buddyName: item.buddy_name,
-      status: item.status,
-      buddyLoad: Number(item.active_students_count || 0),
-      buddyMax: Number(item.max_buddies || 3),
-      message: item.message || "No message provided.",
-      createdAt: item.created_at,
-    }));
+    const pendingRequests = pendingResult.rows.map((item) => {
+      const score = calculateBuddyScore(
+        {
+          study_program: item.student_program,
+          languages: item.student_languages || [],
+          hobbies: item.student_hobbies || [],
+          gender_preference: item.gender_preference,
+        },
+        {
+          study_program: item.buddy_program,
+          languages: item.buddy_languages || [],
+          hobbies: item.buddy_hobbies || [],
+          gender: item.gender,
+        }
+      );
+
+      return {
+        id: item.id,
+        studentId: item.student_id,
+        studentName: item.student_name,
+        buddyId: item.buddy_id,
+        buddyName: item.buddy_name,
+        score,
+        status: item.status,
+        buddyLoad: Number(item.active_students_count || 0),
+        buddyMax: Number(item.max_buddies || 3),
+        message: item.message || "No message provided.",
+        createdAt: item.created_at,
+      };
+    });
 
     const suggestedMatches = studentsResult.rows
       .map((student) => {
         const cancelledBuddies = cancelledBuddyByStudent.get(student.id) || new Set();
         const ranked = approvedBuddies
           .filter((buddy) => !cancelledBuddies.has(buddy.id))
-          .map((buddy) => formatBuddyCard(buddy, new Map(), null))
+          .map((buddy) => formatBuddyCard(student, buddy, new Map(), null))
           .filter((buddy) => buddy.spotsAvailable > 0)
-          .sort((a, b) => b.spotsAvailable - a.spotsAvailable || a.name.localeCompare(b.name));
+          .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
 
         const bestMatch = ranked[0];
         if (!bestMatch) return null;
@@ -115,6 +133,7 @@ export async function getAdminMatchesOverview(req, res) {
           studentName: student.full_name,
           buddyId: bestMatch.id,
           buddyName: bestMatch.name,
+          score: bestMatch.score,
           reasons: buildReasonList(student, {
             study_program: bestMatch.program,
             languages: bestMatch.languages ? bestMatch.languages.split(", ").filter(Boolean) : [],
