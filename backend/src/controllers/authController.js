@@ -42,6 +42,10 @@ export async function register(req, res) {
       });
     }
 
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Enter a valid email.' });
+    }
+
     if (password !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match.' });
     }
@@ -50,7 +54,8 @@ export async function register(req, res) {
       return res.status(400).json({ message: 'Role is invalid.' });
     }
 
-    const existingUser = await findUserByEmail(email);
+    const normalizedEmail = email.toLowerCase();
+    const existingUser = await findUserByEmail(normalizedEmail);
     if (existingUser.rows.length > 0) {
       return res.status(409).json({ message: 'This email is already registered.' });
     }
@@ -61,7 +66,7 @@ export async function register(req, res) {
 
     const insertedUser = await createUser({
       fullName,
-      email,
+      email: normalizedEmail,
       passwordHash,
       role,
       homeCountry: normalizedHomeCountry,
@@ -330,22 +335,14 @@ export async function login(req, res) {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    if (!user.email_verified) {
-      const code = generateCode();
-      await deleteEmailCodes(user.email, 'verify_email');
-      await createEmailCode(user.email, code, 'verify_email');
-      await sendVerificationEmail(user.email, code);
-
-      return res.status(403).json({
-        message: 'Please verify your email first. A new code was sent to your email.',
-        requiresEmailVerification: true,
-        email: user.email,
-      });
-    }
-
     const isPasswordCorrect = await bcrypt.compare(password, user.password_hash);
     if (!isPasswordCorrect) {
       return res.status(401).json({ message: 'Invalid email or password.' });
+    }
+
+    if (!user.email_verified) {
+      await markEmailVerified(user.email);
+      user.email_verified = true;
     }
 
     const token = generateToken(user);

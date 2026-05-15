@@ -28,7 +28,7 @@ const STUDY_PROGRAMS = [
 
 function SignupPage() {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState("");
   const [error, setError] = useState("");
@@ -94,7 +94,7 @@ function SignupPage() {
     setIsLoading(true);
 
     try {
-      const data = await apiRequest("/auth/register/start", {
+      const data = await apiRequest("/auth/register", {
         method: "POST",
         body: JSON.stringify({
           role: selectedRole,
@@ -103,9 +103,15 @@ function SignupPage() {
         }),
       });
 
-      navigate("/verify-email", {
+      navigate("/login", {
+        replace: true,
         state: {
-          pendingUser: data.pendingUser,
+          successMessage: {
+            en: "Account created successfully. Please sign in.",
+            ru: "Аккаунт успешно создан. Теперь войдите в систему.",
+            kz: "Аккаунт сәтті ашылды. Енді жүйеге кіріңіз.",
+          }[language],
+          registeredEmail: data.user?.email || formData.email.trim().toLowerCase(),
         },
       });
     } catch (submitError) {
@@ -400,7 +406,7 @@ function SignupPage() {
                   </button>
 
                   <button type="submit" className="signup-primary-btn" disabled={isLoading}>
-                    {isLoading ? t("signup.sendingCode") : t("signup.createAccount")}
+                    {isLoading ? t("common.sending") : t("signup.createAccount")}
                   </button>
                 </div>
               </div>
