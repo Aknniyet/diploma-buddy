@@ -80,7 +80,7 @@ export async function createEventByAdmin(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const { title, description, eventDate, location, category } = req.body;
+    const { title, description, eventDate, location, category, imageUrl } = req.body;
 
     if (!title || !eventDate) {
       return res.status(400).json({ message: "Title and event date are required." });
@@ -92,6 +92,7 @@ export async function createEventByAdmin(req, res) {
       eventDate,
       location: location?.trim(),
       category: category?.trim(),
+      imageUrl,
     });
 
     const recipients = await findCommunityNotificationRecipients(req.user.id).catch(() => ({ rows: [] }));
@@ -121,7 +122,7 @@ export async function updateEventByAdmin(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const { title, description, eventDate, location, category } = req.body;
+    const { title, description, eventDate, location, category, imageUrl } = req.body;
 
     if (!title || !eventDate) {
       return res.status(400).json({ message: "Title and event date are required." });
@@ -133,6 +134,7 @@ export async function updateEventByAdmin(req, res) {
       eventDate,
       location: location?.trim(),
       category: category?.trim(),
+      imageUrl,
     });
 
     if (result.rows.length === 0) {

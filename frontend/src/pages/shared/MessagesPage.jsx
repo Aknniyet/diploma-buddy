@@ -145,7 +145,6 @@ function MessagesPage({ userType = "student" }) {
       await loadConversations();
     } catch (error) {
       setMessageActionError(error.message || "Could not clear this chat.");
-      throw error;
     } finally {
       setIsClearingConversation(false);
     }

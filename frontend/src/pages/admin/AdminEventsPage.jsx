@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { ImagePlus, X } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { formatAstanaDateTime, toAstanaDateTimeInputValue } from "../../utils/datetime";
@@ -10,6 +11,7 @@ const initialForm = {
   eventDate: "",
   location: "",
   category: "",
+  imageUrl: "",
 };
 
 function formatInputDate(dateValue) {
@@ -33,6 +35,33 @@ function AdminEventsPage() {
   useEffect(() => {
     loadEvents().catch(() => null);
   }, []);
+
+  const readImageFile = (file, onLoad) => {
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setStatusType("error");
+      setStatus("Please choose an image file.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      onLoad(reader.result);
+      setStatus("");
+      setStatusType("info");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+    readImageFile(file, (imageUrl) => {
+      setForm((current) => ({ ...current, imageUrl }));
+    });
+  };
 
   const resetForm = () => {
     setForm(initialForm);
@@ -85,6 +114,7 @@ function AdminEventsPage() {
       eventDate: formatInputDate(item.event_date),
       location: item.location || "",
       category: item.category || "",
+      imageUrl: item.image_url || "",
     });
     setStatus("");
     setStatusType("info");
@@ -170,6 +200,28 @@ function AdminEventsPage() {
                 />
               </label>
 
+              <div className="admin-image-field">
+                <span>Event image</span>
+                {form.imageUrl ? (
+                  <div className="admin-image-preview">
+                    <img src={form.imageUrl} alt="Event preview" />
+                    <button
+                      type="button"
+                      className="admin-image-remove"
+                      onClick={() => setForm((prev) => ({ ...prev, imageUrl: "" }))}
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="admin-image-upload">
+                    <ImagePlus size={16} />
+                    Add image
+                    <input type="file" accept="image/*" onChange={handleImageChange} />
+                  </label>
+                )}
+              </div>
+
               <div className="admin-form-actions">
                 <button type="submit" className="admin-primary-btn" disabled={isSubmitting}>
                   {isSubmitting
@@ -203,9 +255,16 @@ function AdminEventsPage() {
             <div className="admin-list">
               {events.map((item) => (
                 <article className="admin-list-item" key={item.id}>
-                  <div>
-                    <h4>{item.title}</h4>
-                    <p>{item.description || "No description provided."}</p>
+                  <div className="admin-item-main">
+                    <div className="admin-event-row">
+                      {item.image_url ? (
+                        <img src={item.image_url} alt={item.title} className="admin-event-thumb" />
+                      ) : null}
+                      <div className="admin-event-copy">
+                        <h4>{item.title}</h4>
+                        <p>{item.description || "No description provided."}</p>
+                      </div>
+                    </div>
                     <div className="admin-meta">
                       <span>{formatAstanaDateTime(item.event_date)}</span>
                       <span>{item.location || "Location TBD"}</span>

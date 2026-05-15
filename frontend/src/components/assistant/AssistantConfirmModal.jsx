@@ -1,6 +1,14 @@
 import { Trash2 } from "lucide-react";
+import "../../styles/assistant.css";
 
-function AssistantConfirmModal({ onCancel, onConfirm }) {
+function AssistantConfirmModal({
+  title = "Clear conversation?",
+  description = "Are you sure you want to clear this conversation?",
+  confirmLabel = "Clear",
+  isLoading = false,
+  onCancel,
+  onConfirm,
+}) {
   return (
     <div className="assistant-modal-backdrop" role="presentation">
       <div
@@ -13,14 +21,15 @@ function AssistantConfirmModal({ onCancel, onConfirm }) {
           <Trash2 size={20} />
         </div>
         <div>
-          <h2 id="assistant-clear-title">Clear conversation?</h2>
-          <p>Are you sure you want to clear this conversation?</p>
+          <h2 id="assistant-clear-title">{title}</h2>
+          <p>{description}</p>
         </div>
         <div className="assistant-confirm-actions">
           <button
             type="button"
             className="assistant-confirm-cancel"
             onClick={onCancel}
+            disabled={isLoading}
           >
             Cancel
           </button>
@@ -28,8 +37,9 @@ function AssistantConfirmModal({ onCancel, onConfirm }) {
             type="button"
             className="assistant-confirm-clear"
             onClick={onConfirm}
+            disabled={isLoading}
           >
-            Clear
+            {isLoading ? "Clearing..." : confirmLabel}
           </button>
         </div>
       </div>

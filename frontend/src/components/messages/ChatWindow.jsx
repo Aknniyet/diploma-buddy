@@ -1,5 +1,6 @@
-import { ListChecks, Send, Trash2, X } from "lucide-react";
+import { Send, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import AssistantConfirmModal from "../assistant/AssistantConfirmModal";
 import { getSavedUser } from "../../lib/api";
 import { formatAstanaRelativeDateLabel, formatAstanaTime, getAstanaDateKey } from "../../utils/datetime";
 
@@ -16,6 +17,7 @@ function ChatWindow({
   const [text, setText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [selectedMessageIds, setSelectedMessageIds] = useState([]);
   const canSend = useMemo(() => text.trim().length > 0, [text]);
   const messagesEndRef = useRef(null);
@@ -30,6 +32,7 @@ function ChatWindow({
   useEffect(() => {
     setIsSelectionMode(false);
     setSelectedMessageIds([]);
+    setIsClearModalOpen(false);
   }, [conversation.id]);
 
   useEffect(() => {
@@ -121,17 +124,10 @@ function ChatWindow({
   };
 
   const handleClearChat = async () => {
-    const confirmed = window.confirm(
-      "Clear this chat only for you? The other user will still keep their messages."
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
     await onClearConversation();
     setSelectedMessageIds([]);
     setIsSelectionMode(false);
+    setIsClearModalOpen(false);
   };
 
   return (
@@ -156,14 +152,13 @@ function ChatWindow({
             onClick={toggleSelectionMode}
             disabled={isBusy || messages.length === 0}
           >
-            <ListChecks size={16} />
             {isSelectionMode ? "Cancel select" : "Select"}
           </button>
 
           <button
             type="button"
             className="chat-header-btn danger"
-            onClick={handleClearChat}
+            onClick={() => setIsClearModalOpen(true)}
             disabled={isBusy || messages.length === 0}
           >
             <Trash2 size={16} />
@@ -242,18 +237,7 @@ function ChatWindow({
                   />
                 ) : null}
 
-                <div
-                  className={
-                    isSelectionMode && message.isSelectable
-                      ? "chat-bubble selectable"
-                      : "chat-bubble"
-                  }
-                  onClick={
-                    isSelectionMode && message.isSelectable
-                      ? () => toggleMessageSelection(message.id)
-                      : undefined
-                  }
-                >
+                <div className="chat-bubble">
                   <p>{message.text}</p>
                   <span>{message.messageTime || message.time}</span>
                 </div>
@@ -282,6 +266,17 @@ function ChatWindow({
           <Send size={18} />
         </button>
       </form>
+
+      {isClearModalOpen ? (
+        <AssistantConfirmModal
+          title="Clear chat?"
+          description="This will remove the chat only for you. The other user will still keep their messages."
+          confirmLabel="Clear"
+          isLoading={isClearingConversation}
+          onCancel={() => setIsClearModalOpen(false)}
+          onConfirm={handleClearChat}
+        />
+      ) : null}
 
     </div>
   );

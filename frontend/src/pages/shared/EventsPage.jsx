@@ -104,16 +104,24 @@ function EventsPage({ userType = "student" }) {
           ) : (
             filteredEvents.map((item) => (
               <article className="event-card" key={item.id}>
-                <div className="event-card-top">
-                  <span className="event-badge">{item.category || "General"}</span>
-                  <span className="event-date">{formatAstanaShortDateTime(item.event_date)}</span>
-                </div>
+                {item.image_url ? (
+                  <div className="event-card-hero">
+                    <img src={item.image_url} alt={item.title} className="event-card-image" />
+                  </div>
+                ) : null}
 
-                <h3>{item.title}</h3>
-                <p>{item.description || "Event details will be shared soon."}</p>
+                <div className="event-card-content">
+                  <div className="event-card-top">
+                    <span className="event-badge">{item.category || "General"}</span>
+                    <span className="event-date">{formatAstanaShortDateTime(item.event_date)}</span>
+                  </div>
 
-                <div className="event-meta">
-                  <span>{item.location || "Location TBD"}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.description || "Event details will be shared soon."}</p>
+
+                  <div className="event-meta">
+                    <span>{item.location || "Location TBD"}</span>
+                  </div>
                 </div>
               </article>
             ))

@@ -2,7 +2,7 @@ import { query } from '../config/db.js';
 
 export function findAllEvents() {
   return query(
-    `SELECT id, title, description, event_date, location, category
+    `SELECT id, title, description, event_date, location, category, image_url
      FROM events
      ORDER BY event_date ASC`
   );
@@ -10,33 +10,34 @@ export function findAllEvents() {
 
 export function findEventById(eventId) {
   return query(
-    `SELECT id, title, description, event_date, location, category
+    `SELECT id, title, description, event_date, location, category, image_url
      FROM events
      WHERE id = $1`,
     [eventId]
   );
 }
 
-export function createEvent({ title, description, eventDate, location, category }) {
+export function createEvent({ title, description, eventDate, location, category, imageUrl }) {
   return query(
-    `INSERT INTO events (title, description, event_date, location, category)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING id, title, description, event_date, location, category`,
-    [title, description || null, eventDate, location || null, category || null]
+    `INSERT INTO events (title, description, event_date, location, category, image_url)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING id, title, description, event_date, location, category, image_url`,
+    [title, description || null, eventDate, location || null, category || null, imageUrl || null]
   );
 }
 
-export function updateEvent(eventId, { title, description, eventDate, location, category }) {
+export function updateEvent(eventId, { title, description, eventDate, location, category, imageUrl }) {
   return query(
     `UPDATE events
      SET title = $2,
          description = $3,
          event_date = $4,
          location = $5,
-         category = $6
+         category = $6,
+         image_url = $7
      WHERE id = $1
-     RETURNING id, title, description, event_date, location, category`,
-    [eventId, title, description || null, eventDate, location || null, category || null]
+     RETURNING id, title, description, event_date, location, category, image_url`,
+    [eventId, title, description || null, eventDate, location || null, category || null, imageUrl || null]
   );
 }
 

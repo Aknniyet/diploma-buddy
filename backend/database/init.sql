@@ -180,8 +180,12 @@ CREATE TABLE IF NOT EXISTS events (
   event_date TIMESTAMP NOT NULL,
   location VARCHAR(200),
   category VARCHAR(100),
+  image_url TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE events
+ADD COLUMN IF NOT EXISTS image_url TEXT;
 
 CREATE TABLE IF NOT EXISTS event_reminder_deliveries (
   id SERIAL PRIMARY KEY,
