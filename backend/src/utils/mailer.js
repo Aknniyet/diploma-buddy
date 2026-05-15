@@ -5,10 +5,17 @@ const canSendEmail = Boolean(env.emailUser && env.emailPass && env.emailFrom);
 
 const transporter = canSendEmail
   ? nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      requireTLS: true,
       auth: {
         user: env.emailUser,
         pass: env.emailPass,
+      },
+      tls: {
+        family: 4,
+        rejectUnauthorized: false,
       },
     })
   : null;
