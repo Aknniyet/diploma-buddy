@@ -34,6 +34,12 @@ function ConversationsList({
                 <h4>{conversation.name}</h4>
                 <p>{conversation.preview}</p>
               </div>
+
+              {conversation.unreadCount > 0 ? (
+                <span className="conversation-unread-badge">
+                  {conversation.unreadCount > 99 ? "99+" : conversation.unreadCount}
+                </span>
+              ) : null}
             </button>
           );
         })}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { formatAstanaDateTime, toAstanaDateTimeInputValue } from "../../utils/datetime";
@@ -21,6 +21,9 @@ function AdminEventsPage() {
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState("");
+  const [statusType, setStatusType] = useState("info");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const loadEvents = async () => {
     const data = await apiRequest("/events");
@@ -39,20 +42,39 @@ function AdminEventsPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const endpoint = editingId ? `/events/${editingId}` : "/events";
-    const method = editingId ? "PATCH" : "POST";
+    if (isSubmittingRef.current) {
+      return;
+    }
 
-    await apiRequest(endpoint, {
-      method,
-      body: JSON.stringify({
-        ...form,
-        eventDate: form.eventDate,
-      }),
-    });
+    const isEditing = Boolean(editingId);
+    const endpoint = isEditing ? `/events/${editingId}` : "/events";
+    const method = isEditing ? "PATCH" : "POST";
 
-    setStatus(editingId ? "Event updated successfully." : "Event published successfully.");
-    resetForm();
-    await loadEvents();
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
+    setStatusType("info");
+    setStatus(isEditing ? "Saving changes..." : "Publishing event...");
+
+    try {
+      await apiRequest(endpoint, {
+        method,
+        body: JSON.stringify({
+          ...form,
+          eventDate: form.eventDate,
+        }),
+      });
+
+      setStatusType("success");
+      setStatus(isEditing ? "Event updated successfully." : "Event published successfully.");
+      resetForm();
+      await loadEvents();
+    } catch (error) {
+      setStatusType("error");
+      setStatus(error.message || "Could not save the event.");
+    } finally {
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
+    }
   };
 
   const handleEdit = (item) => {
@@ -65,10 +87,12 @@ function AdminEventsPage() {
       category: item.category || "",
     });
     setStatus("");
+    setStatusType("info");
   };
 
   const handleDelete = async (eventId) => {
     await apiRequest(`/events/${eventId}`, { method: "DELETE" });
+    setStatusType("success");
     setStatus("Event deleted.");
     if (editingId === eventId) {
       resetForm();
@@ -91,7 +115,11 @@ function AdminEventsPage() {
               <p>Use this panel to publish official university activities.</p>
             </div>
 
-            {status ? <div className="admin-status">{status}</div> : null}
+            {status ? (
+              <div className={`admin-status${statusType === "error" ? " admin-error" : ""}`}>
+                {status}
+              </div>
+            ) : null}
 
             <form className="admin-form" onSubmit={handleSubmit}>
               <label>
@@ -143,11 +171,22 @@ function AdminEventsPage() {
               </label>
 
               <div className="admin-form-actions">
-                <button type="submit" className="admin-primary-btn">
-                  {editingId ? "Save changes" : "Publish event"}
+                <button type="submit" className="admin-primary-btn" disabled={isSubmitting}>
+                  {isSubmitting
+                    ? editingId
+                      ? "Saving..."
+                      : "Publishing..."
+                    : editingId
+                      ? "Save changes"
+                      : "Publish event"}
                 </button>
                 {editingId ? (
-                  <button type="button" className="admin-secondary-btn" onClick={resetForm}>
+                  <button
+                    type="button"
+                    className="admin-secondary-btn"
+                    onClick={resetForm}
+                    disabled={isSubmitting}
+                  >
                     Cancel
                   </button>
                 ) : null}

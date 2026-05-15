@@ -19,4 +19,5 @@ export const env = {
   emailPass: process.env.EMAIL_PASS || "",
   emailFrom: process.env.EMAIL_FROM || process.env.EMAIL_USER || "",
   geminiApiKey: process.env.GEMINI_API_KEY || "",
+  messageEncryptionKey: process.env.MESSAGE_ENCRYPTION_KEY || "",
 };

@@ -139,6 +139,40 @@ CREATE TABLE IF NOT EXISTS messages (
   is_read BOOLEAN DEFAULT FALSE
 );
 
+ALTER TABLE messages
+ADD COLUMN IF NOT EXISTS encrypted_text TEXT;
+
+ALTER TABLE messages
+ADD COLUMN IF NOT EXISTS encryption_iv TEXT;
+
+ALTER TABLE messages
+ADD COLUMN IF NOT EXISTS encryption_auth_tag TEXT;
+
+ALTER TABLE messages
+ADD COLUMN IF NOT EXISTS encryption_version VARCHAR(40);
+
+CREATE TABLE IF NOT EXISTS message_deletions (
+  id SERIAL PRIMARY KEY,
+  message_id INTEGER NOT NULL REFERENCES messages(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  deleted_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE (message_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_message_deletions_user_id
+ON message_deletions(user_id, deleted_at DESC);
+
+CREATE TABLE IF NOT EXISTS conversation_clears (
+  id SERIAL PRIMARY KEY,
+  conversation_id INTEGER NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  cleared_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  UNIQUE (conversation_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_conversation_clears_user_id
+ON conversation_clears(user_id, cleared_at DESC);
+
 CREATE TABLE IF NOT EXISTS events (
   id SERIAL PRIMARY KEY,
   title VARCHAR(200) NOT NULL,
