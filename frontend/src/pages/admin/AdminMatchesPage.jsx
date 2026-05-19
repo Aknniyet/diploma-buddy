@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { formatAstanaDate } from "../../utils/datetime";
@@ -6,6 +6,11 @@ import "../../styles/admin.css";
 
 function EmptyAdminState({ text }) {
   return <div className="admin-empty-state">{text}</div>;
+}
+
+function formatStatusLabel(value) {
+  if (!value) return "Unknown";
+  return value.replaceAll("_", " ");
 }
 
 function AdminMatchesPage() {
@@ -22,6 +27,10 @@ function AdminMatchesPage() {
   const [noteByMatch, setNoteByMatch] = useState({});
   const [reassignBuddyByMatch, setReassignBuddyByMatch] = useState({});
   const [suggestionNoteByStudent, setSuggestionNoteByStudent] = useState({});
+  const [activeTab, setActiveTab] = useState("unmatched");
+  const [searchValue, setSearchValue] = useState("");
+  const [filterValue, setFilterValue] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const loadData = async () => {
     const result = await apiRequest("/admin/matches");
@@ -31,6 +40,10 @@ function AdminMatchesPage() {
   useEffect(() => {
     loadData().catch((loadError) => setError(loadError.message));
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchValue, filterValue]);
 
   const runAction = async (action, successMessage) => {
     try {
@@ -100,6 +113,185 @@ function AdminMatchesPage() {
     setReassignBuddyByMatch((prev) => ({ ...prev, [matchId]: "" }));
   };
 
+  const tabConfig = {
+    unmatched: {
+      label: "Unmatched Students",
+      title: "Unmatched students",
+      description:
+        "Students who do not have an active buddy yet. Request-pending students are waiting for a buddy response.",
+      empty: "No unmatched students.",
+      searchPlaceholder: "Search by student, country, city, program or language",
+      filterLabel: "All statuses",
+      filterOptions: [
+        { value: "all", label: "All statuses" },
+        { value: "waiting_for_match", label: "Waiting for match" },
+        { value: "request_pending", label: "Request pending" },
+      ],
+    },
+    buddies: {
+      label: "Available Buddies",
+      title: "Available buddies",
+      description:
+        "Only approved buddies with free capacity can be used for manual matching.",
+      empty: "No approved buddies with free slots.",
+      searchPlaceholder: "Search by buddy, city, program or language",
+      filterLabel: "All capacity",
+      filterOptions: [
+        { value: "all", label: "All capacity" },
+        { value: "many_slots", label: "2+ slots left" },
+        { value: "one_slot", label: "1 slot left" },
+      ],
+    },
+    requests: {
+      label: "Pending Requests",
+      title: "Pending buddy requests",
+      description:
+        "Student requests waiting for review. Approving creates a match and opens chat.",
+      empty: "No pending requests.",
+      searchPlaceholder: "Search by student, buddy or request message",
+      filterOptions: [],
+    },
+    recommended: {
+      label: "Recommended Matches",
+      title: "Recommended matches",
+      description:
+        "Admin can create a match from the system recommendation without waiting for a request.",
+      empty: "No recommendations right now.",
+      searchPlaceholder: "Search by student, buddy or recommendation reason",
+      filterOptions: [],
+    },
+    active: {
+      label: "Active Matches",
+      title: "Active matches",
+      description:
+        "Complete successful matches, cancel problematic ones, or reassign students to another approved buddy.",
+      empty: "No active matches.",
+      searchPlaceholder: "Search by student, buddy or date",
+      filterOptions: [],
+    },
+    history: {
+      label: "History",
+      title: "Match history",
+      description:
+        "Completed and cancelled matches stay here, so admin can understand what happened before.",
+      empty: "No completed or cancelled matches yet.",
+      searchPlaceholder: "Search by student, buddy or status",
+      filterLabel: "All history",
+      filterOptions: [
+        { value: "all", label: "All history" },
+        { value: "completed", label: "Completed" },
+        { value: "cancelled", label: "Cancelled" },
+      ],
+    },
+  };
+
+  const filteredItems = useMemo(() => {
+    const query = searchValue.trim().toLowerCase();
+
+    if (activeTab === "unmatched") {
+      return data.unmatchedStudents.filter((student) => {
+        const haystack = [
+          student.name,
+          student.country,
+          student.city,
+          student.program,
+          student.languages?.join(" "),
+          student.interests?.join(" "),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        const matchesQuery = !query || haystack.includes(query);
+        const matchesFilter =
+          filterValue === "all" || student.status === filterValue;
+        return matchesQuery && matchesFilter;
+      });
+    }
+
+    if (activeTab === "buddies") {
+      return data.availableBuddies.filter((buddy) => {
+        const haystack = [
+          buddy.name,
+          buddy.city,
+          buddy.program,
+          buddy.languages?.join(" "),
+          buddy.interests?.join(" "),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+        const matchesQuery = !query || haystack.includes(query);
+        const matchesFilter =
+          filterValue === "all" ||
+          (filterValue === "many_slots" && buddy.spotsAvailable >= 2) ||
+          (filterValue === "one_slot" && buddy.spotsAvailable === 1);
+        return matchesQuery && matchesFilter;
+      });
+    }
+
+    if (activeTab === "requests") {
+      return data.pendingRequests.filter((request) => {
+        const haystack = [request.studentName, request.buddyName, request.message]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return !query || haystack.includes(query);
+      });
+    }
+
+    if (activeTab === "recommended") {
+      return data.suggestedMatches.filter((item) => {
+        const haystack = [item.studentName, item.buddyName, item.reasons?.join(" ")]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        const matchesQuery = !query || haystack.includes(query);
+        const matchesFilter =
+          filterValue === "all" ||
+          (filterValue === "with_reasons" && item.reasons?.length);
+        return matchesQuery && matchesFilter;
+      });
+    }
+
+    if (activeTab === "active") {
+      return data.activeMatches.filter((match) => {
+        const haystack = [match.student_name, match.buddy_name, match.created_at]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        const matchesQuery = !query || haystack.includes(query);
+        const hasNotes = Number(match.note_count || 0) > 0;
+        const matchesFilter =
+          filterValue === "all" ||
+          (filterValue === "with_notes" && hasNotes) ||
+          (filterValue === "without_notes" && !hasNotes);
+        return matchesQuery && matchesFilter;
+      });
+    }
+
+    return data.matchHistory.filter((match) => {
+      const haystack = [match.student_name, match.buddy_name, match.status]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      const matchesQuery = !query || haystack.includes(query);
+      const matchesFilter = filterValue === "all" || match.status === filterValue;
+      return matchesQuery && matchesFilter;
+    });
+  }, [activeTab, data, filterValue, searchValue]);
+
+  const itemsPerPage = 5;
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedItems = filteredItems.slice(
+    (safePage - 1) * itemsPerPage,
+    safePage * itemsPerPage
+  );
+
+  const currentTab = tabConfig[activeTab];
+
   return (
     <DashboardLayout title="Match Management" sidebarType="admin">
       <section className="admin-page">
@@ -111,21 +303,67 @@ function AdminMatchesPage() {
         {status ? <div className="admin-status">{status}</div> : null}
         {error ? <div className="admin-status admin-error">{error}</div> : null}
 
-        <div className="admin-three-stack">
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Unmatched students</h3>
-              <p>Students who do not have an active buddy yet. Request-pending students are waiting for a buddy response.</p>
+        <div className="dashboard-card admin-main-panel admin-combined-panel">
+          <div className="admin-tabs admin-match-tabs">
+            {Object.entries(tabConfig).map(([key, item]) => (
+              <button
+                key={key}
+                type="button"
+                className={`admin-tab-button ${activeTab === key ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab(key);
+                  setFilterValue("all");
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="admin-toolbar-controls admin-toolbar-merged admin-match-toolbar">
+            <div className="admin-search">
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder={currentTab.searchPlaceholder}
+              />
             </div>
 
-            <div className="admin-list">
-              {data.unmatchedStudents.length === 0 ? <EmptyAdminState text="No unmatched students." /> : null}
-              {data.unmatchedStudents.map((student) => (
+            {currentTab.filterOptions.length > 0 ? (
+              <select
+                className="admin-select admin-toolbar-select"
+                value={filterValue}
+                onChange={(event) => setFilterValue(event.target.value)}
+              >
+                {currentTab.filterOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+          </div>
+
+          <div className="admin-combined-divider" />
+
+          <div className="admin-section-header admin-section-header-tight">
+            <h3>{currentTab.title}</h3>
+            <p>{currentTab.description}</p>
+          </div>
+
+          <div className="admin-list">
+            {paginatedItems.length === 0 ? <EmptyAdminState text={currentTab.empty} /> : null}
+
+            {activeTab === "unmatched" &&
+              paginatedItems.map((student) => (
                 <article className="admin-list-item" key={student.id}>
                   <div className="admin-item-main">
                     <div className="admin-item-title-row">
                       <h4>{student.name}</h4>
-                      <span className={`admin-status-pill ${student.status}`}>{student.status}</span>
+                      <span className={`admin-status-pill ${student.status}`}>
+                        {formatStatusLabel(student.status)}
+                      </span>
                     </div>
                     <p>{student.country} | {student.city}</p>
                     <div className="admin-meta">
@@ -137,18 +375,9 @@ function AdminMatchesPage() {
                   </div>
                 </article>
               ))}
-            </div>
-          </div>
 
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Available buddies</h3>
-              <p>Only approved buddies with free capacity can be used for manual matching.</p>
-            </div>
-
-            <div className="admin-list">
-              {data.availableBuddies.length === 0 ? <EmptyAdminState text="No approved buddies with free slots." /> : null}
-              {data.availableBuddies.map((buddy) => (
+            {activeTab === "buddies" &&
+              paginatedItems.map((buddy) => (
                 <article className="admin-list-item" key={buddy.id}>
                   <div className="admin-item-main">
                     <h4>{buddy.name}</h4>
@@ -162,18 +391,9 @@ function AdminMatchesPage() {
                   </div>
                 </article>
               ))}
-            </div>
-          </div>
 
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Pending buddy requests</h3>
-              <p>Student requests waiting for review. Approving creates a match and opens chat.</p>
-            </div>
-
-            <div className="admin-list">
-              {data.pendingRequests.length === 0 ? <EmptyAdminState text="No pending requests." /> : null}
-              {data.pendingRequests.map((request) => (
+            {activeTab === "requests" &&
+              paginatedItems.map((request) => (
                 <article className="admin-list-item" key={request.id}>
                   <div className="admin-item-main">
                     <h4>{request.studentName} {"=>"} {request.buddyName}</h4>
@@ -190,18 +410,9 @@ function AdminMatchesPage() {
                   </div>
                 </article>
               ))}
-            </div>
-          </div>
 
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Recommended matches</h3>
-              <p>Admin can create a match from the system recommendation without waiting for a request.</p>
-            </div>
-
-            <div className="admin-list">
-              {data.suggestedMatches.length === 0 ? <EmptyAdminState text="No recommendations right now." /> : null}
-              {data.suggestedMatches.map((item) => (
+            {activeTab === "recommended" &&
+              paginatedItems.map((item) => (
                 <article className="admin-list-item admin-match-item" key={item.studentId}>
                   <div className="admin-item-main">
                     <h4>{item.studentName} {"=>"} {item.buddyName}</h4>
@@ -224,18 +435,9 @@ function AdminMatchesPage() {
                   </div>
                 </article>
               ))}
-            </div>
-          </div>
 
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Active matches</h3>
-              <p>Complete successful matches, cancel problematic ones, or reassign students to another approved buddy.</p>
-            </div>
-
-            <div className="admin-list">
-              {data.activeMatches.length === 0 ? <EmptyAdminState text="No active matches." /> : null}
-              {data.activeMatches.map((match) => {
+            {activeTab === "active" &&
+              paginatedItems.map((match) => {
                 const note = noteByMatch[match.id] || "";
                 const noteMissing = !note.trim();
                 const reassignOptions = data.availableBuddies.filter(
@@ -308,23 +510,16 @@ function AdminMatchesPage() {
                   </article>
                 );
               })}
-            </div>
-          </div>
 
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Match history</h3>
-              <p>Completed and cancelled matches stay here, so admin can understand what happened before.</p>
-            </div>
-
-            <div className="admin-list">
-              {data.matchHistory.length === 0 ? <EmptyAdminState text="No completed or cancelled matches yet." /> : null}
-              {data.matchHistory.map((match) => (
+            {activeTab === "history" &&
+              paginatedItems.map((match) => (
                 <article className="admin-list-item" key={match.id}>
                   <div className="admin-item-main">
                     <div className="admin-item-title-row">
                       <h4>{match.student_name} {"=>"} {match.buddy_name}</h4>
-                      <span className={`admin-status-pill ${match.status}`}>{match.status}</span>
+                      <span className={`admin-status-pill ${match.status}`}>
+                        {formatStatusLabel(match.status)}
+                      </span>
                     </div>
                     <p>
                       This pair is no longer active. If it was cancelled, the student can be matched with another buddy.
@@ -336,7 +531,35 @@ function AdminMatchesPage() {
                   </div>
                 </article>
               ))}
-            </div>
+          </div>
+
+          <div className="admin-pagination">
+            <button
+              type="button"
+              className="admin-page-btn"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={safePage === 1}
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+              <button
+                key={page}
+                type="button"
+                className={`admin-page-btn ${safePage === page ? "active" : ""}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              type="button"
+              className="admin-page-btn"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={safePage === totalPages}
+            >
+              Next
+            </button>
           </div>
         </div>
       </section>

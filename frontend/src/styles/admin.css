@@ -163,6 +163,14 @@
   margin-bottom: 16px;
 }
 
+.admin-match-tabs {
+  margin-bottom: 16px;
+}
+
+.admin-match-toolbar {
+  margin-bottom: 0;
+}
+
 .admin-search {
   flex: 1;
   min-width: 260px;
