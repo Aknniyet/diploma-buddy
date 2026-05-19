@@ -1,8 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { formatAstanaDate } from "../../utils/datetime";
 import "../../styles/admin.css";
+
+function getRoleLabel(role) {
+  if (role === "international") return "International";
+  if (role === "local") return "Buddy";
+  return "Admin";
+}
 
 function AdminDashboard() {
   const [dashboard, setDashboard] = useState({
@@ -15,12 +21,18 @@ function AdminDashboard() {
       upcomingEvents: 0,
     },
     recentUsers: [],
-    recentRequests: [],
   });
+  const [searchValue, setSearchValue] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     apiRequest("/admin/dashboard").then(setDashboard).catch(() => null);
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchValue, roleFilter]);
 
   const stats = [
     { label: "Total Users", value: dashboard.stats.totalUsers },
@@ -31,15 +43,40 @@ function AdminDashboard() {
     { label: "Upcoming Events", value: dashboard.stats.upcomingEvents },
   ];
 
+  const filteredUsers = useMemo(() => {
+    const query = searchValue.trim().toLowerCase();
+
+    return (dashboard.recentUsers || []).filter((user) => {
+      const matchesQuery =
+        !query ||
+        [user.full_name, user.email, getRoleLabel(user.role)]
+          .join(" ")
+          .toLowerCase()
+          .includes(query);
+
+      const matchesRole = roleFilter === "all" || user.role === roleFilter;
+
+      return matchesQuery && matchesRole;
+    });
+  }, [dashboard.recentUsers, roleFilter, searchValue]);
+
+  const itemsPerPage = 5;
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedItems = filteredUsers.slice(
+    (safePage - 1) * itemsPerPage,
+    safePage * itemsPerPage
+  );
+
   return (
     <DashboardLayout title="Admin Dashboard" sidebarType="admin">
       <section className="admin-page">
         <div className="admin-page-header">
           <h1>Platform Overview</h1>
-          <p>Monitor user growth, matching activity, and campus events from one place.</p>
+          <p>Keep admin work readable even when users and requests grow.</p>
         </div>
 
-        <div className="admin-stats-grid">
+        <div className="admin-stats-grid compact-grid">
           {stats.map((item) => (
             <div className="dashboard-card admin-stat-card" key={item.label}>
               <p className="admin-stat-label">{item.label}</p>
@@ -48,47 +85,91 @@ function AdminDashboard() {
           ))}
         </div>
 
-        <div className="admin-two-column">
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Recent users</h3>
-              <p>Newest accounts registered on the platform.</p>
+        <div className="dashboard-card admin-main-panel admin-combined-panel">
+          <div className="admin-toolbar-controls admin-toolbar-merged">
+            <div className="admin-search">
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder="Search by name, email or role"
+              />
             </div>
 
-            <div className="admin-list">
-              {dashboard.recentUsers.map((user) => (
-                <article className="admin-list-item" key={user.id}>
-                  <div>
-                    <h4>{user.full_name}</h4>
-                    <p>{user.email}</p>
-                    <div className="admin-meta">
-                      <span>{user.role}</span>
-                      <span>{formatAstanaDate(user.created_at)}</span>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+            <select
+              className="admin-select admin-toolbar-select"
+              value={roleFilter}
+              onChange={(event) => setRoleFilter(event.target.value)}
+            >
+              <option value="all">All roles</option>
+              <option value="international">International</option>
+              <option value="local">Buddy</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
 
-          <div className="dashboard-card admin-list-card">
-            <div className="admin-section-header">
-              <h3>Recent requests</h3>
-              <p>Latest buddy requests created in the system.</p>
+          <div className="admin-combined-divider" />
+
+          <div className="admin-content-layout single-column">
+            <div className="admin-section-header admin-section-header-tight">
+              <h3>Recent users</h3>
+              <p>Recent registrations in a simpler and more compact view.</p>
             </div>
 
-            <div className="admin-list">
-              {dashboard.recentRequests.map((request) => (
-                <article className="admin-list-item" key={request.id}>
-                  <div>
-                    <h4>{request.student_name} {"=>"} {request.buddy_name}</h4>
-                    <p>Status: {request.status}</p>
-                    <div className="admin-meta">
-                      <span>{formatAstanaDate(request.created_at)}</span>
+            {paginatedItems.length === 0 ? (
+              <div className="admin-empty-state">
+                No items match your search or filters.
+              </div>
+            ) : (
+              <div className="admin-table">
+                <div className="admin-table-head">
+                  <span>Name</span>
+                  <span>Role</span>
+                  <span>Date</span>
+                </div>
+
+                {paginatedItems.map((user) => (
+                  <article className="admin-table-row" key={user.id}>
+                    <div className="admin-table-primary">
+                      <h4>{user.full_name}</h4>
+                      <p>{user.email}</p>
                     </div>
-                  </div>
-                </article>
+                    <span className="admin-table-text">{getRoleLabel(user.role)}</span>
+                    <span className="admin-table-text">
+                      {formatAstanaDate(user.created_at)}
+                    </span>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            <div className="admin-pagination">
+              <button
+                type="button"
+                className="admin-page-btn"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={safePage === 1}
+              >
+                Prev
+              </button>
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  className={`admin-page-btn ${safePage === page ? "active" : ""}`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
               ))}
+              <button
+                type="button"
+                className="admin-page-btn"
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                disabled={safePage === totalPages}
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>

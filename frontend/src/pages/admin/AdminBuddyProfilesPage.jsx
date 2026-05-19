@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import "../../styles/admin.css";
@@ -16,6 +16,8 @@ function AdminBuddyProfilesPage() {
   const [reasonById, setReasonById] = useState({});
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const loadBuddies = async () => {
     const result = await apiRequest("/admin/matches");
@@ -25,6 +27,32 @@ function AdminBuddyProfilesPage() {
   useEffect(() => {
     loadBuddies().catch((loadError) => setError(loadError.message));
   }, []);
+
+  const filteredBuddies = useMemo(() => {
+    const query = searchValue.trim().toLowerCase();
+
+    return buddies.filter((buddy) => {
+      const matchesQuery =
+        !query ||
+        [
+          buddy.full_name,
+          buddy.email,
+          buddy.city,
+          buddy.study_program,
+          buddy.languages?.join(" "),
+          buddy.hobbies?.join(" "),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(query);
+
+      const matchesStatus =
+        statusFilter === "all" || buddy.buddy_status === statusFilter;
+
+      return matchesQuery && matchesStatus;
+    });
+  }, [buddies, searchValue, statusFilter]);
 
   const handleBuddyStatus = async (buddy, buddyStatus) => {
     try {
@@ -61,9 +89,34 @@ function AdminBuddyProfilesPage() {
             <p>Only approved buddies with free capacity appear in Find Buddies and Match Management.</p>
           </div>
 
+          <div className="admin-toolbar-controls admin-buddy-toolbar">
+            <div className="admin-search">
+              <input
+                type="text"
+                value={searchValue}
+                onChange={(event) => setSearchValue(event.target.value)}
+                placeholder="Search by name, email, city, language or program"
+              />
+            </div>
+
+            <select
+              className="admin-select admin-toolbar-select"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value)}
+            >
+              <option value="all">All statuses</option>
+              <option value="pending">Pending review</option>
+              <option value="approved">Approved</option>
+              <option value="suspended">Suspended</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
           <div className="admin-list">
-            {buddies.length === 0 ? <div className="admin-empty-state">No buddy profiles yet.</div> : null}
-            {buddies.map((buddy) => {
+            {filteredBuddies.length === 0 ? (
+              <div className="admin-empty-state">No buddy profiles match the current search or filter.</div>
+            ) : null}
+            {filteredBuddies.map((buddy) => {
               const isApproved = buddy.buddy_status === "approved";
               const isRejected = buddy.buddy_status === "rejected";
               const isSuspended = buddy.buddy_status === "suspended";
