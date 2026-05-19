@@ -6,11 +6,18 @@ import ProfileSummaryCard from "../../components/profile/ProfileSummaryCard";
 import ProfileInfoCard from "../../components/profile/ProfileInfoCard";
 import { apiRequest } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+import { useI18n } from "../../context/I18nContext";
+import {
+  toggleLanguageSelection,
+  sanitizeRestrictedFieldValue,
+  validateProfileForm,
+} from "../../utils/userValidation";
 import "../../styles/profile.css";
 
 function ProfilePage({ userType = "student" }) {
   const isBuddy = userType === "buddy";
   const { refreshUser } = useAuth();
+  const { t } = useI18n();
   const [rawProfile, setRawProfile] = useState(null);
   const [formData, setFormData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -28,7 +35,7 @@ function ProfilePage({ userType = "student" }) {
       studyProgram: profile.study_program || "",
       gender: profile.gender || "",
       genderPreference: profile.gender_preference || "no_preference",
-      languages: (profile.languages || []).join(", "),
+      languages: profile.languages || [],
       hobbies: (profile.hobbies || []).join(", "),
       aboutYou: profile.about_you || "",
       profilePhotoUrl: profile.profile_photo_url || "",
@@ -42,7 +49,17 @@ function ProfilePage({ userType = "student" }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: sanitizeRestrictedFieldValue(name, value),
+    }));
+  };
+
+  const handleLanguageToggle = (language) => {
+    setFormData((prev) => ({
+      ...prev,
+      languages: toggleLanguageSelection(prev.languages, language),
+    }));
   };
 
   const handlePhotoChange = (event) => {
@@ -68,6 +85,12 @@ function ProfilePage({ userType = "student" }) {
   };
 
   const handleSave = async () => {
+    const validationError = validateProfileForm(formData, isBuddy, t);
+    if (validationError) {
+      setMessage(validationError);
+      return;
+    }
+
     setIsSaving(true);
     setMessage("");
     try {
@@ -126,7 +149,7 @@ function ProfilePage({ userType = "student" }) {
           id: 1,
           title: "Languages Spoken",
           icon: Languages,
-          type: "filled",
+          type: "languages",
           key: "languages",
           items: rawProfile.languages?.length ? rawProfile.languages : ["Not provided"],
         },
@@ -190,7 +213,13 @@ function ProfilePage({ userType = "student" }) {
               onPhotoChange={handlePhotoChange}
               onPhotoRemove={handlePhotoRemove}
             />
-            <ProfileInfoCard profile={profile} formData={formData} isEditing={isEditing} onChange={handleChange} />
+            <ProfileInfoCard
+              profile={profile}
+              formData={formData}
+              isEditing={isEditing}
+              onChange={handleChange}
+              onToggleLanguage={handleLanguageToggle}
+            />
           </div>
         ) : (
           <div className="dashboard-card"><p>Loading profile...</p></div>

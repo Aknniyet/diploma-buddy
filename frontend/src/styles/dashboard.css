@@ -195,6 +195,10 @@ button {
   gap: 18px;
 }
 
+.topbar-profile-menu {
+  position: relative;
+}
+
 .icon-button {
   border: none;
   background: transparent;
@@ -228,6 +232,95 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.topbar-avatar-button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.topbar-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(288px, calc(100vw - 28px));
+  background: #fffdfd;
+  border: 1px solid #d8e4e3;
+  border-radius: 16px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+  z-index: 1300;
+}
+
+.topbar-profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.topbar-profile-summary-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topbar-profile-summary h4 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.topbar-profile-summary p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.topbar-profile-dropdown-actions {
+  border-top: 1px solid #d8e4e3;
+}
+
+.topbar-profile-dropdown-link {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #374151;
+  padding: 13px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.topbar-profile-dropdown-link + .topbar-profile-dropdown-link {
+  border-top: 1px solid #d8e4e3;
+}
+
+.topbar-profile-dropdown-link:hover {
+  background: #f3f8f7;
+}
+
+.topbar-profile-dropdown-link.danger {
+  color: #ef4444;
+}
+
+.topbar-profile-dropdown-link.danger:hover {
+  background: #fff5f5;
 }
 
 .dashboard-content {
@@ -571,6 +664,10 @@ button {
 @media (max-width: 768px) {
   .dashboard-topbar {
     padding: 0 14px;
+  }
+
+  .topbar-profile-dropdown {
+    right: -6px;
   }
 
   .dashboard-content {

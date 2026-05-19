@@ -7,21 +7,24 @@ import "../../styles/local-dashboard.css";
 
 function BuddyOverviewPage() {
   const { user } = useAuth();
-  const [dashboard, setDashboard] = useState({ activeStudents: 0, pendingRequests: 0, unreadMessages: 0, maxStudents: 3 });
-  const [events, setEvents] = useState([]);
+  const [dashboard, setDashboard] = useState({
+    activeStudents: 0,
+    pendingRequests: 0,
+    unreadMessages: 0,
+    maxStudents: 3,
+    buddyStatus: "not_applied",
+    upcomingEvents: [],
+  });
 
   useEffect(() => {
     apiRequest("/dashboard/buddy").then(setDashboard).catch(() => null);
-    apiRequest("/events")
-      .then((data) => setEvents((Array.isArray(data) ? data : []).slice(0, 2)))
-      .catch(() => null);
   }, []);
 
   return (
     <DashboardLayout title="Overview" sidebarType="buddy">
       <section className="local-overview-page">
         <div className="local-overview-header">
-          <h1>Welcome back, {user?.full_name?.split(" ")[0] || "Buddy"}!</h1>
+          <h1>Welcome, {user?.full_name?.split(" ")[0] || "Buddy"}!</h1>
           <p>Thank you for helping international students adapt.</p>
         </div>
 
@@ -60,9 +63,13 @@ function BuddyOverviewPage() {
           </div>
           <div className="dashboard-card">
             <h3 className="card-title">Upcoming Events</h3>
-            {events.length > 0 ? (
+            {dashboard.buddyStatus !== "approved" ? (
+              <p className="card-subtitle">
+                Upcoming events will appear after admin approval.
+              </p>
+            ) : dashboard.upcomingEvents.length > 0 ? (
               <div className="recent-messages-list">
-                {events.map((event) => (
+                {dashboard.upcomingEvents.map((event) => (
                   <div key={event.id} className="recent-message-content">
                     <h4>{event.title}</h4>
                     <p>

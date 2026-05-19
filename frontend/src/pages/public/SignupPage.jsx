@@ -3,32 +3,21 @@ import { Link, useNavigate } from "react-router-dom";
 import { Globe, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import "../../styles/signup.css";
 import { apiRequest } from "../../lib/api";
-import { isValidEmail } from "../../utils/email";
 import { useI18n } from "../../context/I18nContext";
+import LanguageSelector from "../../components/forms/LanguageSelector";
+import {
+  STUDY_PROGRAMS,
+  normalizeRegistrationPayload,
+  toggleLanguageSelection,
+  sanitizeRestrictedFieldValue,
+  validateSignupForm,
+  validateSignupStepTwo,
+} from "../../utils/userValidation";
 import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
-
-const STUDY_PROGRAMS = [
-  "Software Engineering",
-  "Computer Science",
-  "Mathematical and Computational Science",
-  "Big Data Analysis",
-  "Cybersecurity",
-  "Smart Security Technologies",
-  "Industrial Internet of Things",
-  "Electronic Engineering",
-  "Smart Technologies",
-  "Digital Technologies in Nuclear Power Engineering",
-  "IT Management",
-  "IT Entrepreneurship",
-  "AI Business",
-  "Media Technologies",
-  "Digital Journalism",
-  "Digital Public Administration",
-];
 
 function SignupPage() {
   const navigate = useNavigate();
-  const { t, language } = useI18n();
+  const { t } = useI18n();
   const [step, setStep] = useState(1);
   const [selectedRole, setSelectedRole] = useState("");
   const [error, setError] = useState("");
@@ -42,7 +31,7 @@ function SignupPage() {
     homeCountry: "",
     city: "",
     studyProgram: "",
-    languages: "",
+    languages: [],
     hobbies: "",
     aboutYou: "",
     gender: "",
@@ -52,7 +41,17 @@ function SignupPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: sanitizeRestrictedFieldValue(name, value),
+    }));
+  };
+
+  const handleLanguageToggle = (language) => {
+    setFormData((prev) => ({
+      ...prev,
+      languages: toggleLanguageSelection(prev.languages, language),
+    }));
   };
 
   const handleNext = () => {
@@ -62,19 +61,11 @@ function SignupPage() {
       return setError(t("signup.errors.chooseRole"));
     }
 
-    if (
-      step === 2 &&
-      (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword)
-    ) {
-      return setError(t("signup.errors.fillRequired"));
-    }
-
-    if (step === 2 && !isValidEmail(formData.email)) {
-      return setError(t("signup.errors.invalidEmail"));
-    }
-
-    if (step === 2 && formData.password !== formData.confirmPassword) {
-      return setError(t("signup.errors.passwordsMismatch"));
+    if (step === 2) {
+      const validationError = validateSignupStepTwo(formData, t);
+      if (validationError) {
+        return setError(validationError);
+      }
     }
 
     if (step < 3) {
@@ -86,32 +77,32 @@ function SignupPage() {
     e.preventDefault();
     setError("");
 
-    if (!isValidEmail(formData.email)) {
-      setError(t("signup.errors.invalidEmail"));
+    if (!selectedRole) {
+      setError(t("signup.errors.chooseRole"));
       return;
     }
 
+    const validationError = validateSignupForm(formData, selectedRole, t);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    const payload = normalizeRegistrationPayload(formData, selectedRole);
     setIsLoading(true);
 
     try {
-      const data = await apiRequest("/auth/register", {
+      const data = await apiRequest("/auth/register/start", {
         method: "POST",
         body: JSON.stringify({
           role: selectedRole,
-          ...formData,
-          homeCountry: selectedRole === "local" ? "Kazakhstan" : formData.homeCountry,
+          ...payload,
         }),
       });
 
-      navigate("/login", {
-        replace: true,
+      navigate("/verify-email", {
         state: {
-          successMessage: {
-            en: "Account created successfully. Please sign in.",
-            ru: "Аккаунт успешно создан. Теперь войдите в систему.",
-            kz: "Аккаунт сәтті ашылды. Енді жүйеге кіріңіз.",
-          }[language],
-          registeredEmail: data.user?.email || formData.email.trim().toLowerCase(),
+          pendingUser: data.pendingUser,
         },
       });
     } catch (submitError) {
@@ -236,36 +227,42 @@ function SignupPage() {
 
                 <div className="form-group">
                   <label htmlFor="gender">{t("common.gender")}</label>
-                  <select
-                    id="gender"
-                    className="signup-select"
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                  >
-                    <option value="">{t("signup.selectGender")}</option>
-                    <option value="female">{t("common.female")}</option>
-                    <option value="male">{t("common.male")}</option>
-                    <option value="other">{t("common.other")}</option>
-                  </select>
+                  <div className="select-field-wrap">
+                    <select
+                      id="gender"
+                      className="signup-select"
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                    >
+                      <option value="">{t("signup.selectGender")}</option>
+                      <option value="female">{t("common.female")}</option>
+                      <option value="male">{t("common.male")}</option>
+                      <option value="other">{t("common.other")}</option>
+                    </select>
+                    <span className="select-field-arrow">v</span>
+                  </div>
                   <small>{t("signup.genderHelp")}</small>
                 </div>
 
                 {selectedRole === "international" && (
                   <div className="form-group">
                     <label htmlFor="genderPreference">{t("signup.buddyGenderPreference")}</label>
-                    <select
-                      id="genderPreference"
-                      className="signup-select"
-                      name="genderPreference"
-                      value={formData.genderPreference}
-                      onChange={handleChange}
-                    >
-                      <option value="no_preference">{t("common.noPreference")}</option>
-                      <option value="female">{t("common.female")}</option>
-                      <option value="male">{t("common.male")}</option>
-                      <option value="other">{t("common.other")}</option>
-                    </select>
+                    <div className="select-field-wrap">
+                      <select
+                        id="genderPreference"
+                        className="signup-select"
+                        name="genderPreference"
+                        value={formData.genderPreference}
+                        onChange={handleChange}
+                      >
+                        <option value="no_preference">{t("common.noPreference")}</option>
+                        <option value="female">{t("common.female")}</option>
+                        <option value="male">{t("common.male")}</option>
+                        <option value="other">{t("common.other")}</option>
+                      </select>
+                      <span className="select-field-arrow">v</span>
+                    </div>
                     <small>{t("signup.buddyGenderHelp")}</small>
                   </div>
                 )}
@@ -323,31 +320,36 @@ function SignupPage() {
 
                 <div className="form-group">
                   <label htmlFor="studyProgram">{t("common.studyProgram")}</label>
-                  <select
-                    id="studyProgram"
-                    name="studyProgram"
-                    className="signup-select"
-                    value={formData.studyProgram}
-                    onChange={handleChange}
-                  >
-                    <option value="">{t("signup.studyProgramPlaceholder")}</option>
-                    {STUDY_PROGRAMS.map((program) => (
-                      <option key={program} value={program}>
-                        {program}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="select-field-wrap">
+                    <select
+                      id="studyProgram"
+                      name="studyProgram"
+                      className="signup-select"
+                      value={formData.studyProgram}
+                      onChange={handleChange}
+                    >
+                      <option value="">{t("signup.studyProgramPlaceholder")}</option>
+                      {STUDY_PROGRAMS.map((program) => (
+                        <option key={program} value={program}>
+                          {program}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="select-field-arrow">v</span>
+                  </div>
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="languages">{t("common.languages")}</label>
-                  <input
-                    id="languages"
-                    name="languages"
-                    type="text"
-                    placeholder={t("signup.languagesPlaceholder")}
-                    value={formData.languages}
-                    onChange={handleChange}
+                  <label>{t("common.languages")}</label>
+                  <LanguageSelector
+                    selectedLanguages={formData.languages}
+                    onToggle={handleLanguageToggle}
+                    helperText={t("signup.languagesHelp")}
+                    emptyText={t("signup.languagesEmpty")}
+                    selectPlaceholder={t("signup.languagesSelectPlaceholder")}
+                    searchPlaceholder={t("signup.languagesSearchPlaceholder")}
+                    noResultsText={t("signup.languagesNoResults")}
+                    triggerClassName="signup-select"
                   />
                 </div>
 
@@ -373,23 +375,27 @@ function SignupPage() {
                     value={formData.aboutYou}
                     onChange={handleChange}
                   />
+                  <small>{t("signup.aboutYouHelp")}</small>
                 </div>
 
                 {selectedRole === "local" && (
                   <div className="form-group">
-                    <label htmlFor="maxBuddies">{t("signup.maxBuddies") || "Maximum buddies"}</label>
-                    <select
-                      id="maxBuddies"
-                      className="signup-select"
-                      name="maxBuddies"
-                      value={formData.maxBuddies}
-                      onChange={handleChange}
-                    >
-                      <option value="1">1 student</option>
-                      <option value="2">2 students</option>
-                      <option value="3">3 students</option>
-                    </select>
-                    <small>{t("signup.maxBuddiesHelp") || "You can change this later in your profile."}</small>
+                    <label htmlFor="maxBuddies">{t("signup.maxBuddies")}</label>
+                    <div className="select-field-wrap">
+                      <select
+                        id="maxBuddies"
+                        className="signup-select"
+                        name="maxBuddies"
+                        value={formData.maxBuddies}
+                        onChange={handleChange}
+                      >
+                        <option value="1">{t("signup.maxBuddiesOption1")}</option>
+                        <option value="2">{t("signup.maxBuddiesOption2")}</option>
+                        <option value="3">{t("signup.maxBuddiesOption3")}</option>
+                      </select>
+                      <span className="select-field-arrow">v</span>
+                    </div>
+                    <small>{t("signup.maxBuddiesHelp")}</small>
                   </div>
                 )}
 
@@ -406,7 +412,7 @@ function SignupPage() {
                   </button>
 
                   <button type="submit" className="signup-primary-btn" disabled={isLoading}>
-                    {isLoading ? t("common.sending") : t("signup.createAccount")}
+                    {isLoading ? t("signup.sendingCode") : t("signup.createAccount")}
                   </button>
                 </div>
               </div>

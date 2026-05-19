@@ -50,6 +50,16 @@ function EventsPage({ userType = "student" }) {
     );
   }, [events, search]);
 
+  const handleEventImageLoad = (event) => {
+    const image = event.currentTarget;
+    const hero = image.closest(".event-card-hero");
+
+    if (!hero) return;
+
+    hero.dataset.orientation =
+      image.naturalHeight > image.naturalWidth ? "portrait" : "landscape";
+  };
+
   return (
     <DashboardLayout title="Events" sidebarType={userType === "buddy" ? "buddy" : "student"}>
       <section className="events-page">
@@ -106,7 +116,12 @@ function EventsPage({ userType = "student" }) {
               <article className="event-card" key={item.id}>
                 {item.image_url ? (
                   <div className="event-card-hero">
-                    <img src={item.image_url} alt={item.title} className="event-card-image" />
+                    <img
+                      src={item.image_url}
+                      alt={item.title}
+                      className="event-card-image"
+                      onLoad={handleEventImageLoad}
+                    />
                   </div>
                 ) : null}
 

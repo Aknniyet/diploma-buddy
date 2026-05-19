@@ -13,21 +13,18 @@ function StudentOverviewPage() {
     unreadMessages: 0,
     buddy: null,
     nextSteps: [],
+    upcomingEvents: [],
   });
-  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     apiRequest("/dashboard/student").then(setDashboard).catch(() => null);
-    apiRequest("/events")
-      .then((data) => setEvents((Array.isArray(data) ? data : []).slice(0, 2)))
-      .catch(() => null);
   }, []);
 
   return (
     <DashboardLayout title="Overview">
       <section className="overview-page">
         <div className="overview-welcome">
-          <h1>Welcome back, {user?.full_name?.split(" ")[0] || "Student"}!</h1>
+          <h1>Welcome, {user?.full_name?.split(" ")[0] || "Student"}!</h1>
           <p>Here is a real overview of your adaptation journey.</p>
         </div>
 
@@ -78,9 +75,9 @@ function StudentOverviewPage() {
           <NextStepsCard steps={dashboard.nextSteps} />
           <div className="dashboard-card">
             <h3 className="card-title">Upcoming Events</h3>
-            {events.length > 0 ? (
+            {dashboard.upcomingEvents.length > 0 ? (
               <div className="recent-messages-list">
-                {events.map((event) => (
+                {dashboard.upcomingEvents.map((event) => (
                   <div key={event.id} className="recent-message-content">
                     <h4>{event.title}</h4>
                     <p>

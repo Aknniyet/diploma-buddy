@@ -1,4 +1,17 @@
-function ProfileInfoCard({ profile, formData, isEditing, onChange }) {
+import LanguageSelector from "../forms/LanguageSelector";
+
+const PROFILE_SELECT_LABELS = {
+  female: "Female",
+  male: "Male",
+  other: "Other",
+  no_preference: "No Preference",
+};
+
+function formatSelectValue(value) {
+  return PROFILE_SELECT_LABELS[value] || value;
+}
+
+function ProfileInfoCard({ profile, formData, isEditing, onChange, onToggleLanguage }) {
   return (
     <div className="profile-info-card">
       <div className="profile-info-header">
@@ -12,16 +25,21 @@ function ProfileInfoCard({ profile, formData, isEditing, onChange }) {
             <label>{field.label}</label>
             {isEditing && !field.disabled ? (
               field.type === "select" ? (
-                <select name={field.key} className="profile-input" value={formData[field.key]} onChange={onChange}>
-                  {field.options.map((option) => (
-                    <option value={option} key={option}>{option === "no_preference" ? "No preference" : option}</option>
-                  ))}
-                </select>
+                <div className="profile-select-wrap">
+                  <select name={field.key} className="profile-input profile-select" value={formData[field.key]} onChange={onChange}>
+                    {field.options.map((option) => (
+                      <option value={option} key={option}>{formatSelectValue(option)}</option>
+                    ))}
+                  </select>
+                  <span className="profile-select-arrow">v</span>
+                </div>
               ) : (
                 <input name={field.key} className="profile-input" value={formData[field.key]} onChange={onChange} />
               )
             ) : (
-              <div className="profile-field-box">{field.value || "Not provided"}</div>
+              <div className="profile-field-box">
+                {field.value ? (field.type === "select" ? formatSelectValue(field.value) : field.value) : "Not provided"}
+              </div>
             )}
           </div>
         ))}
@@ -38,6 +56,16 @@ function ProfileInfoCard({ profile, formData, isEditing, onChange }) {
             {isEditing ? (
               section.type === "text" ? (
                 <textarea className="profile-textarea" name={section.key} value={formData[section.key]} onChange={onChange} rows={4} />
+              ) : section.type === "languages" ? (
+                <LanguageSelector
+                  selectedLanguages={formData.languages}
+                  onToggle={onToggleLanguage}
+                  helperText="Choose up to five real languages from the list."
+                  emptyText="No languages selected yet."
+                  selectPlaceholder="Select languages"
+                  searchPlaceholder="Search languages..."
+                  triggerClassName="profile-input profile-select"
+                />
               ) : (
                 <input className="profile-input" name={section.key} value={formData[section.key]} onChange={onChange} placeholder="Separate items with commas" />
               )

@@ -1,22 +1,29 @@
 import {
   findBuddyDashboardData,
+  findUpcomingDashboardEvents,
   findStudentChecklistTasks,
   findStudentDashboardData,
 } from "../repositories/dashboardRepository.js";
+import {
+  ensureChecklist,
+  sortChecklistTasks,
+} from "../services/checklistService.js";
 
 export async function getStudentDashboard(req, res) {
   try {
     const userId = req.user.id;
+    await ensureChecklist(userId);
 
-    const [dashboardData, checklistResult] = await Promise.all([
+    const [dashboardData, checklistResult, upcomingEventsResult] = await Promise.all([
       findStudentDashboardData(userId),
       findStudentChecklistTasks(userId),
+      findUpcomingDashboardEvents(2),
     ]);
 
     const [matchResult, requestResult, unreadResult] = dashboardData;
 
     const buddy = matchResult.rows[0] || null;
-    const tasks = checklistResult.rows || [];
+    const tasks = sortChecklistTasks(checklistResult.rows || []);
 
     const completedTasks = tasks.filter((task) => task.is_completed).length;
     const progress = tasks.length
@@ -47,6 +54,7 @@ export async function getStudentDashboard(req, res) {
           }
         : null,
       nextSteps,
+      upcomingEvents: upcomingEventsResult.rows || [],
     });
   } catch (error) {
     console.error("Student dashboard error:", error.message);
@@ -59,6 +67,10 @@ export async function getBuddyDashboard(req, res) {
     const [matchesResult, pendingResult, unreadResult, profileResult] =
       await findBuddyDashboardData(req.user.id);
     const profile = profileResult.rows[0] || {};
+    const upcomingEventsResult =
+      profile.buddy_status === "approved"
+        ? await findUpcomingDashboardEvents(2)
+        : { rows: [] };
 
     return res.json({
       activeStudents: matchesResult.rows[0]?.count || 0,
@@ -66,6 +78,7 @@ export async function getBuddyDashboard(req, res) {
       unreadMessages: unreadResult.rows[0]?.count || 0,
       maxStudents: profile.max_buddies || 3,
       buddyStatus: profile.buddy_status || "not_applied",
+      upcomingEvents: upcomingEventsResult.rows || [],
     });
   } catch (error) {
     console.error("Buddy dashboard error:", error.message);

@@ -1,5 +1,5 @@
-import { normalizeArray } from '../services/arrayUtils.js';
 import { findUserProfileById, updateUserProfile } from '../repositories/userRepository.js';
+import { validateProfileData } from '../utils/userValidation.js';
 
 export async function getMyProfile(req, res) {
   try {
@@ -13,19 +13,12 @@ export async function getMyProfile(req, res) {
 
 export async function updateMyProfile(req, res) {
   try {
-    const result = await updateUserProfile(req.user.id, {
-      fullName: req.body.fullName,
-      homeCountry: req.body.homeCountry,
-      city: req.body.city,
-      studyProgram: req.body.studyProgram,
-      languages: normalizeArray(req.body.languages),
-      hobbies: normalizeArray(req.body.hobbies),
-      aboutYou: req.body.aboutYou,
-      profilePhotoUrl: req.body.profilePhotoUrl,
-      gender: req.body.gender,
-      genderPreference: req.body.genderPreference,
-      maxBuddies: req.user.role === 'local' ? Number(req.body.maxBuddies) || null : null,
-    });
+    const validation = validateProfileData(req.body, { role: req.user.role });
+    if (validation.error) {
+      return res.status(400).json({ message: validation.error });
+    }
+
+    const result = await updateUserProfile(req.user.id, validation.value);
 
     return res.json({
       message: 'Profile updated successfully.',

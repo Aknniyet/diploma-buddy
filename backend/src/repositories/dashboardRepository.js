@@ -74,3 +74,14 @@ export function findStudentChecklistTasks(userId) {
     [userId]
   );
 }
+
+export function findUpcomingDashboardEvents(limit = 2) {
+  return query(
+    `SELECT id, title, event_date, location
+     FROM events
+     WHERE event_date >= NOW()
+     ORDER BY event_date ASC
+     LIMIT $1`,
+    [limit]
+  );
+}

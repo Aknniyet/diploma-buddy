@@ -60,6 +60,17 @@ function LoginPage() {
         navigate("/admin", { replace: true });
       }
     } catch (submitError) {
+      if (submitError.data?.requiresEmailVerification && submitError.data?.email) {
+        navigate("/verify-email", {
+          state: {
+            pendingUser: {
+              email: submitError.data.email,
+            },
+          },
+        });
+        return;
+      }
+
       setError(submitError.message);
     } finally {
       setIsLoading(false);

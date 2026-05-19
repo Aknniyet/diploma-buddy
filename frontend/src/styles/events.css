@@ -51,6 +51,9 @@
   position: relative;
   height: 220px;
   background: linear-gradient(135deg, #dff1f0, #eff7f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .event-card-image {
@@ -58,6 +61,16 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.event-card-hero[data-orientation="portrait"] {
+  height: 340px;
+  padding: 12px;
+}
+
+.event-card-hero[data-orientation="portrait"] .event-card-image {
+  object-fit: contain;
+  border-radius: 14px;
 }
 
 .event-card-content {
@@ -170,5 +183,9 @@
 
   .event-card-hero {
     height: 200px;
+  }
+
+  .event-card-hero[data-orientation="portrait"] {
+    height: 300px;
   }
 }
