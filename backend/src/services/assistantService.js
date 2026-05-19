@@ -53,8 +53,29 @@ function buildDefaultActions(user, language) {
 
 const assistantIntents = [
   {
+    intent: "buddy_unresponsive",
+    keywords: [
+      "ignores me",
+      "ignore me",
+      "not replying",
+      "does not reply",
+      "doesn't reply",
+      "no response",
+      "not responding",
+      "ghost",
+      "не отвечает",
+      "игнор",
+      "игнорирует",
+      "нет ответа",
+    ],
+  },
+  {
     intent: "iin",
     keywords: ["iin", "individual identification", "identification number", "иин"],
+  },
+  {
+    intent: "sim",
+    keywords: ["sim", "phone number", "mobile", "internet", "beeline", "tele2", "activ", "сим", "номер", "интернет", "связь"],
   },
   {
     intent: "bank",
@@ -70,7 +91,7 @@ const assistantIntents = [
   },
   {
     intent: "checklist",
-    keywords: ["checklist", "task", "progress", "next step", "what should i do", "чеклист", "задач", "прогресс", "следующий шаг", "что делать дальше"],
+    keywords: ["checklist", "task", "progress", "чеклист", "задач", "прогресс"],
   },
   {
     intent: "events",
@@ -87,6 +108,38 @@ const assistantIntents = [
   {
     intent: "healthcare",
     keywords: ["health", "clinic", "doctor", "insurance", "emergency", "здоров", "клиник", "врач", "страхов", "экстр"],
+  },
+  {
+    intent: "safety",
+    keywords: ["safe", "safety", "scam", "lost", "police", "danger", "безопас", "мошен", "потерял", "потеряла", "полиция", "опас"],
+  },
+  {
+    intent: "homesick",
+    keywords: ["homesick", "lonely", "loneliness", "miss home", "stress", "anxious", "anxiety", "одинок", "скучаю", "стресс", "тревож"],
+  },
+  {
+    intent: "language",
+    keywords: ["language", "kazakh", "russian", "translate", "translation", "язык", "казах", "русск", "перевод"],
+  },
+  {
+    intent: "culture",
+    keywords: ["culture", "tradition", "etiquette", "custom", "respect", "культур", "традиц", "этикет", "обыча"],
+  },
+  {
+    intent: "campus",
+    keywords: ["campus", "building", "classroom", "library", "cafeteria", "canteen", "кампус", "здание", "аудитор", "библиот", "столов"],
+  },
+  {
+    intent: "classes",
+    keywords: ["class", "classes", "schedule", "teacher", "professor", "attendance", "курс", "пары", "распис", "преподав", "посещаем"],
+  },
+  {
+    intent: "profile",
+    keywords: ["profile", "photo", "bio", "interests", "edit profile", "профиль", "фото", "интерес", "био"],
+  },
+  {
+    intent: "community",
+    keywords: ["community", "post", "comment", "club", "friends", "сообщество", "пост", "коммент", "клуб", "друз"],
   },
 ];
 
@@ -117,6 +170,14 @@ function buildIntentReply(intent, user, checklistTasks, language) {
   const checklistSummary = buildChecklistSummary(checklistTasks, language);
 
   switch (intent) {
+    case "buddy_unresponsive":
+      return {
+        answer:
+          language === "ru"
+            ? "Если buddy не отвечает, сначала напиши короткое вежливое сообщение ещё раз и дай ему немного времени. Если ответа всё равно нет, ты можешь продолжить поиск другого buddy через страницу Find Buddies или написать администратору/International Office вне платформы. На платформе нет отдельной страницы для жалоб или report, поэтому я не буду направлять тебя туда."
+            : "If your buddy is not replying, send one short polite follow-up and give them a little time. If there is still no response, you can look for another buddy on the Find Buddies page or contact the administrator/International Office outside the platform. There is no separate report page in this platform, so I should not direct you to one.",
+        actions: localizeActions([actionCatalog.studentMessages, actionCatalog.findBuddies], language),
+      };
     case "iin":
       return {
         answer:
@@ -132,6 +193,14 @@ function buildIntentReply(intent, user, checklistTasks, language) {
             ? `Для открытия банковского счёта студентам чаще всего нужны удостоверяющие документы и ИИН. Я бы рекомендовал сначала закрыть шаги по документам, а затем переходить к банку.\n\n${checklistSummary}`
             : `To open a bank account, students usually need identification documents and an IIN. I would first complete the document-related steps and then move to banking.\n\n${checklistSummary}`,
         actions: localizeActions([actionCatalog.checklist], language),
+      };
+    case "sim":
+      return {
+        answer:
+          language === "ru"
+            ? "Для SIM-карты обычно стоит подготовить паспорт, проверить наличие ИИН, выбрать тариф с достаточным интернетом и сохранить номер в профиле/контактах. Если не уверен, какой оператор удобнее, спроси buddy о покрытии рядом с кампусом и общежитием."
+            : "For a SIM card, prepare your passport, check whether you need an IIN, choose a plan with enough mobile data, and save your new number in your contacts. If you are unsure which provider is convenient, ask your buddy about coverage near campus and your dorm or apartment.",
+        actions: localizeActions([actionCatalog.studentMessages, actionCatalog.checklist], language),
       };
     case "documents":
       return {
@@ -201,6 +270,70 @@ function buildIntentReply(intent, user, checklistTasks, language) {
             : "For healthcare, it is best to understand your insurance coverage, where to go for help, and which emergency numbers to save. If the question is official, confirm it with the university or your insurer.",
         actions: buildDefaultActions(user, language),
       };
+    case "safety":
+      return {
+        answer:
+          language === "ru"
+            ? "Если ситуация срочная или небезопасная, сразу обращайся в местные экстренные службы, охрану кампуса или к администрации университета. Для обычных бытовых вопросов: не отправляй деньги незнакомым людям, проверяй адреса и документы, держи копии паспорта отдельно и попроси buddy помочь оценить ситуацию."
+            : "If the situation is urgent or unsafe, contact local emergency services, campus security, or university administration immediately. For everyday safety: do not send money to strangers, double-check addresses and documents, keep passport copies separately, and ask your buddy to help you assess the situation.",
+        actions: localizeActions([actionCatalog.studentMessages, actionCatalog.guide], language),
+      };
+    case "homesick":
+      return {
+        answer:
+          language === "ru"
+            ? "Это нормально чувствовать одиночество или стресс в новой стране. Попробуй сделать один маленький социальный шаг: написать buddy, сходить на ближайшее событие или присоединиться к студенческой активности. Если состояние тяжёлое или длится долго, лучше обратиться в студенческую поддержку или International Office."
+            : "It is normal to feel lonely or stressed in a new country. Try one small social step: message your buddy, join an upcoming event, or take part in a student activity. If it feels heavy or lasts a long time, contact student support or the International Office.",
+        actions: localizeActions([actionCatalog.studentMessages, actionCatalog.studentEvents], language),
+      };
+    case "language":
+      return {
+        answer:
+          language === "ru"
+            ? "Если сложно с языком, начни с фраз для повседневных ситуаций: транспорт, еда, адрес, документы и университет. В сообщениях можно попросить buddy объяснить местные слова или помочь сформулировать вопрос для администрации."
+            : "If language feels difficult, start with phrases for everyday situations: transport, food, addresses, documents, and university offices. You can message your buddy to explain local words or help you phrase a question for administration.",
+        actions: localizeActions([actionCatalog.studentMessages, actionCatalog.guide], language),
+      };
+    case "culture":
+      return {
+        answer:
+          language === "ru"
+            ? "Для культурной адаптации лучше наблюдать, спрашивать и быть вежливым, когда что-то непонятно. Хорошие темы для buddy: как здороваться, как вести себя в гостях, что принято в университете и какие местные привычки стоит знать."
+            : "For cultural adaptation, observe, ask, and stay polite when something is unclear. Good topics for your buddy are greetings, visiting etiquette, university norms, and local habits worth knowing.",
+        actions: localizeActions([actionCatalog.studentMessages, actionCatalog.studentEvents], language),
+      };
+    case "campus":
+      return {
+        answer:
+          language === "ru"
+            ? "Для ориентации на кампусе сначала найди свои основные точки: учебные корпуса, библиотеку, столовую, International Office и дорогу домой. Если есть события или туры, они помогут быстрее привыкнуть к маршрутам."
+            : "For campus orientation, first locate your main places: academic buildings, library, cafeteria, International Office, and your route home. If there are events or tours, they can help you learn the routes faster.",
+        actions: localizeActions([actionCatalog.studentEvents, actionCatalog.studentMessages], language),
+      };
+    case "classes":
+      return {
+        answer:
+          language === "ru"
+            ? "По учёбе начни с расписания, аудиторий, правил посещаемости и контактов преподавателей. Если что-то официальное непонятно, уточни у координатора программы или в офисе университета; buddy может помочь с бытовым контекстом, но не заменяет администрацию."
+            : "For classes, start with your schedule, classrooms, attendance rules, and instructor contacts. If an official rule is unclear, confirm it with your program coordinator or university office; your buddy can help with everyday context but does not replace administration.",
+        actions: localizeActions([actionCatalog.checklist, actionCatalog.studentMessages], language),
+      };
+    case "profile":
+      return {
+        answer:
+          language === "ru"
+            ? "Хороший профиль помогает buddy быстрее понять, чем тебе помочь. Добавь понятное фото, языки, интересы, страну и короткое описание того, с чем нужна поддержка: кампус, документы, жильё, транспорт или общение."
+            : "A good profile helps buddies understand how to support you. Add a clear photo, languages, interests, home country, and a short note about what you need help with: campus, documents, housing, transport, or social adaptation.",
+        actions: localizeActions([actionCatalog.findBuddies], language),
+      };
+    case "community":
+      return {
+        answer:
+          language === "ru"
+            ? "Сообщество полезно для неформальных вопросов, поиска активности и знакомства с другими студентами. Если вопрос личный или касается твоего buddy, лучше использовать Messages; если вопрос общий, события и community помогут быстрее найти людей."
+            : "Community is useful for informal questions, activities, and meeting other students. If the question is personal or about your buddy, use Messages; if it is general, events and community can help you find people faster.",
+        actions: buildDefaultActions(user, language),
+      };
     default:
       return null;
   }
@@ -245,6 +378,20 @@ export function generateAssistantReply(message, user, checklistTasks = []) {
     };
   }
 
+  const matchedIntent = assistantIntents.find((item) =>
+    includesAny(normalizedMessage, item.keywords)
+  );
+
+  if (matchedIntent) {
+    const reply = buildIntentReply(matchedIntent.intent, user, checklistTasks, language);
+
+    return {
+      intent: matchedIntent.intent,
+      answer: reply.answer,
+      actions: reply.actions,
+    };
+  }
+
   if (
     includesAny(normalizedMessage, [
       "what should i do",
@@ -265,20 +412,6 @@ export function generateAssistantReply(message, user, checklistTasks = []) {
       actions: isLocalBuddy(user)
         ? buildDefaultActions(user, language)
         : localizeActions([actionCatalog.checklist], language),
-    };
-  }
-
-  const matchedIntent = assistantIntents.find((item) =>
-    includesAny(normalizedMessage, item.keywords)
-  );
-
-  if (matchedIntent) {
-    const reply = buildIntentReply(matchedIntent.intent, user, checklistTasks, language);
-
-    return {
-      intent: matchedIntent.intent,
-      answer: reply.answer,
-      actions: reply.actions,
     };
   }
 

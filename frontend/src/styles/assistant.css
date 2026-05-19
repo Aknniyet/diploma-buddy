@@ -185,7 +185,10 @@
 
 .assistant-suggestions {
   padding: 16px;
-  height: fit-content;
+  height: clamp(420px, calc(100vh - 260px), 560px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .assistant-suggestions h3 {
@@ -198,6 +201,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .assistant-starter-list button {
@@ -319,6 +326,11 @@
     height: min(70vh, 560px);
   }
 
+  .assistant-suggestions {
+    height: auto;
+    max-height: 320px;
+  }
+
   .assistant-message {
     max-width: 100%;
   }
@@ -339,6 +351,10 @@
 
   .assistant-chat-card {
     height: min(68vh, 520px);
+  }
+
+  .assistant-suggestions {
+    max-height: 300px;
   }
 
   .assistant-input-row {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarDays } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
@@ -11,10 +11,11 @@ function EventsPage({ userType = "student" }) {
   const hasEventsAccess = userType !== "buddy" || user?.buddy_status === "approved";
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const loadEvents = async () => {
+  const loadEvents = useCallback(async () => {
     if (!hasEventsAccess) {
       setEvents([]);
       setError("");
@@ -33,11 +34,19 @@ function EventsPage({ userType = "student" }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [hasEventsAccess]);
 
   useEffect(() => {
     loadEvents().catch(() => null);
-  }, [hasEventsAccess]);
+  }, [loadEvents]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCurrentTime(Date.now());
+    }, 60000);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   const filteredEvents = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -50,6 +59,35 @@ function EventsPage({ userType = "student" }) {
     );
   }, [events, search]);
 
+  const { upcomingEvents, pastEvents } = useMemo(() => {
+    const groupedEvents = filteredEvents.reduce(
+      (groups, item) => {
+        const eventTime = new Date(item.event_date).getTime();
+
+        if (eventTime >= currentTime) {
+          groups.upcoming.push(item);
+        } else {
+          groups.past.push(item);
+        }
+
+        return groups;
+      },
+      { upcoming: [], past: [] }
+    );
+
+    groupedEvents.upcoming.sort(
+      (first, second) => new Date(first.event_date).getTime() - new Date(second.event_date).getTime()
+    );
+    groupedEvents.past.sort(
+      (first, second) => new Date(second.event_date).getTime() - new Date(first.event_date).getTime()
+    );
+
+    return {
+      upcomingEvents: groupedEvents.upcoming,
+      pastEvents: groupedEvents.past,
+    };
+  }, [filteredEvents, currentTime]);
+
   const handleEventImageLoad = (event) => {
     const image = event.currentTarget;
     const hero = image.closest(".event-card-hero");
@@ -59,6 +97,39 @@ function EventsPage({ userType = "student" }) {
     hero.dataset.orientation =
       image.naturalHeight > image.naturalWidth ? "portrait" : "landscape";
   };
+
+  const renderEventCard = (item, status) => (
+    <article className={`event-card ${status === "past" ? "event-card-past" : ""}`} key={item.id}>
+      {item.image_url ? (
+        <div className="event-card-hero">
+          <img
+            src={item.image_url}
+            alt={item.title}
+            className="event-card-image"
+            onLoad={handleEventImageLoad}
+          />
+        </div>
+      ) : null}
+
+      <div className="event-card-content">
+        <div className="event-card-top">
+          <span className="event-badge">{item.category || "General"}</span>
+          <span className={`event-status event-status-${status}`}>
+            {status === "upcoming" ? "Upcoming" : "Past"}
+          </span>
+        </div>
+
+        <h3>{item.title}</h3>
+
+        <div className="event-details">
+          <span>{formatAstanaShortDateTime(item.event_date)}</span>
+          <span>{item.location || "Location TBD"}</span>
+        </div>
+
+        <p>{item.description || "Event details will be shared soon."}</p>
+      </div>
+    </article>
+  );
 
   return (
     <DashboardLayout title="Events" sidebarType={userType === "buddy" ? "buddy" : "student"}>
@@ -79,7 +150,7 @@ function EventsPage({ userType = "student" }) {
           </div>
         ) : null}
 
-        <div className="events-grid">
+        <div className="events-content">
           {!hasEventsAccess ? (
             <div className="events-empty-card">
               <CalendarDays size={28} />
@@ -112,34 +183,50 @@ function EventsPage({ userType = "student" }) {
               </p>
             </div>
           ) : (
-            filteredEvents.map((item) => (
-              <article className="event-card" key={item.id}>
-                {item.image_url ? (
-                  <div className="event-card-hero">
-                    <img
-                      src={item.image_url}
-                      alt={item.title}
-                      className="event-card-image"
-                      onLoad={handleEventImageLoad}
-                    />
+            <div className="events-sections">
+              <section className="events-section events-section-primary">
+                <div className="events-section-header">
+                  <div>
+                    <h2>Upcoming Events</h2>
+                    <p>Planned campus activities sorted by the nearest date and time.</p>
                   </div>
-                ) : null}
-
-                <div className="event-card-content">
-                  <div className="event-card-top">
-                    <span className="event-badge">{item.category || "General"}</span>
-                    <span className="event-date">{formatAstanaShortDateTime(item.event_date)}</span>
-                  </div>
-
-                  <h3>{item.title}</h3>
-                  <p>{item.description || "Event details will be shared soon."}</p>
-
-                  <div className="event-meta">
-                    <span>{item.location || "Location TBD"}</span>
-                  </div>
+                  <span>{upcomingEvents.length}</span>
                 </div>
-              </article>
-            ))
+
+                {upcomingEvents.length > 0 ? (
+                  <div className="events-grid">
+                    {upcomingEvents.map((item) => renderEventCard(item, "upcoming"))}
+                  </div>
+                ) : (
+                  <div className="events-empty-card">
+                    <CalendarDays size={28} />
+                    <h3>No upcoming events yet</h3>
+                    <p>New activities will appear here when they are scheduled.</p>
+                  </div>
+                )}
+              </section>
+
+              <section className="events-section events-section-secondary">
+                <div className="events-section-header">
+                  <div>
+                    <h2>Past Events</h2>
+                    <p>Recently finished activities, sorted from newest to oldest.</p>
+                  </div>
+                  <span>{pastEvents.length}</span>
+                </div>
+
+                {pastEvents.length > 0 ? (
+                  <div className="events-grid events-grid-secondary">
+                    {pastEvents.map((item) => renderEventCard(item, "past"))}
+                  </div>
+                ) : (
+                  <div className="events-empty-card events-empty-card-secondary">
+                    <CalendarDays size={24} />
+                    <h3>No past events yet</h3>
+                  </div>
+                )}
+              </section>
+            </div>
           )}
         </div>
       </section>

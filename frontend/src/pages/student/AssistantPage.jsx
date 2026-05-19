@@ -20,7 +20,13 @@ const STARTER_QUESTIONS = [
   "What should I do next?",
   "How can I get IIN?",
   "How do I find a buddy?",
+  "What if my buddy is not replying?",
   "Where can I see events?",
+  "How do I get a SIM card?",
+  "I feel lonely in Kazakhstan. What can I do?",
+  "How can I understand campus better?",
+  "What should I know about local culture?",
+  "What should I do if I feel unsafe?",
 ];
 
 function getChatStorageKey(userType) {
