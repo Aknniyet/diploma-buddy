@@ -74,7 +74,7 @@
   background: #ffffff;
   color: #4b5563;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  box-shadow: none;
 }
 
 .nav-link {
@@ -126,7 +126,7 @@
 .language-switcher-button.active {
   background: #ffffff;
   color: #0f9aa8;
-  box-shadow: 0 4px 12px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .login {
@@ -199,7 +199,7 @@
     background: #ffffff;
     border: 1px solid #e7eeee;
     border-radius: 18px;
-    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    box-shadow: none;
     z-index: 1200;
   }
 

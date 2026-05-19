@@ -45,7 +45,7 @@
 .language-switcher-button.active {
   background: #ffffff;
   color: #0f9aa8;
-  box-shadow: 0 4px 12px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .login-brand {
@@ -84,7 +84,7 @@
   border: 1px solid #dbe7e7;
   border-radius: 22px;
   padding: 36px 32px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: none;
 }
 
 .login-card h2 {
@@ -126,12 +126,12 @@
   padding: 0 14px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input:focus {
   border-color: #0f9aa8;
-  box-shadow: 0 0 0 3px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .login-button {
@@ -253,7 +253,7 @@
   border: 1px solid #dbe7e7;
   border-radius: 22px;
   padding: 34px 32px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  box-shadow: none;
 }
 
 .login-card h2 {
@@ -295,12 +295,12 @@
   padding: 0 14px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input:focus {
   border-color: #0f9aa8;
-  box-shadow: 0 0 0 3px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .login-button {

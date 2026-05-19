@@ -48,7 +48,7 @@
   background: #ffffff;
   border: 1px solid #edf1f4;
   border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: none;
 }
 
 .assistant-chat-card {
@@ -162,7 +162,7 @@
 
 .assistant-input-row input:focus {
   border-color: #087f84;
-  box-shadow: 0 0 0 3px rgba(8, 127, 132, 0.12);
+  box-shadow: none;
 }
 
 .assistant-input-row button {
@@ -248,7 +248,7 @@
   background: #ffffff;
   border-radius: 24px;
   border: 1px solid #edf1f4;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.22);
+  box-shadow: none;
   padding: 24px;
 }
 

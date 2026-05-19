@@ -51,7 +51,7 @@
   border: 1px solid #dbe7e7;
   border-radius: 24px;
   padding: 26px 22px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+  box-shadow: none;
 }
 
 .signup-card h2 {
@@ -176,12 +176,12 @@
   padding: 0 14px;
   font-size: 15px;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input:focus {
   border-color: #0f9aa8;
-  box-shadow: 0 0 0 3px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .form-group small {
@@ -298,7 +298,7 @@
 
 .signup-select:focus {
   border-color: #0f9aa8;
-  box-shadow: 0 0 0 3px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .select-field-wrap {
@@ -354,7 +354,7 @@
 
 .language-multiselect-trigger.open {
   border-color: #0f9aa8;
-  box-shadow: 0 0 0 3px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .language-multiselect-trigger .placeholder {
@@ -380,7 +380,7 @@
   border: 1px solid #d7e2e2;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: none;
   padding: 12px;
 }
 
@@ -397,7 +397,7 @@
 
 .language-search-input:focus {
   border-color: #0f9aa8;
-  box-shadow: 0 0 0 3px rgba(15, 154, 168, 0.12);
+  box-shadow: none;
 }
 
 .language-option-list {
