@@ -674,6 +674,97 @@
   text-align: center;
 }
 
+.community-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(15, 23, 42, 0.42);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.community-confirm-modal {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #edf1f4;
+  box-shadow: none;
+  padding: 24px;
+}
+
+.community-confirm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #fee4e2;
+  color: #b42318;
+  margin-bottom: 16px;
+}
+
+.community-confirm-modal h2 {
+  margin: 0 0 8px;
+  color: #102a43;
+  font-size: 22px;
+}
+
+.community-confirm-modal p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.community-confirm-error {
+  margin-top: 14px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.community-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.community-confirm-actions button {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font: inherit;
+}
+
+.community-confirm-cancel {
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #344054;
+}
+
+.community-confirm-cancel:hover {
+  background: #f8fafc;
+}
+
+.community-confirm-delete {
+  border: 1px solid #d92d20;
+  background: #d92d20;
+  color: #ffffff;
+}
+
+.community-confirm-delete:hover {
+  background: #b42318;
+  border-color: #b42318;
+}
+
+.community-confirm-delete:disabled,
+.community-confirm-cancel:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 
 @media (max-width: 1100px) {
   .admin-stats-grid,
@@ -725,5 +816,10 @@
   .admin-inline-actions button,
   .admin-select {
     width: 100%;
+  }
+
+  .community-confirm-modal {
+    border-radius: 20px;
+    padding: 20px;
   }
 }
