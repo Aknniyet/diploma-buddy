@@ -91,11 +91,15 @@ function EventsPage({ userType = "student" }) {
   const handleEventImageLoad = (event) => {
     const image = event.currentTarget;
     const hero = image.closest(".event-card-hero");
+    const card = image.closest(".event-card");
 
-    if (!hero) return;
+    if (!hero || !card) return;
 
-    hero.dataset.orientation =
+    const orientation =
       image.naturalHeight > image.naturalWidth ? "portrait" : "landscape";
+
+    hero.dataset.orientation = orientation;
+    card.dataset.orientation = orientation;
   };
 
   const renderEventCard = (item, status) => (
