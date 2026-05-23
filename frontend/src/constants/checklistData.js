@@ -1,10 +1,10 @@
 import {
+  BriefcaseBusiness,
   FileText,
   House,
   Landmark,
-  HeartPulse,
   BusFront,
-  Users,
+  GraduationCap,
 } from "lucide-react";
 
 export const checklistCategories = [
@@ -21,27 +21,27 @@ export const checklistCategories = [
     colorClass: "housing",
   },
   {
-    id: "banking",
-    title: "Banking",
-    icon: Landmark,
-    colorClass: "banking",
-  },
-  {
-    id: "healthcare",
-    title: "Healthcare",
-    icon: HeartPulse,
-    colorClass: "healthcare",
-  },
-  {
     id: "transport",
     title: "Transport",
     icon: BusFront,
     colorClass: "transport",
   },
   {
-    id: "social",
-    title: "Social",
-    icon: Users,
-    colorClass: "social",
+    id: "banking",
+    title: "Banking",
+    icon: Landmark,
+    colorClass: "banking",
+  },
+  {
+    id: "university",
+    title: "University",
+    icon: GraduationCap,
+    colorClass: "university",
+  },
+  {
+    id: "personal",
+    title: "Personal",
+    icon: BriefcaseBusiness,
+    colorClass: "personal",
   },
 ];

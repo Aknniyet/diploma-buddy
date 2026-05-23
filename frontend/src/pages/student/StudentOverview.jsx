@@ -14,6 +14,10 @@ function StudentOverviewPage() {
     buddy: null,
     nextSteps: [],
     upcomingEvents: [],
+    checklistSummary: {
+      overdueTasks: 0,
+      highPriorityIncomplete: 0,
+    },
   });
 
   useEffect(() => {
@@ -67,6 +71,17 @@ function StudentOverviewPage() {
             <div className="message-count">{dashboard.unreadMessages}</div>
             <p className="card-subtitle">
               Pending requests: {dashboard.pendingRequests}
+            </p>
+          </div>
+
+          <div className="dashboard-card">
+            <h3 className="card-title">Checklist Focus</h3>
+            <div className="message-count">{dashboard.checklistSummary.highPriorityIncomplete || 0}</div>
+            <p className="card-subtitle">
+              High priority tasks left
+            </p>
+            <p className="card-subtitle" style={{ marginTop: 8 }}>
+              Overdue tasks: {dashboard.checklistSummary.overdueTasks || 0}
             </p>
           </div>
         </div>

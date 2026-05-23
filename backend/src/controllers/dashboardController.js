@@ -5,14 +5,23 @@ import {
   findStudentDashboardData,
 } from "../repositories/dashboardRepository.js";
 import {
+  buildNextSteps,
+  calculateChecklistProgress,
   ensureChecklist,
-  sortChecklistTasks,
+  isTaskDueSoon,
+  isTaskOverdue,
 } from "../services/checklistService.js";
+import { processTaskReminders } from "../services/taskReminderService.js";
+
+function triggerTaskReminders() {
+  processTaskReminders().catch(() => null);
+}
 
 export async function getStudentDashboard(req, res) {
   try {
     const userId = req.user.id;
     await ensureChecklist(userId);
+    triggerTaskReminders();
 
     const [dashboardData, checklistResult, upcomingEventsResult] = await Promise.all([
       findStudentDashboardData(userId),
@@ -20,30 +29,37 @@ export async function getStudentDashboard(req, res) {
       findUpcomingDashboardEvents(2),
     ]);
 
-    const [matchResult, requestResult, unreadResult] = dashboardData;
+    const [matchResult, requestResult, unreadResult, eventEngagementResult] = dashboardData;
 
     const buddy = matchResult.rows[0] || null;
-    const tasks = sortChecklistTasks(checklistResult.rows || []);
+    const tasks = checklistResult.rows || [];
+    const progressSummary = calculateChecklistProgress(tasks);
 
-    const completedTasks = tasks.filter((task) => task.is_completed).length;
-    const progress = tasks.length
-      ? Math.round((completedTasks / tasks.length) * 100)
-      : 0;
-
-    const nextSteps = tasks
-      .filter((task) => !task.is_completed)
-      .slice(0, 3)
-      .map((task) => ({
+    const nextSteps = buildNextSteps(tasks, 4).map((task) => ({
         id: task.id,
         title: task.title,
         description: task.description,
         category: task.category,
+        priority: task.priority,
+        deadline: task.deadline,
+        overdue: isTaskOverdue(task),
+        dueSoon: isTaskDueSoon(task),
+        isCustom: Boolean(task.is_custom),
       }));
 
     return res.json({
-      progress,
-      pendingRequests: requestResult.rows[0]?.count || 0,
+      progress: progressSummary.progress,
+      checklistSummary: {
+        ...progressSummary,
+        overdueTasks: tasks.filter((task) => isTaskOverdue(task)).length,
+        highPriorityIncomplete: tasks.filter(
+          (task) => !task.is_completed && task.priority === "high"
+        ).length,
+      },
+      pendingRequests: requestResult.rows[0]?.pending_count || 0,
+      hasBuddyRequest: Number(requestResult.rows[0]?.total_count || 0) > 0,
       unreadMessages: unreadResult.rows[0]?.count || 0,
+      eventEngagementCount: eventEngagementResult.rows[0]?.count || 0,
       buddy: buddy
         ? {
             name: buddy.full_name,

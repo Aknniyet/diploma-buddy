@@ -13,7 +13,8 @@ export function findUserProfileById(userId) {
   return query(
     `SELECT id, full_name, email, role, home_country, city, study_program,
             languages, hobbies, about_you, gender, gender_preference,
-            buddy_status, max_buddies, profile_photo_url, created_at, email_verified
+            buddy_status, max_buddies, profile_photo_url, created_at, email_verified,
+            last_active_at
      FROM users
      WHERE id = $1`,
     [userId]
@@ -161,5 +162,14 @@ export function findStudentAndBuddyRecipients() {
      FROM users
      WHERE role = 'international'
         OR (role = 'local' AND buddy_status = 'approved')`
+  );
+}
+
+export function updateLastActiveAt(userId) {
+  return query(
+    `UPDATE users
+     SET last_active_at = NOW()
+     WHERE id = $1`,
+    [userId]
   );
 }

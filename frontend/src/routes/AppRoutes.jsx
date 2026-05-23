@@ -23,6 +23,7 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminEventsPage from "../pages/admin/AdminEventsPage";
 import AdminMatchesPage from "../pages/admin/AdminMatchesPage";
 import AdminBuddyProfilesPage from "../pages/admin/AdminBuddyProfilesPage";
+import AdminRiskMonitorPage from "../pages/admin/AdminRiskMonitorPage";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 function AppRoutes() {
@@ -210,6 +211,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <AdminBuddyProfilesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/risk-monitor"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <AdminRiskMonitorPage />
           </ProtectedRoute>
         }
       />

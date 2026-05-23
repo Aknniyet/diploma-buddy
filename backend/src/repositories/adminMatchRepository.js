@@ -34,7 +34,17 @@ export function getPendingRequestsForAdmin() {
             b.id AS buddy_id, b.full_name AS buddy_name, b.study_program AS buddy_program,
             b.languages AS buddy_languages, b.hobbies AS buddy_hobbies, b.gender,
             b.max_buddies,
-            COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count
+            COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count,
+            COALESCE((
+              SELECT ROUND(AVG(bf.rating)::numeric, 1)::float
+              FROM buddy_feedback bf
+              WHERE bf.buddy_id = b.id
+            ), 0) AS average_rating,
+            (
+              SELECT COUNT(*)::int
+              FROM buddy_feedback bf
+              WHERE bf.buddy_id = b.id
+            ) AS feedback_count
      FROM buddy_requests br
      JOIN users s ON s.id = br.international_student_id
      JOIN users b ON b.id = br.buddy_id
@@ -92,7 +102,17 @@ export function getApprovedBuddiesForAdmin() {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
             u.about_you, u.gender, u.buddy_status, u.max_buddies, u.profile_photo_url,
-            COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count
+            COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count,
+            COALESCE((
+              SELECT ROUND(AVG(bf.rating)::numeric, 1)::float
+              FROM buddy_feedback bf
+              WHERE bf.buddy_id = u.id
+            ), 0) AS average_rating,
+            (
+              SELECT COUNT(*)::int
+              FROM buddy_feedback bf
+              WHERE bf.buddy_id = u.id
+            ) AS feedback_count
      FROM users u
      LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
      WHERE u.role = 'local' AND u.buddy_status = 'approved'

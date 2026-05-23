@@ -26,10 +26,10 @@ function MessagesPage({ userType = "student" }) {
       }
 
       if (!currentConversation) {
-        return data[0];
+        return null;
       }
 
-      return data.find((item) => item.id === currentConversation.id) || data[0];
+      return data.find((item) => item.id === currentConversation.id) || null;
     });
   };
 

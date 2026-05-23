@@ -14,6 +14,8 @@ const iconMap = {
   community_post: Bell,
   event_created: Bell,
   event_reminder: Bell,
+  task_deadline_reminder: Bell,
+  task_overdue: Bell,
   request_sent: Bell,
   request_received: Bell,
   request_accepted: CheckCircle2,

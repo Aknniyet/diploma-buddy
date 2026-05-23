@@ -59,7 +59,11 @@ function FindBuddiesPage() {
     try {
       const response = await apiRequest("/buddy/requests", {
         method: "POST",
-        body: JSON.stringify({ buddyId: data.buddyId, message: data.message }),
+        body: JSON.stringify({
+          buddyId: data.buddyId,
+          message: data.message,
+          supportTopics: data.supportTopics || [],
+        }),
       });
       setAlertMessage(response.message);
       setIsModalOpen(false);

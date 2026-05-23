@@ -6,7 +6,7 @@ function EmptyChatState() {
       <div className="empty-chat-content">
         <MessageSquare size={54} />
         <h3>Select a conversation</h3>
-        <p>Choose a contact from the list to start messaging</p>
+        <p>Choose a contact from the Conversations list to open the chat.</p>
       </div>
     </div>
   );

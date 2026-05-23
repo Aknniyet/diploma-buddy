@@ -21,6 +21,7 @@ function formatInputDate(dateValue) {
 
 function AdminEventsPage() {
   const [events, setEvents] = useState([]);
+  const [loadError, setLoadError] = useState("");
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState("");
@@ -33,8 +34,14 @@ function AdminEventsPage() {
   const isSubmittingRef = useRef(false);
 
   const loadEvents = async () => {
-    const data = await apiRequest("/events");
-    setEvents(Array.isArray(data) ? data : []);
+    try {
+      const data = await apiRequest("/events");
+      setEvents(Array.isArray(data) ? data : []);
+      setLoadError("");
+    } catch (error) {
+      setEvents([]);
+      setLoadError(error.message || "Could not load events.");
+    }
   };
 
   useEffect(() => {
@@ -297,7 +304,9 @@ function AdminEventsPage() {
             </div>
 
             <div className="admin-list">
-              {paginatedEvents.length === 0 ? (
+              {loadError ? (
+                <div className="admin-empty-state">{loadError}</div>
+              ) : paginatedEvents.length === 0 ? (
                 <div className="admin-empty-state">No events published yet.</div>
               ) : (
                 paginatedEvents.map((item) => (
