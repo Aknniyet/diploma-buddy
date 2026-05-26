@@ -4,27 +4,28 @@
 }
 
 .guide-hero {
-  padding: 90px 0 70px;
+  padding: 56px 0 44px;
   text-align: center;
 }
 
 .guide-hero h1 {
-  font-size: 44px;
-  line-height: 1.1;
-  margin-bottom: 20px;
-  color: #111827;
+  margin: 0 0 14px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0f172a;
 }
 
 .guide-hero p {
-  max-width: 820px;
-  margin: 0 auto;
-  font-size: 16px;
-  line-height: 1.8;
-  color: #6b7280;
+  max-width: 700px;
+  margin: 0 auto 10px;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #667085;
 }
 
 .guide-content {
-  padding-bottom: 20x;
+  padding-bottom: 20px;
 }
 
 .quick-tips-box {
@@ -156,10 +157,6 @@
 }
 
 @media (max-width: 992px) {
-  .guide-hero h1 {
-    font-size: 42px;
-  }
-
   .guide-grid {
     grid-template-columns: 1fr;
   }
@@ -167,16 +164,16 @@
 
 @media (max-width: 768px) {
   .guide-hero {
-    padding: 70px 0 50px;
+    padding: 42px 0 34px;
   }
 
   .guide-hero h1 {
-    font-size: 34px;
+    font-size: 28px;
   }
 
   .guide-hero p,
   .guide-help-section p {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .quick-tips-box,
@@ -185,11 +182,11 @@
   }
 
   .guide-card-header h3 {
-    font-size: 22px;
+    font-size: 16px;
   }
 
   .guide-help-section h2 {
-    font-size: 32px;
+    font-size: 28px;
   }
 }
 
