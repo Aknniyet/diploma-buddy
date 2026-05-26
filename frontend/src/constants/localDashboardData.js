@@ -18,13 +18,13 @@ export const localSidebarLinks = [
   },
   {
     id: 2,
-    label: "My Buddies",
+    label: "My Students",
     path: "/buddy/my-buddies",
     icon: Users,
   },
   {
     id: 3,
-    label: "Buddy Requests",
+    label: "Student Requests",
     path: "/buddy/buddy-requests",
     icon: UserPlus,
   },
