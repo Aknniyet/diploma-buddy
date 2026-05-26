@@ -35,10 +35,18 @@ function CommunityBoardPage({ userType = "student" }) {
   const [expandedComments, setExpandedComments] = useState({});
   const [deleteError, setDeleteError] = useState("");
   const [error, setError] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortValue, setSortValue] = useState("newest");
 
   const loadPosts = () => {
     setIsLoading(true);
-    apiRequest("/community/posts")
+    const params = new URLSearchParams();
+    if (searchValue.trim()) params.set("search", searchValue.trim());
+    if (selectedCategory !== "all") params.set("category", selectedCategory);
+    if (sortValue !== "newest") params.set("sort", sortValue);
+
+    apiRequest(`/community/posts${params.toString() ? `?${params.toString()}` : ""}`)
       .then(setPosts)
       .catch((requestError) => setError(requestError.message || "Could not load community posts."))
       .finally(() => setIsLoading(false));
@@ -53,7 +61,7 @@ function CommunityBoardPage({ userType = "student" }) {
     }
 
     loadPosts();
-  }, [hasCommunityAccess]);
+  }, [hasCommunityAccess, searchValue, selectedCategory, sortValue]);
 
   const updateForm = (event) => {
     const { name, value } = event.target;
@@ -259,8 +267,14 @@ function CommunityBoardPage({ userType = "student" }) {
     <DashboardLayout title="Community Board" sidebarType={userType === "buddy" ? "buddy" : "student"}>
       <section className="community-page">
         <CommunityFeedHeader
+          category={selectedCategory}
           hasCommunityAccess={hasCommunityAccess}
+          onCategoryChange={setSelectedCategory}
           onCreatePost={openCreateComposer}
+          onSearchChange={setSearchValue}
+          onSortChange={setSortValue}
+          searchValue={searchValue}
+          sortValue={sortValue}
         />
 
         <div className="community-feed">

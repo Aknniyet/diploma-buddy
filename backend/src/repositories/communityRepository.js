@@ -1,12 +1,17 @@
 import { query } from "../config/db.js";
 
-export function findCommunityPosts(userId) {
+export function findCommunityPosts(userId, { search = "", category = "all", sort = "newest" } = {}) {
+  const safeSearch = String(search || "").trim().toLowerCase();
+  const safeCategory = String(category || "all").trim().toLowerCase();
+  const safeSort = sort === "popular" ? "popular" : "newest";
+
   return query(
     `SELECT
        p.id,
        p.title,
        p.description,
        p.category,
+       p.status,
        p.location,
        p.meeting_time,
        p.image_url,
@@ -41,9 +46,16 @@ export function findCommunityPosts(userId) {
      LEFT JOIN community_post_interests i ON i.post_id = p.id
      LEFT JOIN community_comments c ON c.post_id = p.id
      LEFT JOIN users cu ON cu.id = c.author_id
+     WHERE p.status = 'active'
+       AND ($2 = '' OR (
+         LOWER(CONCAT_WS(' ', p.title, p.description, COALESCE(p.location, ''), u.full_name)) LIKE '%' || $2 || '%'
+       ))
+       AND ($3 = 'all' OR p.category = $3)
      GROUP BY p.id, u.id
-     ORDER BY p.created_at DESC`,
-    [userId]
+     ORDER BY
+       CASE WHEN $4 = 'popular' THEN COUNT(DISTINCT i.id) END DESC,
+       p.created_at DESC`,
+    [userId, safeSearch, safeCategory, safeSort]
   );
 }
 
@@ -68,7 +80,7 @@ export function createCommunityPost(userId, postData) {
 }
 
 export function findCommunityPostById(postId) {
-  return query("SELECT id, author_id FROM community_posts WHERE id = $1", [postId]);
+  return query("SELECT id, author_id, status FROM community_posts WHERE id = $1", [postId]);
 }
 
 export function addCommunityInterest(postId, userId) {

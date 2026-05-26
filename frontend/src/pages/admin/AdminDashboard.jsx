@@ -10,24 +10,41 @@ function getRoleLabel(role) {
   return "Admin";
 }
 
+const initialDashboard = {
+  stats: {
+    totalUsers: 0,
+    internationalStudents: 0,
+    buddies: 0,
+    activeMatches: 0,
+    pendingRequests: 0,
+    upcomingEvents: 0,
+  },
+  recentUsers: [],
+  attentionQueue: [],
+  analytics: {},
+};
+
 function AdminDashboard() {
-  const [dashboard, setDashboard] = useState({
-    stats: {
-      totalUsers: 0,
-      internationalStudents: 0,
-      buddies: 0,
-      activeMatches: 0,
-      pendingRequests: 0,
-      upcomingEvents: 0,
-    },
-    recentUsers: [],
-  });
+  const [dashboard, setDashboard] = useState(initialDashboard);
   const [searchValue, setSearchValue] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    apiRequest("/admin/dashboard").then(setDashboard).catch(() => null);
+    apiRequest("/admin/dashboard")
+      .then((data) =>
+        setDashboard({
+          ...initialDashboard,
+          ...data,
+          stats: {
+            ...initialDashboard.stats,
+            ...(data?.stats || {}),
+          },
+          recentUsers: Array.isArray(data?.recentUsers) ? data.recentUsers : [],
+          attentionQueue: Array.isArray(data?.attentionQueue) ? data.attentionQueue : [],
+        })
+      )
+      .catch(() => null);
   }, []);
 
   useEffect(() => {
@@ -173,6 +190,51 @@ function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        <div className="dashboard-card admin-main-panel">
+          <div className="admin-section-header admin-section-header-tight">
+            <h3>Students needing attention</h3>
+            <p>Decision-support queue based on adaptation risk and missing support signals.</p>
+          </div>
+
+          {dashboard.attentionQueue.length === 0 ? (
+            <div className="admin-empty-state">
+              No students currently need urgent intervention.
+            </div>
+          ) : (
+            <div className="admin-attention-list">
+              {dashboard.attentionQueue.map((student) => (
+                <article className="admin-attention-card" key={student.id}>
+                  <div className="admin-attention-top">
+                    <div>
+                      <h4>{student.fullName}</h4>
+                      <p>{student.email}</p>
+                    </div>
+                    <span className={`admin-risk-pill ${student.risk.level}`}>
+                      {student.risk.label}
+                    </span>
+                  </div>
+
+                  <div className="admin-attention-metrics">
+                    <span>Score: {student.risk.score}</span>
+                    <span>Profile: {student.profileCompletion}%</span>
+                    <span>Checklist: {student.checklistProgress}%</span>
+                    <span>{student.hasBuddy ? "Buddy assigned" : "No buddy yet"}</span>
+                  </div>
+
+                  <p className="admin-attention-stage">{student.stage.label}</p>
+
+                  <ul className="admin-attention-reasons">
+                    {student.risk.reasons.map((reason) => (
+                      <li key={reason}>{reason}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+
       </section>
     </DashboardLayout>
   );
