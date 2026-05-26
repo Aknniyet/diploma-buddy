@@ -14,6 +14,7 @@ import {
 } from "../repositories/notificationRepository.js";
 import { createNotification } from "../services/notificationService.js";
 import { findCommunityNotificationRecipients, findUserProfileById } from "../repositories/userRepository.js";
+import { validateModeratedText } from "../utils/userValidation.js";
 
 const allowedCategories = ["hangout", "study", "sports", "food", "question", "city"];
 
@@ -50,7 +51,11 @@ export async function getCommunityPosts(req, res) {
   try {
     if (!(await ensureCommunityMember(req, res))) return;
 
-    const result = await findCommunityPosts(req.user.id);
+    const result = await findCommunityPosts(req.user.id, {
+      search: req.query.search,
+      category: req.query.category,
+      sort: req.query.sort,
+    });
     return res.json(result.rows);
   } catch (error) {
     console.error("Community posts error:", error.message);
@@ -66,6 +71,16 @@ export async function createCommunityPostByStudent(req, res) {
     const cleanTitle = title?.trim();
     const cleanDescription = description?.trim();
     const cleanCategory = allowedCategories.includes(category) ? category : "hangout";
+
+    const titleError = validateModeratedText(cleanTitle, "Title", { required: true, maxLength: 180 });
+    if (titleError) {
+      return res.status(400).json({ message: titleError });
+    }
+
+    const descriptionError = validateModeratedText(cleanDescription, "Description", { required: true, maxLength: 600 });
+    if (descriptionError) {
+      return res.status(400).json({ message: descriptionError });
+    }
 
     if (!cleanTitle || !cleanDescription) {
       return res.status(400).json({ message: "Title and description are required." });
@@ -113,6 +128,16 @@ export async function updateCommunityPostByAuthor(req, res) {
     const cleanTitle = title?.trim();
     const cleanDescription = description?.trim();
     const cleanCategory = allowedCategories.includes(category) ? category : "hangout";
+
+    const titleError = validateModeratedText(cleanTitle, "Title", { required: true, maxLength: 180 });
+    if (titleError) {
+      return res.status(400).json({ message: titleError });
+    }
+
+    const descriptionError = validateModeratedText(cleanDescription, "Description", { required: true, maxLength: 600 });
+    if (descriptionError) {
+      return res.status(400).json({ message: descriptionError });
+    }
 
     if (!cleanTitle || !cleanDescription) {
       return res.status(400).json({ message: "Title and description are required." });
@@ -202,6 +227,13 @@ export async function createCommunityCommentByMember(req, res) {
 
     if (!cleanText && !imageUrl) {
       return res.status(400).json({ message: "Comment text or image is required." });
+    }
+
+    if (cleanText) {
+      const textError = validateModeratedText(cleanText, "Comment", { required: false, maxLength: 400 });
+      if (textError) {
+        return res.status(400).json({ message: textError });
+      }
     }
 
     const result = await createCommunityComment(postId, req.user.id, {

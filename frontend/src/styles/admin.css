@@ -268,6 +268,119 @@
   font-size: 14px;
 }
 
+.admin-moderation-panel {
+  margin-top: 18px;
+}
+
+.admin-moderation-error {
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: #fef3f2;
+  border: 1px solid #fecdca;
+  color: #b42318;
+  font-size: 14px;
+  padding: 12px 14px;
+}
+
+.admin-report-list {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-report-card {
+  border: 1px solid #e4eceb;
+  border-radius: 16px;
+  padding: 16px 18px;
+  background: #fbfefe;
+}
+
+.admin-report-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.admin-report-top h4 {
+  margin: 0 0 4px;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.admin-report-top p {
+  margin: 0;
+  font-size: 13px;
+  color: #667085;
+}
+
+.admin-report-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-report-status.active {
+  background: #fff4d6;
+  color: #b7791f;
+}
+
+.admin-report-status.hidden {
+  background: #fef3f2;
+  color: #b42318;
+}
+
+.admin-report-reason {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #475467;
+}
+
+.admin-report-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-inline-action {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #d8e4e3;
+  background: #ffffff;
+  color: #344054;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-inline-action.danger {
+  border-color: #f3c6c6;
+  color: #c24141;
+}
+
+.admin-inline-action:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .admin-report-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-report-actions {
+    justify-content: flex-start;
+  }
+}
+
 .admin-card-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -235,8 +235,8 @@ export const translations = {
           subtitle: "Making friends and adapting to Kazakh culture.",
           items: {
             telegram: {
-              title: "Telegram Groups",
-              content: "Student groups on Telegram are very important for university life. You'll find announcements, events, housing offers, and everyday advice there.",
+              title: "Student Communities & Friendships",
+              content: "Try to join student communities, interest groups, and informal chats where you can meet people, ask everyday questions, and feel less isolated during your first weeks.",
             },
             hospitality: {
               title: "Kazakh Hospitality",
@@ -725,8 +725,8 @@ export const translations = {
           subtitle: "Как заводить друзей и привыкать к казахской культуре.",
           items: {
             telegram: {
-              title: "Telegram-группы",
-              content: "Студенческие Telegram-группы очень важны для университетской жизни. Там вы найдёте объявления, события, варианты жилья и бытовые советы.",
+              title: "Студенческие сообщества и дружба",
+              content: "Старайтесь вступать в студенческие сообщества, группы по интересам и неформальные чаты, где можно знакомиться, задавать бытовые вопросы и быстрее чувствовать себя своим в первые недели.",
             },
             hospitality: {
               title: "Казахское гостеприимство",
@@ -1212,8 +1212,8 @@ export const translations = {
           subtitle: "Дос табу және қазақ мәдениетіне бейімделу жолдары.",
           items: {
             telegram: {
-              title: "Telegram топтары",
-              content: "Telegram-дағы студенттік топтар университет өмірінде өте маңызды. Сол жерден хабарландырулар, іс-шаралар, баспана ұсыныстары және күнделікті кеңестер табасыз.",
+              title: "Студенттік қауымдастықтар мен достық",
+              content: "Алғашқы апталарда өзіңізді жалғыз сезінбеу үшін студенттік қауымдастықтарға, қызығушылық топтарына және бейресми чаттарға қосылып, танысып, күнделікті сұрақтарыңызды қойып жүріңіз.",
             },
             hospitality: {
               title: "Қазақ қонақжайлығы",

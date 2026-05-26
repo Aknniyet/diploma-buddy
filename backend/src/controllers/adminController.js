@@ -6,6 +6,22 @@ import {
 } from "../repositories/adminRepository.js";
 import { buildAdaptationRiskSummary } from "../services/adaptationRiskService.js";
 
+function buildAttentionStage(student) {
+  if (!student.hasBuddyMatch && !student.hasBuddyRequest) {
+    return { label: "Needs first outreach" };
+  }
+
+  if (!student.hasBuddyMatch && student.hasBuddyRequest) {
+    return { label: "Waiting for buddy match" };
+  }
+
+  if (student.overdueTasks > 0 || student.highPriorityIncomplete > 0) {
+    return { label: "Checklist support needed" };
+  }
+
+  return { label: "Monitoring progress" };
+}
+
 function ensureAdmin(req, res) {
   if (req.user.role !== "admin") {
     res.status(403).json({ message: "Admin access required." });
@@ -75,6 +91,35 @@ export async function getAdminDashboard(req, res) {
       };
     });
 
+    const attentionQueue = adaptationInsights
+      .filter(
+        (student) =>
+          student.risk.level !== "low" ||
+          !student.hasBuddyMatch ||
+          student.overdueTasks > 0 ||
+          student.highPriorityIncomplete > 0
+      )
+      .sort((first, second) => {
+        const riskWeight = { high: 3, medium: 2, low: 1 };
+        const riskDiff =
+          (riskWeight[second.risk.level] || 0) - (riskWeight[first.risk.level] || 0);
+
+        if (riskDiff !== 0) return riskDiff;
+
+        return (second.risk.score || 0) - (first.risk.score || 0);
+      })
+      .slice(0, 6)
+      .map((student) => ({
+        id: student.id,
+        fullName: student.full_name,
+        email: student.email,
+        profileCompletion: student.checklistProgress,
+        checklistProgress: student.checklistProgress,
+        hasBuddy: student.hasBuddyMatch,
+        stage: buildAttentionStage(student),
+        risk: student.risk,
+      }));
+
     const highRiskStudents = adaptationInsights.filter(
       (student) => student.risk.level === "high"
     ).length;
@@ -93,6 +138,7 @@ export async function getAdminDashboard(req, res) {
       },
       recentUsers: recentUsersResult.rows,
       recentRequests: recentRequestsResult.rows,
+      attentionQueue,
       adaptationInsights,
     });
   } catch (error) {

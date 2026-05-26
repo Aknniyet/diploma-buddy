@@ -105,6 +105,37 @@ export function ensurePlatformEnhancements() {
       `CREATE INDEX IF NOT EXISTS idx_users_last_active_at
        ON users(last_active_at DESC)`
     );
+
+    await query(
+      `ALTER TABLE community_posts
+       ADD COLUMN IF NOT EXISTS image_url TEXT`
+    );
+
+    await query(
+      `ALTER TABLE community_posts
+       ADD COLUMN IF NOT EXISTS status VARCHAR(30)`
+    );
+
+    await query(
+      `UPDATE community_posts
+       SET status = 'active'
+       WHERE status IS NULL`
+    );
+
+    await query(
+      `ALTER TABLE community_posts
+       ALTER COLUMN status SET DEFAULT 'active'`
+    );
+
+    await query(
+      `ALTER TABLE community_comments
+       ADD COLUMN IF NOT EXISTS image_url TEXT`
+    );
+
+    await query(
+      `CREATE INDEX IF NOT EXISTS idx_community_posts_status
+       ON community_posts(status, created_at DESC)`
+    );
   })();
 
   return setupPromise;

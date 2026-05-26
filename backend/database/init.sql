@@ -235,6 +235,7 @@ CREATE TABLE IF NOT EXISTS community_posts (
   title VARCHAR(180) NOT NULL,
   description TEXT NOT NULL,
   category VARCHAR(60) NOT NULL DEFAULT 'hangout',
+  status VARCHAR(30) NOT NULL DEFAULT 'active',
   location VARCHAR(160),
   meeting_time TIMESTAMP,
   image_url TEXT,
@@ -245,8 +246,14 @@ CREATE TABLE IF NOT EXISTS community_posts (
 ALTER TABLE community_posts
 ADD COLUMN IF NOT EXISTS image_url TEXT;
 
+ALTER TABLE community_posts
+ADD COLUMN IF NOT EXISTS status VARCHAR(30) NOT NULL DEFAULT 'active';
+
 CREATE INDEX IF NOT EXISTS idx_community_posts_created_at
 ON community_posts(created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_community_posts_status
+ON community_posts(status, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS community_post_interests (
   id SERIAL PRIMARY KEY,

@@ -2,9 +2,7 @@ import {
   FileText,
   House,
   Landmark,
-  Heart,
   Bus,
-  Users,
   School,
 } from "lucide-react";
 
@@ -187,57 +185,6 @@ export const guideSections = [
       ],
     },
     {
-      icon: Heart,
-      titleKey: "guide.sections.healthcare.title",
-      subtitleKey: "guide.sections.healthcare.subtitle",
-      items: [
-        {
-          titleKey: "guide.sections.healthcare.items.insurance.title",
-          contentKey: "guide.sections.healthcare.items.insurance.content",
-          links: [
-            {
-              label: "AITU International Office",
-              url: "https://int.astanait.edu.kz/",
-            },
-          ],
-        },
-        {
-          titleKey: "guide.sections.healthcare.items.clinics.title",
-          contentKey: "guide.sections.healthcare.items.clinics.content",
-          links: [
-            {
-              label: "2GIS: Clinics and Pharmacies",
-              url: "https://2gis.kz/",
-            },
-          ],
-        },
-        {
-          titleKey: "guide.sections.healthcare.items.pharmacies.title",
-          contentKey: "guide.sections.healthcare.items.pharmacies.content",
-          links: [
-            {
-              label: "2GIS: Nearest Pharmacies",
-              url: "https://2gis.kz/",
-            },
-          ],
-        },
-        {
-          titleKey: "guide.sections.healthcare.items.emergency.title",
-          contentKey: "guide.sections.healthcare.items.emergency.content",
-          links: [
-            {
-              label: "eGov: Emergency Number 112",
-              url: "https://egov.kz/cms/en/articles/emergency_situations/emergency_number_112",
-            },
-            {
-              label: "Ministry of Emergency Situations",
-              url: "https://www.gov.kz/memleket/entities/emer?lang=en",
-            },
-          ],
-        },
-      ],
-    },
-    {
       icon: Bus,
       titleKey: "guide.sections.transportation.title",
       subtitleKey: "guide.sections.transportation.subtitle",
@@ -289,41 +236,6 @@ export const guideSections = [
               url: "https://2gis.kz/",
             },
           ],
-        },
-      ],
-    },
-    {
-      icon: Users,
-      titleKey: "guide.sections.socialLife.title",
-      subtitleKey: "guide.sections.socialLife.subtitle",
-      items: [
-        {
-          titleKey: "guide.sections.socialLife.items.telegram.title",
-          contentKey: "guide.sections.socialLife.items.telegram.content",
-          links: [
-            {
-              label: "Telegram",
-              url: "https://telegram.org/",
-            },
-          ],
-        },
-        {
-          titleKey: "guide.sections.socialLife.items.hospitality.title",
-          contentKey: "guide.sections.socialLife.items.hospitality.content",
-        },
-        {
-          titleKey: "guide.sections.socialLife.items.clubs.title",
-          contentKey: "guide.sections.socialLife.items.clubs.content",
-          links: [
-            {
-              label: "AITU Official Website",
-              url: "https://astanait.edu.kz/en/",
-            },
-          ],
-        },
-        {
-          titleKey: "guide.sections.socialLife.items.languageTips.title",
-          contentKey: "guide.sections.socialLife.items.languageTips.content",
         },
       ],
     },
