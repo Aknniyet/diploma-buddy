@@ -59,7 +59,7 @@ function BuddyOverviewPage() {
           </div>
           <div className="dashboard-card">
             <h3 className="card-title">Action</h3>
-            <p className="card-subtitle">Open Buddy Requests to accept or decline incoming requests.</p>
+            <p className="card-subtitle">Open Student Requests to accept or decline incoming requests.</p>
           </div>
           <div className="dashboard-card">
             <h3 className="card-title">Upcoming Events</h3>
