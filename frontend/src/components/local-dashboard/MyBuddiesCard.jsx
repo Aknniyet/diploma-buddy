@@ -7,7 +7,7 @@ function MyBuddiesCard() {
     <section className="dashboard-card large-card">
       <div className="card-header-row">
         <div>
-          <h3 className="section-title">My Buddies</h3>
+          <h3 className="section-title">My Students</h3>
           <p className="section-subtitle">
             International students you're helping
           </p>

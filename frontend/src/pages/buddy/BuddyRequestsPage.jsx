@@ -31,10 +31,10 @@ function BuddyRequestsPage() {
   };
 
   return (
-    <DashboardLayout title="Requests" sidebarType="buddy">
+    <DashboardLayout title="Student Requests" sidebarType="buddy">
       <section className="buddy-requests-page">
         <div className="buddy-requests-header">
-          <h1>Buddy Requests</h1>
+          <h1>Student Requests</h1>
           <p>Review and respond to connection requests from international students.</p>
         </div>
 
@@ -48,7 +48,7 @@ function BuddyRequestsPage() {
               ))}
             </div>
           ) : (
-            <div className="buddy-past-empty-card"><div className="buddy-past-empty-content"><h3>No pending requests</h3><p>New buddy requests will appear here.</p></div></div>
+            <div className="buddy-past-empty-card"><div className="buddy-past-empty-content"><h3>No pending requests</h3><p>New student requests will appear here.</p></div></div>
           )
         ) : pastRequests.length > 0 ? (
           <div className="buddy-requests-list">

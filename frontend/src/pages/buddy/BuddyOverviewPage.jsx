@@ -1,9 +1,10 @@
+import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
-import { useAuth } from "../../context/AuthContext";
-import { formatAstanaShortDateTime } from "../../utils/datetime";
 import "../../styles/local-dashboard.css";
+import { formatAstanaShortDateTime } from "../../utils/datetime";
 
 function BuddyOverviewPage() {
   const { user } = useAuth();
@@ -30,7 +31,8 @@ function BuddyOverviewPage() {
 
         {dashboard.buddyStatus && dashboard.buddyStatus !== "approved" ? (
           <div className="local-review-alert">
-            Your buddy profile status is <strong>{dashboard.buddyStatus}</strong>. You can edit your profile, but you will appear in matching only after admin approval.
+            Your buddy profile status is <strong>{dashboard.buddyStatus}</strong>. You can edit
+            your profile, but you will appear in matching only after admin approval.
           </div>
         ) : null}
 
@@ -53,30 +55,25 @@ function BuddyOverviewPage() {
         </div>
 
         <div className="local-overview-bottom-grid">
-          <div className="dashboard-card">
-            <h3 className="card-title">Capacity</h3>
-            <p className="card-subtitle">You can support up to {dashboard.maxStudents} active students at the same time.</p>
-          </div>
-          <div className="dashboard-card">
-            <h3 className="card-title">Action</h3>
-            <p className="card-subtitle">Open Buddy Requests to accept or decline incoming requests.</p>
-          </div>
-          <div className="dashboard-card">
+          <div className="dashboard-card local-overview-panel local-events-card">
             <h3 className="card-title">Upcoming Events</h3>
             {dashboard.buddyStatus !== "approved" ? (
-              <p className="card-subtitle">
-                Upcoming events will appear after admin approval.
-              </p>
+              <p className="card-subtitle">Upcoming events will appear after admin approval.</p>
             ) : dashboard.upcomingEvents.length > 0 ? (
               <div className="recent-messages-list">
                 {dashboard.upcomingEvents.map((event) => (
-                  <div key={event.id} className="recent-message-content">
-                    <h4>{event.title}</h4>
-                    <p>
-                      {formatAstanaShortDateTime(event.event_date)}
-                      {" · "}
-                      {event.location || "Location TBD"}
-                    </p>
+                  <div key={event.id} className="local-event-item">
+                    <div className="local-event-icon">
+                      <CalendarDays size={18} />
+                    </div>
+                    <div className="recent-message-content">
+                      <h4>{event.title}</h4>
+                      <p>
+                        {formatAstanaShortDateTime(event.event_date)}
+                        {" · "}
+                        {event.location || "Location TBD"}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -26,10 +26,10 @@ function MyBuddiesPage() {
   }, []);
 
   return (
-    <DashboardLayout title="My Buddies" sidebarType="buddy">
+    <DashboardLayout title="My Students" sidebarType="buddy">
       <section className="my-buddies-page">
         <div className="my-buddies-header">
-          <h1>My Buddies</h1>
+          <h1>My Students</h1>
           <p>International students you are currently helping</p>
         </div>
 
@@ -37,7 +37,7 @@ function MyBuddiesPage() {
           <div className="my-buddies-summary-left">
             <div className="my-buddies-summary-icon"><Users size={20} /></div>
             <div>
-              <h3>{students.length} Active Buddies</h3>
+              <h3>{students.length} Active Students</h3>
               <p>You can support up to 3 students</p>
             </div>
           </div>
@@ -47,7 +47,7 @@ function MyBuddiesPage() {
         <div className="my-buddies-feedback-card">
           <div className="my-buddies-feedback-top">
             <div>
-              <h3>Buddy Feedback</h3>
+              <h3>Student Feedback</h3>
               <p>See how students rate your support and communication.</p>
             </div>
 
@@ -106,7 +106,7 @@ function MyBuddiesPage() {
           <div className="my-buddies-empty-card">
             <div className="my-buddies-empty-content">
               <Users size={52} />
-              <h3>No buddies yet</h3>
+              <h3>No students yet</h3>
               <p>International students will appear here after you accept their requests.</p>
               <Link to="/buddy/buddy-requests" className="pending-link">Check pending requests</Link>
             </div>
