@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import CommunityDeleteModal from "../../components/community/CommunityDeleteModal";
 import ProgressOverviewCard from "../../components/checklist/ProgressOverviewCard";
 import CategoryTabs from "../../components/checklist/CategoryTabs";
 import ChecklistSectionCard from "../../components/checklist/ChecklistSectionCard";
@@ -45,6 +46,9 @@ function AdaptationChecklistPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [isDeletingTask, setIsDeletingTask] = useState(false);
 
   const loadChecklist = async () => {
     try {
@@ -85,6 +89,12 @@ function AdaptationChecklistPage() {
   const selectedCategoryData =
     checklistCategories.find((item) => item.id === selectedCategory) || checklistCategories[0];
   const selectedTasks = tasks.filter((task) => task.category === selectedCategory);
+
+  const openTaskComposer = () => {
+    setEditingTaskId(null);
+    setFormData({ ...emptyTaskForm, category: selectedCategory });
+    setIsTaskModalOpen(true);
+  };
 
   const resetComposer = () => {
     setEditingTaskId(null);
@@ -170,19 +180,34 @@ function AdaptationChecklistPage() {
   };
 
   const handleDeleteTask = async (task) => {
-    const shouldDelete = window.confirm(`Delete "${task.title}"?`);
-    if (!shouldDelete) return;
+    setDeleteError("");
+    setTaskToDelete(task);
+  };
 
+  const closeDeleteModal = () => {
+    if (isDeletingTask) return;
+    setDeleteError("");
+    setTaskToDelete(null);
+  };
+
+  const confirmDeleteTask = async () => {
+    if (!taskToDelete) return;
+
+    setIsDeletingTask(true);
+    setDeleteError("");
     try {
-      await apiRequest(`/checklist/${task.id}`, { method: "DELETE" });
-      setTasks((prev) => prev.filter((item) => item.id !== task.id));
+      await apiRequest(`/checklist/${taskToDelete.id}`, { method: "DELETE" });
+      setTasks((prev) => prev.filter((item) => item.id !== taskToDelete.id));
       setStatusMessage("Task deleted.");
-      if (editingTaskId === task.id) {
+      if (editingTaskId === taskToDelete.id) {
         resetComposer();
       }
+      setTaskToDelete(null);
       await loadChecklist();
     } catch (error) {
-      setErrorMessage(error.message || "Could not delete task.");
+      setDeleteError(error.message || "Could not delete task.");
+    } finally {
+      setIsDeletingTask(false);
     }
   };
 
@@ -190,8 +215,13 @@ function AdaptationChecklistPage() {
     <DashboardLayout title="Checklist">
       <section className="adaptation-checklist-page">
         <div className="adaptation-checklist-header">
-          <h1>Adaptation Checklist</h1>
-          <p>Track university, document, housing, and personal tasks in one place.</p>
+          <div>
+            <h1>Adaptation Checklist</h1>
+            <p>Track university, document, housing, and personal tasks in one place.</p>
+          </div>
+          <button type="button" className="checklist-primary-btn" onClick={openTaskComposer}>
+            Add Your Own Task
+          </button>
         </div>
 
         {statusMessage ? <div className="checklist-status-message">{statusMessage}</div> : null}
@@ -204,11 +234,6 @@ function AdaptationChecklistPage() {
             totalCount={summary.totalCount || 0}
             overdueTasks={overdueTasks}
             highPriorityIncomplete={highPriorityIncomplete}
-            onAddTask={() => {
-              setEditingTaskId(null);
-              setFormData({ ...emptyTaskForm, category: selectedCategory });
-              setIsTaskModalOpen(true);
-            }}
           />
           <CategoryTabs
             categories={checklistCategories}
@@ -304,6 +329,19 @@ function AdaptationChecklistPage() {
               </form>
             </div>
           </div>
+        ) : null}
+
+        {taskToDelete ? (
+          <CommunityDeleteModal
+            deleteError={deleteError}
+            isDeletingPost={isDeletingTask}
+            onCancel={closeDeleteModal}
+            onConfirm={confirmDeleteTask}
+            title="Delete task?"
+            description={`Are you sure you want to delete "${taskToDelete.title}"? This action cannot be undone.`}
+            confirmLabel="Delete"
+            deletingLabel="Deleting..."
+          />
         ) : null}
       </section>
     </DashboardLayout>

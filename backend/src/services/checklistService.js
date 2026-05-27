@@ -67,7 +67,7 @@ export const defaultChecklistTasks = [
     category: "transport",
     title: "Get a Transport Card",
     description: "Buy or activate a local transport card for buses or other public transport in your city.",
-    priority: "high",
+    priority: "low",
     timeframe: "Arrival week",
   },
   {

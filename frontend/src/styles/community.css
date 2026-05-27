@@ -799,8 +799,6 @@
   }
 
   .community-feed-header,
-  .community-post-header,
-  .community-post-content-header,
   .community-post-footer,
   .community-modal-tools,
   .community-modal-actions {
@@ -808,11 +806,36 @@
     flex-direction: column;
   }
 
+  .community-post-header,
+  .community-post-content-header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .community-author,
+  .community-post-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .community-post-badges {
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+
+  .community-owner-actions {
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+
   .community-comment-form {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
   }
 
   .community-comment-form button {
+    grid-column: 1 / -1;
     padding: 11px 18px;
   }
 

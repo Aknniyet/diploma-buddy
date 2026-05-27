@@ -5,7 +5,6 @@ import { useAuth } from "../../context/AuthContext";
 import { apiRequest } from "../../lib/api";
 
 function DashboardTopbar({
-  title = "Overview",
   sidebarType = "student",
   onMenuToggle = () => {},
 }) {
@@ -40,6 +39,12 @@ function DashboardTopbar({
       : user?.role === "international"
       ? "International Student"
       : "Admin";
+  const workspaceLabel =
+    sidebarType === "admin"
+      ? "Admin panel"
+      : sidebarType === "buddy"
+      ? "Buddy workspace"
+      : "Student workspace";
   const hasUnreadNotifications = useMemo(
     () => notifications.some((item) => !item.read),
     [notifications]
@@ -121,7 +126,7 @@ function DashboardTopbar({
         >
           <Menu size={20} />
         </button>
-        <h2>{title}</h2>
+        <span className="dashboard-topbar-context">{workspaceLabel}</span>
       </div>
       <div className="topbar-actions">
         {notificationsPath ? (

@@ -8,6 +8,7 @@ import { apiRequest } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 import { useI18n } from "../../context/I18nContext";
 import {
+  STUDY_PROGRAMS,
   toggleLanguageSelection,
   sanitizeRestrictedFieldValue,
   validateProfileForm,
@@ -128,7 +129,15 @@ function ProfilePage({ userType = "student" }) {
         { id: 2, label: "Email", key: "email", value: rawProfile.email || "" , disabled: true},
         { id: 3, label: "Home Country", key: "homeCountry", value: rawProfile.home_country || "" },
         { id: 4, label: "Current City", key: "city", value: rawProfile.city || "" },
-        { id: 5, label: "Study Program", key: "studyProgram", value: rawProfile.study_program || "" },
+        {
+          id: 5,
+          label: "Study Program",
+          key: "studyProgram",
+          value: rawProfile.study_program || "",
+          type: "select",
+          options: STUDY_PROGRAMS,
+          placeholder: "Select",
+        },
         { id: 6, label: "Gender", key: "gender", value: rawProfile.gender || "" , type: "select", options: ["female", "male", "other"]},
         { id: 7, label: "Buddy Preference", key: "genderPreference", value: rawProfile.gender_preference || "no_preference", type: "select", options: ["no_preference", "female", "male", "other"] },
         ...(isBuddy

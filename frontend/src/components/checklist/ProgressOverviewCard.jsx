@@ -4,7 +4,6 @@ function ProgressOverviewCard({
   totalCount = 0,
   overdueTasks = 0,
   highPriorityIncomplete = 0,
-  onAddTask,
 }) {
   return (
     <div className="checklist-overview-card">
@@ -35,14 +34,6 @@ function ProgressOverviewCard({
           {overdueTasks} overdue
         </span>
       </div>
-
-      {onAddTask ? (
-        <div className="checklist-overview-actions">
-          <button type="button" className="checklist-primary-btn" onClick={onAddTask}>
-            Add Your Own Task
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }
