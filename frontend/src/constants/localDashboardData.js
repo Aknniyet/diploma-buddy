@@ -70,10 +70,10 @@ export const localCurrentUser = {
 export const localOverviewCards = [
   {
     id: 1,
-    title: "Active Buddies",
+    title: "Active Students",
     value: 0,
-    subtitle: "of 3 max buddies",
-    actionText: "View buddies",
+    subtitle: "of 3 max students",
+    actionText: "View students",
     actionPath: "/buddy/my-buddies",
   },
   {
@@ -95,7 +95,7 @@ export const localOverviewCards = [
 ];
 
 export const myBuddiesEmptyState = {
-  title: "No buddies yet",
+  title: "No students yet",
   subtitle: "Wait for requests or update your profile",
 };
 

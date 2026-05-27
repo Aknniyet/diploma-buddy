@@ -10,9 +10,10 @@ export function findStudentDashboardData(userId) {
       [userId]
     ),
     query(
-      `SELECT COUNT(*)::int AS count
+      `SELECT COUNT(*) FILTER (WHERE status = 'pending')::int AS pending_count,
+              COUNT(*)::int AS total_count
        FROM buddy_requests
-       WHERE international_student_id = $1 AND status = 'pending'`,
+       WHERE international_student_id = $1`,
       [userId]
     ),
     query(
@@ -25,6 +26,12 @@ export function findStudentDashboardData(userId) {
        JOIN messages m ON m.conversation_id = c.id
        WHERE (c.international_student_id = $1 OR c.buddy_id = $1)
          AND m.sender_id <> $1 AND m.is_read = FALSE`,
+      [userId]
+    ),
+    query(
+      `SELECT COUNT(*)::int AS count
+       FROM event_attendance
+       WHERE user_id = $1`,
       [userId]
     ),
   ]);
@@ -67,7 +74,8 @@ export function findBuddyDashboardData(userId) {
 
 export function findStudentChecklistTasks(userId) {
   return query(
-    `SELECT id, category, title, description, priority, timeframe, action_label, action_url, is_completed
+    `SELECT id, category, title, description, priority, timeframe, deadline,
+            action_label, action_url, is_completed, created_by, is_custom, completed_at
      FROM adaptation_checklist_tasks
      WHERE user_id = $1
      ORDER BY id ASC`,

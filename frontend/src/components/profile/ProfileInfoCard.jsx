@@ -27,6 +27,9 @@ function ProfileInfoCard({ profile, formData, isEditing, onChange, onToggleLangu
               field.type === "select" ? (
                 <div className="profile-select-wrap">
                   <select name={field.key} className="profile-input profile-select" value={formData[field.key]} onChange={onChange}>
+                    {field.placeholder ? (
+                      <option value="">{field.placeholder}</option>
+                    ) : null}
                     {field.options.map((option) => (
                       <option value={option} key={option}>{formatSelectValue(option)}</option>
                     ))}

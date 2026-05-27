@@ -348,6 +348,32 @@ function validateAboutYouField(value) {
   return null;
 }
 
+export function validateModeratedText(value, label, { required = false, maxLength = 500 } = {}) {
+  const normalizedValue = collapseSpaces(value);
+
+  if (!normalizedValue) {
+    return required ? `${label} is required.` : null;
+  }
+
+  if (normalizedValue.length > maxLength) {
+    return `${label} must be ${maxLength} characters or fewer.`;
+  }
+
+  if (normalizedValue.length < 2) {
+    return `${label} is too short.`;
+  }
+
+  if (looksLikePlaceholderText(normalizedValue)) {
+    return `${label} looks incomplete or unrealistic.`;
+  }
+
+  if (containsUnsafeContent(normalizedValue)) {
+    return `${label} must stay respectful and safe.`;
+  }
+
+  return null;
+}
+
 function normalizeRole(role) {
   return collapseSpaces(role);
 }

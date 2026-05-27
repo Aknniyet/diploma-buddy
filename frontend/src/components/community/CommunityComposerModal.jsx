@@ -42,54 +42,56 @@ function CommunityComposerModal({
           </button>
         </div>
 
-        <input
-          name="title"
-          value={form.title}
-          onChange={onFormChange}
-          placeholder="Movie tonight? City walk? Need help with documents?"
-          maxLength={180}
-        />
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={onFormChange}
-          placeholder="Write the details so other students understand how to join."
-          rows="5"
-        />
+        <div className="community-modal-body">
+          <input
+            name="title"
+            value={form.title}
+            onChange={onFormChange}
+            placeholder="Movie tonight? City walk? Need help with documents?"
+            maxLength={180}
+          />
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={onFormChange}
+            placeholder="Write the details so other students understand how to join."
+            rows="5"
+          />
 
-        {form.imageUrl ? (
-          <div className="community-image-preview">
-            <img src={form.imageUrl} alt="Post preview" />
-            <button
-              type="button"
-              className="community-remove-image"
-              onClick={onRemoveImage}
-            >
-              Remove photo
-            </button>
+          {form.imageUrl ? (
+            <div className="community-image-preview">
+              <img src={form.imageUrl} alt="Post preview" />
+              <button
+                type="button"
+                className="community-remove-image"
+                onClick={onRemoveImage}
+              >
+                Remove photo
+              </button>
+            </div>
+          ) : null}
+
+          <div className="community-modal-tools">
+            <select name="category" value={form.category} onChange={onFormChange}>
+              {categories.map((category) => (
+                <option key={category.value} value={category.value}>
+                  {category.label}
+                </option>
+              ))}
+            </select>
+            <input
+              type="datetime-local"
+              name="meetingTime"
+              value={form.meetingTime}
+              onChange={onFormChange}
+            />
+            <input
+              name="location"
+              value={form.location}
+              onChange={onFormChange}
+              placeholder="Location"
+            />
           </div>
-        ) : null}
-
-        <div className="community-modal-tools">
-          <select name="category" value={form.category} onChange={onFormChange}>
-            {categories.map((category) => (
-              <option key={category.value} value={category.value}>
-                {category.label}
-              </option>
-            ))}
-          </select>
-          <input
-            type="datetime-local"
-            name="meetingTime"
-            value={form.meetingTime}
-            onChange={onFormChange}
-          />
-          <input
-            name="location"
-            value={form.location}
-            onChange={onFormChange}
-            placeholder="Location"
-          />
         </div>
 
         <div className="community-modal-actions">

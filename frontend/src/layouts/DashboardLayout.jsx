@@ -3,7 +3,7 @@ import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardTopbar from "../components/dashboard/DashboardTopbar";
 import "../styles/dashboard.css";
 
-function DashboardLayout({ children, title, sidebarType = "student" }) {
+function DashboardLayout({ children, sidebarType = "student" }) {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -27,7 +27,6 @@ function DashboardLayout({ children, title, sidebarType = "student" }) {
 
       <div className="dashboard-main">
         <DashboardTopbar
-          title={title}
           sidebarType={sidebarType}
           onMenuToggle={() => setIsMobileSidebarOpen((prev) => !prev)}
         />

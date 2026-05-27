@@ -1,6 +1,18 @@
-import { Check, FileText } from "lucide-react";
+import { Check, Pencil, Trash2 } from "lucide-react";
+import { formatAstanaDateTime } from "../../utils/datetime";
 
-function ChecklistSectionCard({ category, tasks, onToggleTask }) {
+function formatPriorityLabel(priority) {
+  if (!priority) return "Medium";
+  return priority.charAt(0).toUpperCase() + priority.slice(1);
+}
+
+function ChecklistSectionCard({
+  category,
+  tasks,
+  onToggleTask,
+  onEditTask,
+  onDeleteTask,
+}) {
   const completedCount = tasks.filter((task) => task.completed).length;
 
   return (
@@ -8,7 +20,7 @@ function ChecklistSectionCard({ category, tasks, onToggleTask }) {
       <div className="checklist-section-header">
         <div className="section-title-wrap">
           <div className="section-main-icon">
-            <FileText size={18} />
+            <category.icon size={18} />
           </div>
 
           <div>
@@ -25,22 +37,77 @@ function ChecklistSectionCard({ category, tasks, onToggleTask }) {
       </div>
 
       <div className="checklist-tasks">
+        {tasks.length === 0 ? (
+          <div className="checklist-empty-state">
+            No tasks in this category yet. Add one from the composer above.
+          </div>
+        ) : null}
+
         {tasks.map((task) => (
-          <button
-            type="button"
+          <div
             key={task.id}
             className={task.completed ? "checklist-task completed" : "checklist-task"}
-            onClick={() => onToggleTask(task.id)}
           >
-            <div className="task-check">{task.completed ? <Check size={14} /> : null}</div>
+            <button
+              type="button"
+              className="checklist-task-main"
+              onClick={() => onToggleTask(task.id)}
+            >
+              <div className="task-check">{task.completed ? <Check size={14} /> : null}</div>
 
-            <div className="task-content">
-              <h4>{task.title}</h4>
-              <p>{task.description}</p>
+              <div className="task-content">
+                <div className="task-title-row">
+                  <h4>{task.title}</h4>
+                  <div className="task-pill-row">
+                    <span className={`task-meta-pill priority-${task.priority || "medium"}`}>
+                      {formatPriorityLabel(task.priority)}
+                    </span>
+                    {task.deadline ? (
+                      <span
+                        className={`task-meta-pill ${
+                          task.overdue ? "deadline-overdue" : task.dueSoon ? "deadline-soon" : ""
+                        }`}
+                      >
+                        {task.overdue
+                          ? "Overdue"
+                          : `Due ${formatAstanaDateTime(task.deadline, {
+                              day: "2-digit",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                            })}`}
+                      </span>
+                    ) : null}
+                    {task.is_custom ? (
+                      <span className="task-meta-pill source-custom">My task</span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <p>{task.description}</p>
+              </div>
+            </button>
+
+            <div className="task-side-actions">
+              <div className="task-action-text">{task.completed ? "Completed" : "Mark complete"}</div>
+
+              {task.is_custom ? (
+                <div className="task-icon-actions">
+                  <button type="button" className="task-icon-btn" onClick={() => onEditTask?.(task)}>
+                    <Pencil size={15} />
+                  </button>
+                  <button
+                    type="button"
+                    className="task-icon-btn danger"
+                    onClick={() => onDeleteTask?.(task)}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              ) : null}
             </div>
-
-            <div className="task-action-text">{task.completed ? "Completed" : "Mark complete"}</div>
-          </button>
+          </div>
         ))}
       </div>
     </div>

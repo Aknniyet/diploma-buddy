@@ -180,10 +180,13 @@ button {
   min-width: 0;
 }
 
-.dashboard-topbar h2 {
+.dashboard-topbar-context {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -352,7 +355,7 @@ button {
 
 .overview-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -527,6 +530,55 @@ button {
   font-size: 14px;
   line-height: 1.5;
   color: #667085;
+}
+
+.next-step-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.next-step-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #edf6f6;
+  color: #466164;
+}
+
+.next-step-pill.priority-high {
+  background: #ffe9ea;
+  color: #c2410c;
+}
+
+.next-step-pill.priority-medium {
+  background: #fff5db;
+  color: #b45309;
+}
+
+.next-step-pill.priority-low {
+  background: #edf7ff;
+  color: #0369a1;
+}
+
+.next-step-pill.warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.next-step-pill.danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.next-step-pill.subtle {
+  background: #f3f8f7;
+  color: #667085;
+  text-transform: capitalize;
 }
 
 .recent-messages-list {

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
+import CommunityDeleteModal from "../../components/community/CommunityDeleteModal";
 import { apiRequest } from "../../lib/api";
 import { formatAstanaDateTime, toAstanaDateTimeInputValue } from "../../utils/datetime";
 import "../../styles/admin.css";
@@ -20,21 +21,48 @@ function formatInputDate(dateValue) {
 
 function AdminEventsPage() {
   const [events, setEvents] = useState([]);
+  const [loadError, setLoadError] = useState("");
   const [form, setForm] = useState(initialForm);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState("");
   const [statusType, setStatusType] = useState("info");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [eventToDelete, setEventToDelete] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
+  const [isDeletingEvent, setIsDeletingEvent] = useState(false);
   const isSubmittingRef = useRef(false);
 
   const loadEvents = async () => {
-    const data = await apiRequest("/events");
-    setEvents(Array.isArray(data) ? data : []);
+    try {
+      const data = await apiRequest("/events");
+      setEvents(Array.isArray(data) ? data : []);
+      setLoadError("");
+    } catch (error) {
+      setEvents([]);
+      setLoadError(error.message || "Could not load events.");
+    }
   };
 
   useEffect(() => {
     loadEvents().catch(() => null);
   }, []);
+
+  const itemsPerPage = 3;
+  const totalPages = Math.max(1, Math.ceil(events.length / itemsPerPage));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedEvents = useMemo(
+    () =>
+      events.slice(
+        (safePage - 1) * itemsPerPage,
+        safePage * itemsPerPage
+      ),
+    [events, safePage]
+  );
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
 
   const readImageFile = (file, onLoad) => {
     if (!file) {
@@ -120,14 +148,37 @@ function AdminEventsPage() {
     setStatusType("info");
   };
 
-  const handleDelete = async (eventId) => {
-    await apiRequest(`/events/${eventId}`, { method: "DELETE" });
-    setStatusType("success");
-    setStatus("Event deleted.");
-    if (editingId === eventId) {
-      resetForm();
+  const openDeleteModal = (item) => {
+    setEventToDelete(item);
+    setDeleteError("");
+  };
+
+  const closeDeleteModal = () => {
+    if (isDeletingEvent) return;
+    setEventToDelete(null);
+    setDeleteError("");
+  };
+
+  const handleDelete = async () => {
+    if (!eventToDelete) return;
+
+    setDeleteError("");
+    setIsDeletingEvent(true);
+
+    try {
+      await apiRequest(`/events/${eventToDelete.id}`, { method: "DELETE" });
+      setStatusType("success");
+      setStatus("Event deleted.");
+      if (editingId === eventToDelete.id) {
+        resetForm();
+      }
+      setEventToDelete(null);
+      await loadEvents();
+    } catch (error) {
+      setDeleteError(error.message || "Could not delete the event.");
+    } finally {
+      setIsDeletingEvent(false);
     }
-    await loadEvents();
   };
 
   return (
@@ -253,39 +304,87 @@ function AdminEventsPage() {
             </div>
 
             <div className="admin-list">
-              {events.map((item) => (
-                <article className="admin-list-item" key={item.id}>
-                  <div className="admin-item-main">
-                    <div className="admin-event-row">
-                      {item.image_url ? (
-                        <img src={item.image_url} alt={item.title} className="admin-event-thumb" />
-                      ) : null}
-                      <div className="admin-event-copy">
-                        <h4>{item.title}</h4>
-                        <p>{item.description || "No description provided."}</p>
+              {loadError ? (
+                <div className="admin-empty-state">{loadError}</div>
+              ) : paginatedEvents.length === 0 ? (
+                <div className="admin-empty-state">No events published yet.</div>
+              ) : (
+                paginatedEvents.map((item) => (
+                  <article className="admin-list-item" key={item.id}>
+                    <div className="admin-item-main">
+                      <div className="admin-event-row">
+                        {item.image_url ? (
+                          <img src={item.image_url} alt={item.title} className="admin-event-thumb" />
+                        ) : null}
+                        <div className="admin-event-copy">
+                          <h4>{item.title}</h4>
+                          <p>{item.description || "No description provided."}</p>
+                        </div>
+                      </div>
+                      <div className="admin-meta">
+                        <span>{formatAstanaDateTime(item.event_date)}</span>
+                        <span>{item.location || "Location TBD"}</span>
+                        <span>{item.category || "General"}</span>
                       </div>
                     </div>
-                    <div className="admin-meta">
-                      <span>{formatAstanaDateTime(item.event_date)}</span>
-                      <span>{item.location || "Location TBD"}</span>
-                      <span>{item.category || "General"}</span>
-                    </div>
-                  </div>
 
-                  <div className="admin-inline-actions">
-                    <button type="button" className="admin-secondary-btn" onClick={() => handleEdit(item)}>
-                      Edit
-                    </button>
-                    <button type="button" className="admin-danger-btn" onClick={() => handleDelete(item.id)}>
-                      Delete
-                    </button>
-                  </div>
-                </article>
+                    <div className="admin-inline-actions">
+                      <button type="button" className="admin-secondary-btn" onClick={() => handleEdit(item)}>
+                        Edit
+                      </button>
+                      <button type="button" className="admin-danger-btn" onClick={() => openDeleteModal(item)}>
+                        Delete
+                      </button>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+
+            <div className="admin-pagination">
+              <button
+                type="button"
+                className="admin-page-btn"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={safePage === 1}
+              >
+                Prev
+              </button>
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+                <button
+                  key={page}
+                  type="button"
+                  className={`admin-page-btn ${safePage === page ? "active" : ""}`}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
               ))}
+              <button
+                type="button"
+                className="admin-page-btn"
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                disabled={safePage === totalPages}
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
       </section>
+
+      {eventToDelete ? (
+        <CommunityDeleteModal
+          deleteError={deleteError}
+          isDeletingPost={isDeletingEvent}
+          onCancel={closeDeleteModal}
+          onConfirm={handleDelete}
+          title="Delete event?"
+          description={`Are you sure you want to delete "${eventToDelete.title}"? This action cannot be undone.`}
+          confirmLabel="Delete"
+          deletingLabel="Deleting..."
+        />
+      ) : null}
     </DashboardLayout>
   );
 }

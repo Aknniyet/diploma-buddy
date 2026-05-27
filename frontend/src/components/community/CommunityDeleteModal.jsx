@@ -5,6 +5,10 @@ function CommunityDeleteModal({
   isDeletingPost,
   onCancel,
   onConfirm,
+  title = "Delete post?",
+  description = "Are you sure you want to delete this post? This action cannot be undone.",
+  confirmLabel = "Delete",
+  deletingLabel = "Deleting...",
 }) {
   return (
     <div className="community-confirm-backdrop" role="presentation">
@@ -18,8 +22,8 @@ function CommunityDeleteModal({
           <Trash2 size={20} />
         </div>
         <div>
-          <h2 id="community-delete-title">Delete post?</h2>
-          <p>Are you sure you want to delete this post? This action cannot be undone.</p>
+          <h2 id="community-delete-title">{title}</h2>
+          <p>{description}</p>
         </div>
 
         {deleteError ? <p className="community-confirm-error">{deleteError}</p> : null}
@@ -34,7 +38,7 @@ function CommunityDeleteModal({
             onClick={onConfirm}
             disabled={isDeletingPost}
           >
-            {isDeletingPost ? "Deleting..." : "Delete"}
+            {isDeletingPost ? deletingLabel : confirmLabel}
           </button>
         </div>
       </div>

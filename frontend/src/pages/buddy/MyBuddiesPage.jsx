@@ -47,7 +47,7 @@ function MyBuddiesPage() {
         <div className="my-buddies-feedback-card">
           <div className="my-buddies-feedback-top">
             <div>
-              <h3>Buddy Feedback</h3>
+              <h3>Student Feedback</h3>
               <p>See how students rate your support and communication.</p>
             </div>
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
 import { formatAstanaDate } from "../../utils/datetime";
@@ -6,6 +7,63 @@ import "../../styles/admin.css";
 
 function EmptyAdminState({ text }) {
   return <div className="admin-empty-state">{text}</div>;
+}
+
+function MatchBreakdown({ scoreLabel, reasons = [], breakdown = [] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="admin-match-breakdown">
+      <button
+        type="button"
+        className="admin-match-breakdown-toggle"
+        onClick={() => setIsOpen((prev) => !prev)}
+        aria-expanded={isOpen}
+      >
+        <strong>Compatibility {scoreLabel}</strong>
+        <span>
+          Why this match fits
+          {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </span>
+      </button>
+
+      {!isOpen && reasons.length ? (
+        <div className="admin-match-reasons preview">
+          {reasons.slice(0, 2).map((reason) => (
+            <span key={reason} className="admin-match-reason-pill compact">
+              {reason}
+            </span>
+          ))}
+        </div>
+      ) : null}
+
+      {isOpen ? (
+        <div className="admin-match-breakdown-content">
+          {reasons.length ? (
+            <div className="admin-match-reasons">
+              {reasons.map((reason) => (
+                <span key={reason} className="admin-match-reason-pill">
+                  {reason}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
+          <div className="admin-match-breakdown-grid">
+            {breakdown.map((item) => (
+              <div className="admin-match-breakdown-row" key={item.key}>
+                <div>
+                  <p>{item.label}</p>
+                  <small>{item.summary}</small>
+                </div>
+                <strong>+{item.score}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function formatStatusLabel(value) {
@@ -396,11 +454,20 @@ function AdminMatchesPage() {
               paginatedItems.map((request) => (
                 <article className="admin-list-item" key={request.id}>
                   <div className="admin-item-main">
-                    <h4>{request.studentName} {"=>"} {request.buddyName}</h4>
+                    <div className="admin-item-title-row">
+                      <h4>{request.studentName} {"=>"} {request.buddyName}</h4>
+                      <span className="admin-status-pill">{request.scoreLabel || `${request.score}/100`}</span>
+                    </div>
                     <p>{request.message}</p>
                     <div className="admin-meta">
                       <span>{formatAstanaDate(request.createdAt)}</span>
+                      <span>{request.buddyLoad}/{request.buddyMax} active students</span>
                     </div>
+                    <MatchBreakdown
+                      scoreLabel={request.scoreLabel || `${request.score}/100`}
+                      reasons={request.reasons || []}
+                      breakdown={request.breakdown || []}
+                    />
                   </div>
 
                   <div className="admin-inline-actions">
@@ -415,8 +482,20 @@ function AdminMatchesPage() {
               paginatedItems.map((item) => (
                 <article className="admin-list-item admin-match-item" key={item.studentId}>
                   <div className="admin-item-main">
-                    <h4>{item.studentName} {"=>"} {item.buddyName}</h4>
-                    <p>{item.reasons?.length ? item.reasons.join(" | ") : "Available buddy with open capacity."}</p>
+                    <div className="admin-item-title-row">
+                      <h4>{item.studentName} {"=>"} {item.buddyName}</h4>
+                      <span className="admin-status-pill">{item.scoreLabel || `${item.score}/100`}</span>
+                    </div>
+                    <p>
+                      {item.reasons?.length
+                        ? item.reasons.join(" | ")
+                        : "Available buddy with open capacity."}
+                    </p>
+                    <MatchBreakdown
+                      scoreLabel={item.scoreLabel || `${item.score}/100`}
+                      reasons={item.reasons || []}
+                      breakdown={item.breakdown || []}
+                    />
                   </div>
 
                   <div className="admin-action-panel">

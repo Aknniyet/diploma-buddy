@@ -410,7 +410,8 @@
 .language-option-list.plain {
   border: 1px solid #dfe9e9;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .language-option-row {

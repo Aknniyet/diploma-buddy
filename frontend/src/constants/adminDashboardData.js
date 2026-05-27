@@ -1,4 +1,4 @@
-import { CalendarDays, LayoutGrid, ShieldCheck, Shuffle } from "lucide-react";
+import { AlertTriangle, CalendarDays, LayoutGrid, ShieldCheck, Shuffle } from "lucide-react";
 
 export const adminSidebarLinks = [
   {
@@ -16,12 +16,18 @@ export const adminSidebarLinks = [
   },
   {
     id: 3,
+    label: "Risk Monitor",
+    path: "/admin/risk-monitor",
+    icon: AlertTriangle,
+  },
+  {
+    id: 4,
     label: "Buddy Profiles",
     path: "/admin/buddies",
     icon: ShieldCheck,
   },
   {
-    id: 4,
+    id: 5,
     label: "Events",
     path: "/admin/events",
     icon: CalendarDays,

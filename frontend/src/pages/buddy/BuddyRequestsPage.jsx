@@ -31,7 +31,7 @@ function BuddyRequestsPage() {
   };
 
   return (
-    <DashboardLayout title="Requests" sidebarType="buddy">
+    <DashboardLayout title="Student Requests" sidebarType="buddy">
       <section className="buddy-requests-page">
         <div className="buddy-requests-header">
           <h1>Student Requests</h1>

@@ -447,7 +447,8 @@
 .language-option-list.plain {
   border: 1px solid #d8e4e3;
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .language-option-row {

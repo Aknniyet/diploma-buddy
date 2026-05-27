@@ -1,4 +1,10 @@
-function ProgressOverviewCard({ totalProgress }) {
+function ProgressOverviewCard({
+  totalProgress,
+  completedCount = 0,
+  totalCount = 0,
+  overdueTasks = 0,
+  highPriorityIncomplete = 0,
+}) {
   return (
     <div className="checklist-overview-card">
       <div className="checklist-overview-header">
@@ -15,6 +21,18 @@ function ProgressOverviewCard({ totalProgress }) {
         </div>
 
         <span className="overall-progress-value">{totalProgress}%</span>
+      </div>
+
+      <div className="checklist-summary-pills">
+        <span className="checklist-summary-pill">
+          {completedCount}/{totalCount} completed
+        </span>
+        <span className="checklist-summary-pill warning">
+          {highPriorityIncomplete} high priority left
+        </span>
+        <span className={`checklist-summary-pill ${overdueTasks > 0 ? "danger" : ""}`}>
+          {overdueTasks} overdue
+        </span>
       </div>
     </div>
   );

@@ -680,6 +680,11 @@
 
 .community-modal {
   width: min(700px, 100%);
+  display: flex;
+  flex-direction: column;
+  max-height: min(820px, calc(100dvh - 56px));
+  min-height: 0;
+  overflow: hidden;
   padding: 20px;
 }
 
@@ -700,6 +705,15 @@
 .community-modal textarea {
   margin-top: 12px;
   resize: vertical;
+}
+
+.community-modal-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .community-image-preview {
@@ -726,6 +740,13 @@
 .community-modal-actions {
   gap: 10px;
   margin-top: 14px;
+}
+
+.community-modal-actions {
+  flex-shrink: 0;
+  padding-top: 14px;
+  border-top: 1px solid #edf3f2;
+  background: #fffdfd;
 }
 
 .community-photo-button {
@@ -773,9 +794,11 @@
 }
 
 @media (max-width: 700px) {
+  .community-modal-backdrop {
+    padding: 12px;
+  }
+
   .community-feed-header,
-  .community-post-header,
-  .community-post-content-header,
   .community-post-footer,
   .community-modal-tools,
   .community-modal-actions {
@@ -783,15 +806,60 @@
     flex-direction: column;
   }
 
+  .community-post-header,
+  .community-post-content-header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .community-author,
+  .community-post-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .community-post-badges {
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+
+  .community-owner-actions {
+    flex-shrink: 0;
+    justify-content: flex-end;
+  }
+
   .community-comment-form {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
   }
 
   .community-comment-form button {
+    grid-column: 1 / -1;
     padding: 11px 18px;
   }
 
   .community-open-composer {
+    width: 100%;
+  }
+
+  .community-modal {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .community-modal-body {
+    padding-right: 0;
+  }
+
+  .community-image-preview img {
+    max-height: 220px;
+  }
+
+  .community-photo-button,
+  .community-submit-button {
     width: 100%;
   }
 

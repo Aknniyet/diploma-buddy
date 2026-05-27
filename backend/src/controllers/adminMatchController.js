@@ -1,4 +1,7 @@
-import { calculateBuddyScore, formatBuddyCard } from "../services/matchingService.js";
+import {
+  formatBuddyCard,
+  getBuddyMatchInsights,
+} from "../services/matchingService.js";
 import {
   adminApproveRequest,
   createManualMatch,
@@ -27,39 +30,6 @@ function ensureAdmin(req, res) {
   return true;
 }
 
-function buildReasonList(student, buddy) {
-  const reasons = [];
-  const sharedLanguages = (student.languages || []).filter((language) =>
-    (buddy.languages || []).includes(language)
-  );
-  const sharedHobbies = (student.hobbies || []).filter((hobby) =>
-    (buddy.hobbies || []).includes(hobby)
-  );
-
-  if (student.study_program && buddy.study_program && student.study_program === buddy.study_program) {
-    reasons.push("Same study program");
-  }
-
-  if (sharedLanguages.length > 0) {
-    reasons.push(`Shared language: ${sharedLanguages.slice(0, 2).join(", ")}`);
-  }
-
-  if (sharedHobbies.length > 0) {
-    reasons.push(`Shared interests: ${sharedHobbies.slice(0, 2).join(", ")}`);
-  }
-
-  if (
-    student.gender_preference &&
-    student.gender_preference !== "no_preference" &&
-    buddy.gender &&
-    student.gender_preference === buddy.gender
-  ) {
-    reasons.push("Matches gender preference");
-  }
-
-  return reasons;
-}
-
 export async function getAdminMatchesOverview(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
@@ -86,7 +56,7 @@ export async function getAdminMatchesOverview(req, res) {
       });
 
     const pendingRequests = pendingResult.rows.map((item) => {
-      const score = calculateBuddyScore(
+      const matchInsights = getBuddyMatchInsights(
         {
           study_program: item.student_program,
           languages: item.student_languages || [],
@@ -98,6 +68,10 @@ export async function getAdminMatchesOverview(req, res) {
           languages: item.buddy_languages || [],
           hobbies: item.buddy_hobbies || [],
           gender: item.gender,
+          max_buddies: item.max_buddies,
+          active_students_count: item.active_students_count,
+          average_rating: item.average_rating,
+          feedback_count: item.feedback_count,
         }
       );
 
@@ -107,7 +81,10 @@ export async function getAdminMatchesOverview(req, res) {
         studentName: item.student_name,
         buddyId: item.buddy_id,
         buddyName: item.buddy_name,
-        score,
+        score: matchInsights.score,
+        scoreLabel: matchInsights.scoreLabel,
+        reasons: matchInsights.reasons,
+        breakdown: matchInsights.breakdown,
         status: item.status,
         buddyLoad: Number(item.active_students_count || 0),
         buddyMax: Number(item.max_buddies || 3),
@@ -134,12 +111,9 @@ export async function getAdminMatchesOverview(req, res) {
           buddyId: bestMatch.id,
           buddyName: bestMatch.name,
           score: bestMatch.score,
-          reasons: buildReasonList(student, {
-            study_program: bestMatch.program,
-            languages: bestMatch.languages ? bestMatch.languages.split(", ").filter(Boolean) : [],
-            hobbies: bestMatch.interests || [],
-            gender: null,
-          }),
+          scoreLabel: bestMatch.scoreLabel,
+          reasons: bestMatch.matchReasons,
+          breakdown: bestMatch.matchBreakdown,
         };
       })
       .filter(Boolean);

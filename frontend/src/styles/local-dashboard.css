@@ -56,8 +56,33 @@
 
 .local-overview-bottom-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 18px;
+}
+
+.local-overview-panel {
+  min-height: 0;
+}
+
+.local-events-card {
+  min-height: 0;
+}
+
+.local-event-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.local-event-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: #edf7ff;
+  color: #0369a1;
+  flex-shrink: 0;
 }
 
 .local-empty-state {
@@ -123,10 +148,6 @@
 
 @media (max-width: 1100px) {
   .local-overview-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .local-overview-bottom-grid {
     grid-template-columns: 1fr;
   }
 }

@@ -1,8 +1,18 @@
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 
+const supportTopicOptions = [
+  "Documents",
+  "Housing",
+  "Transport",
+  "Banking",
+  "University",
+  "Personal",
+];
+
 function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
   const [message, setMessage] = useState("");
+  const [supportTopics, setSupportTopics] = useState([]);
 
   const isMessageValid = useMemo(() => {
     return message.trim().length > 0;
@@ -12,6 +22,7 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
 
   const handleClose = () => {
     setMessage("");
+    setSupportTopics([]);
     onClose();
   };
 
@@ -23,9 +34,11 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
     onSend({
       buddyId: buddy.id,
       message: message.trim(),
+      supportTopics,
     });
 
     setMessage("");
+    setSupportTopics([]);
   };
 
   return (
@@ -61,6 +74,30 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
         </div>
 
         <form onSubmit={handleSubmit}>
+          <label className="buddy-modal-label">What do you need help with?</label>
+          <div className="buddy-support-topics">
+            {supportTopicOptions.map((topic) => {
+              const isSelected = supportTopics.includes(topic);
+
+              return (
+                <button
+                  key={topic}
+                  type="button"
+                  className={isSelected ? "buddy-support-chip active" : "buddy-support-chip"}
+                  onClick={() =>
+                    setSupportTopics((prev) =>
+                      prev.includes(topic)
+                        ? prev.filter((item) => item !== topic)
+                        : [...prev, topic]
+                    )
+                  }
+                >
+                  {topic}
+                </button>
+              );
+            })}
+          </div>
+
           <label className="buddy-modal-label">Your Message</label>
 
           <textarea

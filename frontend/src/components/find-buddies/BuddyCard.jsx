@@ -1,6 +1,17 @@
-import { BookOpen, Globe, MapPin, MessageSquare, CheckCircle2, Star } from "lucide-react";
+import { useState } from "react";
+import {
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  Globe,
+  MapPin,
+  MessageSquare,
+  CheckCircle2,
+  Star,
+} from "lucide-react";
 
 function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
+  const [isScoreOpen, setIsScoreOpen] = useState(false);
   const status = buddy.status;
   const isDisabled =
     status === "pending" ||
@@ -55,6 +66,60 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
       </div>
 
       <p className="buddy-card-bio">{buddy.bio}</p>
+
+      <div className="buddy-score-panel">
+        <button
+          type="button"
+          className="buddy-score-toggle"
+          onClick={() => setIsScoreOpen((prev) => !prev)}
+          aria-expanded={isScoreOpen}
+        >
+          <strong>Compatibility {buddy.scoreLabel || `${buddy.score}/100`}</strong>
+          <span>
+            Why this buddy fits
+            {isScoreOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </span>
+        </button>
+
+        {!isScoreOpen && buddy.matchReasons?.length ? (
+          <div className="buddy-score-preview">
+            {buddy.matchReasons.slice(0, 2).map((reason) => (
+              <span key={reason} className="buddy-reason-pill compact">
+                {reason}
+              </span>
+            ))}
+          </div>
+        ) : null}
+
+        {isScoreOpen ? (
+          <div className="buddy-score-content">
+            {buddy.matchReasons?.length ? (
+              <div className="buddy-reason-list">
+                {buddy.matchReasons.map((reason) => (
+                  <span key={reason} className="buddy-reason-pill">
+                    {reason}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+
+            {buddy.matchBreakdown?.length ? (
+              <div className="buddy-breakdown-list">
+                {buddy.matchBreakdown.map((item) => (
+                  <div className="buddy-breakdown-row" key={item.key}>
+                    <div>
+                      <p>{item.label}</p>
+                      <small>{item.summary}</small>
+                    </div>
+                    <strong>+{item.score}</strong>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
       <div className="buddy-tags">
         {(buddy.interests || []).map((tag) => <span key={tag} className="buddy-tag">{tag}</span>)}
       </div>
@@ -69,7 +134,7 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
               ? "You already have an active buddy"
               : status === "waiting"
               ? "You already have a pending request"
-              : `Matching score: ${buddy.score}`}
+              : `Matching score: ${buddy.scoreLabel || `${buddy.score}/100`}`}
           </small>
         </div>
         <div className="buddy-card-actions">
