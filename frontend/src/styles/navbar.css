@@ -1,0 +1,274 @@
+.navbar {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #edf2f7;
+}
+
+.navbar-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: 70px;
+  gap: 18px;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.logo-mark {
+  width: 52px;
+  height: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.03em;
+}
+
+.logo-text-primary {
+  color: #111827;
+}
+
+.logo-text-accent {
+  color: #0f9aa8;
+}
+
+.nav-panel {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d7e4e4;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #6b7280;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #111827;
+}
+
+.nav-link.active {
+  background: #dff2f1;
+  color: #0f9aa8;
+  font-weight: 600;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: #f1f7f7;
+  border: 1px solid #d8eceb;
+  border-radius: 999px;
+}
+
+.language-switcher-button {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.language-switcher-button.active {
+  background: #ffffff;
+  color: #0f9aa8;
+  box-shadow: none;
+}
+
+.login {
+  text-decoration: none;
+  color: #374151;
+}
+
+.signup-btn {
+  background: #0f9aa8;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.signup-btn:hover {
+  background: #0c7e88;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e6eeee;
+  }
+
+  .navbar-content {
+    position: relative;
+    display: flex;
+    min-height: 60px;
+    height: auto;
+    padding: 10px 0;
+    gap: 12px;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .logo-mark {
+    width: 48px;
+    height: 40px;
+  }
+
+  .logo-text {
+    font-size: 20px;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: 0;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .nav-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #e7eeee;
+    border-radius: 18px;
+    box-shadow: none;
+    z-index: 1200;
+  }
+
+  .nav-panel.open {
+    display: flex;
+  }
+
+  .nav-links,
+  .nav-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .language-switcher {
+    justify-content: center;
+  }
+
+  .nav-link {
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .login,
+  .signup-btn {
+    font-size: 14px;
+    text-align: center;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  .login {
+    background: #f5f9f9;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-mark {
+    width: 42px;
+    height: 36px;
+  }
+
+  .logo-text {
+    font-size: 18px;
+  }
+
+  .navbar-content {
+    min-height: 56px;
+    padding: 8px 0;
+  }
+
+  .nav-toggle {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    right: 0;
+  }
+
+  .nav-link {
+    padding: 9px 10px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .login,
+  .signup-btn {
+    font-size: 13px;
+  }
+}

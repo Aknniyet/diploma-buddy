@@ -1,0 +1,431 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Globe, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import "../../styles/signup.css";
+import { apiRequest } from "../../lib/api";
+import { useI18n } from "../../context/I18nContext";
+import LanguageSelector from "../../components/forms/LanguageSelector";
+import {
+  STUDY_PROGRAMS,
+  normalizeRegistrationPayload,
+  toggleLanguageSelection,
+  sanitizeRestrictedFieldValue,
+  validateSignupForm,
+  validateSignupStepTwo,
+} from "../../utils/userValidation";
+import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
+
+function SignupPage() {
+  const navigate = useNavigate();
+  const { t } = useI18n();
+  const [step, setStep] = useState(1);
+  const [selectedRole, setSelectedRole] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    homeCountry: "",
+    city: "",
+    studyProgram: "",
+    languages: [],
+    hobbies: "",
+    aboutYou: "",
+    gender: "",
+    genderPreference: "no_preference",
+    maxBuddies: "3",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: sanitizeRestrictedFieldValue(name, value),
+    }));
+  };
+
+  const handleLanguageToggle = (language) => {
+    setFormData((prev) => ({
+      ...prev,
+      languages: toggleLanguageSelection(prev.languages, language),
+    }));
+  };
+
+  const handleNext = () => {
+    setError("");
+
+    if (step === 1 && !selectedRole) {
+      return setError(t("signup.errors.chooseRole"));
+    }
+
+    if (step === 2) {
+      const validationError = validateSignupStepTwo(formData, t);
+      if (validationError) {
+        return setError(validationError);
+      }
+    }
+
+    if (step < 3) {
+      setStep((prev) => prev + 1);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (!selectedRole) {
+      setError(t("signup.errors.chooseRole"));
+      return;
+    }
+
+    const validationError = validateSignupForm(formData, selectedRole, t);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    const payload = normalizeRegistrationPayload(formData, selectedRole);
+    setIsLoading(true);
+
+    try {
+      const data = await apiRequest("/auth/register/start", {
+        method: "POST",
+        body: JSON.stringify({
+          role: selectedRole,
+          ...payload,
+        }),
+      });
+
+      navigate("/verify-email", {
+        state: {
+          pendingUser: data.pendingUser,
+        },
+      });
+    } catch (submitError) {
+      setError(submitError.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="signup-page">
+      <div className="signup-wrapper">
+        <Link to="/" className="signup-brand">
+          <img src={logo} alt="KazakhBuddy logo" className="auth-brand-logo" />
+          <h1>
+            Kazakh<span>Buddy</span>
+          </h1>
+        </Link>
+
+        <div className="signup-card">
+          <h2>{t("signup.title")}</h2>
+          <p className="signup-step-text">{t("signup.stepOf", { step })}</p>
+
+          <div className="signup-progress">
+            <span className={step >= 1 ? "active" : ""}></span>
+            <span className={step >= 2 ? "active" : ""}></span>
+            <span className={step >= 3 ? "active" : ""}></span>
+          </div>
+
+          <form onSubmit={handleSubmit} className="signup-form">
+            {step === 1 && (
+              <div className="signup-step-content">
+                <p className="signup-section-label">{t("signup.iAm")}</p>
+
+                <div className="role-grid">
+                  <button
+                    type="button"
+                    className={`role-card ${selectedRole === "international" ? "selected" : ""}`}
+                    onClick={() => setSelectedRole("international")}
+                  >
+                    <div className="role-icon">
+                      <Globe size={28} />
+                    </div>
+                    <h3>{t("signup.internationalStudent")}</h3>
+                    <p>{t("signup.internationalStudentText")}</p>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`role-card ${selectedRole === "local" ? "selected" : ""}`}
+                    onClick={() => setSelectedRole("local")}
+                  >
+                    <div className="role-icon">
+                      <MapPin size={28} />
+                    </div>
+                    <h3>{t("signup.buddy")}</h3>
+                    <p>{t("signup.buddyText")}</p>
+                  </button>
+                </div>
+
+                {error && <p className="signup-error-text">{error}</p>}
+
+                <button
+                  type="button"
+                  className="signup-primary-btn full-width"
+                  onClick={handleNext}
+                >
+                  {t("common.continue")} <ChevronRight size={18} />
+                </button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="signup-step-content">
+                <div className="form-group">
+                  <label htmlFor="fullName">{t("common.fullName")}</label>
+                  <input
+                    id="fullName"
+                    name="fullName"
+                    type="text"
+                    placeholder={t("signup.fullNamePlaceholder")}
+                    value={formData.fullName}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="email">{t("common.email")}</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder={t("signup.emailPlaceholder")}
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="password">{t("common.password")}</label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder={t("signup.passwordPlaceholder")}
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="confirmPassword">{t("common.confirmPassword")}</label>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder={t("signup.confirmPasswordPlaceholder")}
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="gender">{t("common.gender")}</label>
+                  <div className="select-field-wrap">
+                    <select
+                      id="gender"
+                      className="signup-select"
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                    >
+                      <option value="">{t("signup.selectGender")}</option>
+                      <option value="female">{t("common.female")}</option>
+                      <option value="male">{t("common.male")}</option>
+                      <option value="other">{t("common.other")}</option>
+                    </select>
+                    <span className="select-field-arrow">v</span>
+                  </div>
+                  <small>{t("signup.genderHelp")}</small>
+                </div>
+
+                {selectedRole === "international" && (
+                  <div className="form-group">
+                    <label htmlFor="genderPreference">{t("signup.buddyGenderPreference")}</label>
+                    <div className="select-field-wrap">
+                      <select
+                        id="genderPreference"
+                        className="signup-select"
+                        name="genderPreference"
+                        value={formData.genderPreference}
+                        onChange={handleChange}
+                      >
+                        <option value="no_preference">{t("common.noPreference")}</option>
+                        <option value="female">{t("common.female")}</option>
+                        <option value="male">{t("common.male")}</option>
+                        <option value="other">{t("common.other")}</option>
+                      </select>
+                      <span className="select-field-arrow">v</span>
+                    </div>
+                    <small>{t("signup.buddyGenderHelp")}</small>
+                  </div>
+                )}
+
+                {error && <p className="signup-error-text">{error}</p>}
+
+                <div className="signup-buttons-row">
+                  <button
+                    type="button"
+                    className="signup-secondary-btn"
+                    onClick={() => setStep(1)}
+                  >
+                    <ChevronLeft size={18} />
+                    {t("common.back")}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="signup-primary-btn"
+                    onClick={handleNext}
+                  >
+                    {t("common.continue")} <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="signup-step-content">
+                {selectedRole === "international" && (
+                  <div className="form-group">
+                    <label htmlFor="homeCountry">{t("common.homeCountry")}</label>
+                    <input
+                      id="homeCountry"
+                      name="homeCountry"
+                      type="text"
+                      placeholder={t("signup.homeCountryPlaceholder")}
+                      value={formData.homeCountry}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label htmlFor="city">{t("common.city")}</label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    placeholder={t("signup.cityPlaceholder")}
+                    value={formData.city}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="studyProgram">{t("common.studyProgram")}</label>
+                  <div className="select-field-wrap">
+                    <select
+                      id="studyProgram"
+                      name="studyProgram"
+                      className="signup-select"
+                      value={formData.studyProgram}
+                      onChange={handleChange}
+                    >
+                      <option value="">{t("signup.studyProgramPlaceholder")}</option>
+                      {STUDY_PROGRAMS.map((program) => (
+                        <option key={program} value={program}>
+                          {program}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="select-field-arrow">v</span>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>{t("common.languages")}</label>
+                  <LanguageSelector
+                    selectedLanguages={formData.languages}
+                    onToggle={handleLanguageToggle}
+                    helperText={t("signup.languagesHelp")}
+                    emptyText={t("signup.languagesEmpty")}
+                    selectPlaceholder={t("signup.languagesSelectPlaceholder")}
+                    searchPlaceholder={t("signup.languagesSearchPlaceholder")}
+                    noResultsText={t("signup.languagesNoResults")}
+                    triggerClassName="signup-select"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="hobbies">{t("common.interests")}</label>
+                  <input
+                    id="hobbies"
+                    name="hobbies"
+                    type="text"
+                    placeholder={t("signup.interestsPlaceholder")}
+                    value={formData.hobbies}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="aboutYou">{t("common.aboutYou")}</label>
+                  <textarea
+                    id="aboutYou"
+                    name="aboutYou"
+                    rows="4"
+                    placeholder={t("signup.aboutYouPlaceholder")}
+                    value={formData.aboutYou}
+                    onChange={handleChange}
+                  />
+                  <small>{t("signup.aboutYouHelp")}</small>
+                </div>
+
+                {selectedRole === "local" && (
+                  <div className="form-group">
+                    <label htmlFor="maxBuddies">{t("signup.maxBuddies")}</label>
+                    <div className="select-field-wrap">
+                      <select
+                        id="maxBuddies"
+                        className="signup-select"
+                        name="maxBuddies"
+                        value={formData.maxBuddies}
+                        onChange={handleChange}
+                      >
+                        <option value="1">{t("signup.maxBuddiesOption1")}</option>
+                        <option value="2">{t("signup.maxBuddiesOption2")}</option>
+                        <option value="3">{t("signup.maxBuddiesOption3")}</option>
+                      </select>
+                      <span className="select-field-arrow">v</span>
+                    </div>
+                    <small>{t("signup.maxBuddiesHelp")}</small>
+                  </div>
+                )}
+
+                {error && <p className="signup-error-text">{error}</p>}
+
+                <div className="signup-buttons-row">
+                  <button
+                    type="button"
+                    className="signup-secondary-btn"
+                    onClick={() => setStep(2)}
+                  >
+                    <ChevronLeft size={18} />
+                    {t("common.back")}
+                  </button>
+
+                  <button type="submit" className="signup-primary-btn" disabled={isLoading}>
+                    {isLoading ? t("signup.sendingCode") : t("signup.createAccount")}
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+
+          <p className="signup-footer-text">
+            {t("signup.alreadyHaveAccount")} <Link to="/login">{t("common.logIn")}</Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SignupPage;

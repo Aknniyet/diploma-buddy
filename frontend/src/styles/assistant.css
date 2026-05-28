@@ -1,0 +1,382 @@
+.assistant-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.assistant-hero {
+  background: linear-gradient(135deg, #e8f7f5 0%, #ffffff 100%);
+  border: 1px solid #d8eeeb;
+  border-radius: 20px;
+  padding: 18px 20px;
+}
+
+.assistant-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #087f84;
+  font-weight: 700;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.assistant-hero h1 {
+  margin: 0 0 6px;
+  color: #102a43;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.assistant-hero p {
+  margin: 0;
+  color: #667085;
+  max-width: 560px;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.assistant-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 16px;
+  align-items: start;
+}
+
+.assistant-chat-card,
+.assistant-suggestions {
+  background: #ffffff;
+  border: 1px solid #edf1f4;
+  border-radius: 20px;
+  box-shadow: none;
+}
+
+.assistant-chat-card {
+  height: clamp(420px, calc(100vh - 260px), 560px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.assistant-messages {
+  flex: 1;
+  min-height: 0;
+  padding: 18px 18px 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.assistant-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 82%;
+}
+
+.assistant-message-user {
+  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+
+.assistant-message-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #e8f7f5;
+  color: #087f84;
+  flex-shrink: 0;
+}
+
+.assistant-message-user .assistant-message-icon {
+  background: #102a43;
+  color: #ffffff;
+}
+
+.assistant-message-content {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 12px 14px;
+  color: #344054;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+.assistant-message-user .assistant-message-content {
+  background: #087f84;
+  color: #ffffff;
+}
+
+.assistant-message-content p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+.assistant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.assistant-actions button,
+.assistant-starter-list button {
+  border: 1px solid #cde7e4;
+  background: #ffffff;
+  color: #087f84;
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.assistant-actions button:hover,
+.assistant-starter-list button:hover {
+  background: #e8f7f5;
+}
+
+.assistant-input-row {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid #edf1f4;
+  background: rgba(255, 255, 255, 0.96);
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.assistant-input-row input {
+  flex: 1;
+  border: 1px solid #d0d5dd;
+  border-radius: 14px;
+  padding: 11px 13px;
+  font-size: 14px;
+  outline: none;
+}
+
+.assistant-input-row input:focus {
+  border-color: #087f84;
+  box-shadow: none;
+}
+
+.assistant-input-row button {
+  border: none;
+  border-radius: 14px;
+  background: #087f84;
+  color: #ffffff;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.assistant-input-row button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.assistant-suggestions {
+  padding: 16px;
+  height: clamp(420px, calc(100vh - 260px), 560px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.assistant-suggestions h3 {
+  margin: 0 0 12px;
+  color: #102a43;
+  font-size: 16px;
+}
+
+.assistant-starter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.assistant-starter-list button {
+  border-radius: 14px;
+  text-align: left;
+  padding: 10px 12px;
+}
+
+.assistant-sidebar-divider {
+  height: 1px;
+  background: #edf1f4;
+  margin: 16px 0 12px;
+}
+
+.assistant-clear-chat-button {
+  width: 100%;
+  border: 1px solid #f1b8b8;
+  background: #fffafa;
+  color: #b42318;
+  border-radius: 14px;
+  padding: 10px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.assistant-clear-chat-button:hover {
+  background: #fee4e2;
+  border-color: #f97066;
+}
+
+.assistant-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(15, 23, 42, 0.42);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.assistant-confirm-modal {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 24px;
+  border: 1px solid #edf1f4;
+  box-shadow: none;
+  padding: 24px;
+}
+
+.assistant-confirm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #fee4e2;
+  color: #b42318;
+  margin-bottom: 16px;
+}
+
+.assistant-confirm-modal h2 {
+  margin: 0 0 8px;
+  color: #102a43;
+  font-size: 22px;
+}
+
+.assistant-confirm-modal p {
+  margin: 0;
+  color: #667085;
+  line-height: 1.55;
+}
+
+.assistant-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.assistant-confirm-actions button {
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.assistant-confirm-cancel {
+  border: 1px solid #d0d5dd;
+  background: #ffffff;
+  color: #344054;
+}
+
+.assistant-confirm-cancel:hover {
+  background: #f8fafc;
+}
+
+.assistant-confirm-clear {
+  border: 1px solid #d92d20;
+  background: #d92d20;
+  color: #ffffff;
+}
+
+.assistant-confirm-clear:hover {
+  background: #b42318;
+  border-color: #b42318;
+}
+
+@media (max-width: 1000px) {
+  .assistant-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-chat-card {
+    height: min(70vh, 560px);
+  }
+
+  .assistant-suggestions {
+    height: auto;
+    max-height: 320px;
+  }
+
+  .assistant-message {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .assistant-page {
+    gap: 14px;
+  }
+
+  .assistant-hero {
+    padding: 16px;
+  }
+
+  .assistant-hero h1 {
+    font-size: 22px;
+  }
+
+  .assistant-chat-card {
+    height: min(68vh, 520px);
+  }
+
+  .assistant-suggestions {
+    max-height: 300px;
+  }
+
+  .assistant-input-row {
+    flex-wrap: wrap;
+  }
+
+  .assistant-input-row button {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  .assistant-confirm-modal {
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  .assistant-confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .assistant-confirm-actions button {
+    width: 100%;
+  }
+}
