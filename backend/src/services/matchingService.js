@@ -1,3 +1,5 @@
+import { buildNlpMatchInsights } from "./nlpSupportService.js";
+
 const SCORE_WEIGHTS = {
   studyProgram: 20,
   languages: 30,
@@ -170,20 +172,52 @@ export function getBuddyMatchInsights(student = {}, buddy = {}) {
     ),
   ];
 
-  const score = breakdown.reduce((total, item) => total + item.score, 0);
+  const ruleBasedScore = breakdown.reduce((total, item) => total + item.score, 0);
+  const nlpInsights = buildNlpMatchInsights(student, buddy);
+  const hasNlpSignal =
+    nlpInsights.score > 0 ||
+    nlpInsights.detectedTopics.length > 0 ||
+    nlpInsights.textSimilarity > 0;
+  const nlpBonus = hasNlpSignal ? Math.round(nlpInsights.score * 0.15) : 0;
+  const score = hasNlpSignal
+    ? Math.min(100, ruleBasedScore + nlpBonus)
+    : ruleBasedScore;
+  const finalBreakdown = hasNlpSignal
+    ? [
+        ...breakdown,
+        buildScoreItem(
+          "nlpSupportFit",
+          "NLP support fit",
+          nlpBonus,
+          15,
+          nlpInsights.matchedTopics.length > 0
+            ? `Matches support needs: ${nlpInsights.matchedTopics.join(", ")}`
+            : nlpInsights.detectedTopics.length > 0
+            ? `Detected student needs: ${nlpInsights.detectedTopics.join(", ")}`
+            : "Profile text similarity checked",
+          "Lightweight NLP compares request/profile text and support topics with the buddy profile."
+        ),
+      ]
+    : breakdown;
   const reasons = breakdown
     .filter((item) => item.score > 0)
     .sort((left, right) => right.score - left.score)
     .slice(0, 4)
     .map((item) => item.summary);
+  const nlpReasons = nlpInsights.reasons.slice(0, 2);
 
   return {
     score,
     scoreLabel: `${score}/100`,
-    breakdown,
-    reasons,
+    ruleBasedScore,
+    ruleBasedScoreLabel: `${ruleBasedScore}/100`,
+    nlpScore: nlpInsights.score,
+    nlpScoreLabel: nlpInsights.scoreLabel,
+    breakdown: finalBreakdown,
+    reasons: [...nlpReasons, ...reasons].slice(0, 4),
     sharedLanguages,
     sharedHobbies,
+    nlpInsights,
   };
 }
 
@@ -227,6 +261,11 @@ export function formatBuddyCard(
     maxBuddies,
     score: matchInsights.score,
     scoreLabel: matchInsights.scoreLabel,
+    ruleBasedScore: matchInsights.ruleBasedScore,
+    ruleBasedScoreLabel: matchInsights.ruleBasedScoreLabel,
+    nlpScore: matchInsights.nlpScore,
+    nlpScoreLabel: matchInsights.nlpScoreLabel,
+    nlpInsights: matchInsights.nlpInsights,
     matchReasons: matchInsights.reasons,
     matchBreakdown: matchInsights.breakdown,
     sharedLanguages: matchInsights.sharedLanguages,

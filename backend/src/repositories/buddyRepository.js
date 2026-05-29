@@ -2,7 +2,21 @@ import { pool, query } from '../config/db.js';
 
 export function findStudentForMatching(studentId) {
   return query(
-    `SELECT id, role, study_program, languages, hobbies, gender_preference
+    `SELECT id, role, home_country, study_program, languages, hobbies, about_you, gender_preference,
+            (
+              SELECT br.message
+              FROM buddy_requests br
+              WHERE br.international_student_id = users.id
+              ORDER BY br.created_at DESC
+              LIMIT 1
+            ) AS latest_request_message,
+            COALESCE((
+              SELECT br.support_topics
+              FROM buddy_requests br
+              WHERE br.international_student_id = users.id
+              ORDER BY br.created_at DESC
+              LIMIT 1
+            ), ARRAY[]::text[]) AS latest_support_topics
      FROM users
      WHERE id = $1`,
     [studentId]

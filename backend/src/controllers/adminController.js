@@ -5,6 +5,7 @@ import {
   getStudentAdaptationInsights,
 } from "../repositories/adminRepository.js";
 import { buildAdaptationRiskSummary } from "../services/adaptationRiskService.js";
+import { buildNlpRiskInsights } from "../services/nlpSupportService.js";
 
 function buildAttentionStage(student) {
   if (!student.hasBuddyMatch && !student.hasBuddyRequest) {
@@ -64,12 +65,20 @@ export async function getAdminDashboard(req, res) {
         ? Math.floor((Date.now() - lastActiveAt.getTime()) / (1000 * 60 * 60 * 24))
         : 999;
 
+      const nlpRisk = buildNlpRiskInsights({
+        message: student.latest_request_message,
+        supportTopics: student.latest_support_topics || [],
+        hasBuddyMatch: Boolean(student.has_buddy_match),
+        hasBuddyRequest: Number(student.request_count || 0) > 0,
+      });
+
       const risk = buildAdaptationRiskSummary({
         hasBuddyMatch: Boolean(student.has_buddy_match),
         checklistProgress,
         hasBuddyRequest: Number(student.request_count || 0) > 0,
         daysSinceLastActive,
         supportNeedsCount: Number(student.support_needs_count || 0),
+        nlpRiskBonus: nlpRisk.bonus,
       });
 
       return {
@@ -88,6 +97,7 @@ export async function getAdminDashboard(req, res) {
         requestCount: Number(student.request_count || 0),
         supportNeedsCount: Number(student.support_needs_count || 0),
         risk,
+        nlpRisk,
       };
     });
 

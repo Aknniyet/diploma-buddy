@@ -17,6 +17,7 @@ import {
 } from '../repositories/buddyRepository.js';
 import { formatBuddyCard } from '../services/matchingService.js';
 import { createNotification } from '../services/notificationService.js';
+import { detectSupportTopics, getTopicLabels } from '../services/nlpSupportService.js';
 import { findUserProfileById } from '../repositories/userRepository.js';
 import { formatAstanaDate } from "../utils/datetime.js";
 
@@ -109,10 +110,15 @@ export async function createRequest(req, res) {
       return res.status(409).json({ message: 'You already sent a request to this buddy.' });
     }
 
+    const detectedTopicLabels = getTopicLabels(detectSupportTopics(message, supportTopics || []));
+    const mergedSupportTopics = Array.from(
+      new Set([...(supportTopics || []), ...detectedTopicLabels])
+    );
+
     const result = await createBuddyRequest(req.user.id, {
       buddyId,
       preferredLanguage,
-      supportTopics,
+      supportTopics: mergedSupportTopics,
       message,
     });
 

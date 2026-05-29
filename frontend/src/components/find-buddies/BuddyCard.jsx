@@ -13,6 +13,10 @@ import {
 function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
   const [isScoreOpen, setIsScoreOpen] = useState(false);
   const status = buddy.status;
+  const nlpTopics =
+    buddy.nlpInsights?.matchedTopics?.length > 0
+      ? buddy.nlpInsights.matchedTopics
+      : buddy.nlpInsights?.detectedTopics || [];
   const isDisabled =
     status === "pending" ||
     status === "matched" ||
@@ -93,6 +97,19 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
 
         {isScoreOpen ? (
           <div className="buddy-score-content">
+            {nlpTopics.length > 0 ? (
+              <div className="buddy-nlp-insight">
+                <p>NLP support match</p>
+                <div className="buddy-reason-list">
+                  {nlpTopics.map((topic) => (
+                    <span key={topic} className="buddy-reason-pill">
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             {buddy.matchReasons?.length ? (
               <div className="buddy-reason-list">
                 {buddy.matchReasons.map((reason) => (

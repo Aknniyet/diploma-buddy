@@ -261,6 +261,17 @@
   margin-top: 10px;
 }
 
+.buddy-nlp-insight {
+  margin-bottom: 12px;
+}
+
+.buddy-nlp-insight p {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .buddy-reason-list {
   display: flex;
   flex-wrap: wrap;

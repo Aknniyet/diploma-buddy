@@ -617,6 +617,34 @@
   padding: 5px 9px;
 }
 
+.admin-nlp-risk-box {
+  margin-top: 12px;
+  border: 1px solid #dcebea;
+  border-radius: 14px;
+  background: #f8fcfc;
+  padding: 12px;
+}
+
+.admin-nlp-risk-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.admin-nlp-risk-top strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.admin-nlp-risk-top span {
+  color: #0a7d84;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
 .admin-match-breakdown-grid {
   display: grid;
   gap: 8px;

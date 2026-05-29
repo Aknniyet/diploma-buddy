@@ -142,6 +142,22 @@ function AdminRiskMonitorPage() {
                         ))}
                       </div>
                     ) : null}
+                    {student.nlpRisk?.signals?.length ? (
+                      <div className="admin-nlp-risk-box">
+                        <div className="admin-nlp-risk-top">
+                          <strong>NLP risk signal</strong>
+                          <span>{student.nlpRisk.urgency} urgency</span>
+                        </div>
+                        <p>{student.nlpRisk.recommendation}</p>
+                        <div className="admin-match-reasons preview">
+                          {student.nlpRisk.detectedTopics.map((topic) => (
+                            <span key={topic} className="admin-match-reason-pill compact">
+                              {topic}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                   </div>
                 </article>
               ))

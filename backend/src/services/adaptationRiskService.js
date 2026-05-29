@@ -40,6 +40,11 @@ export function buildAdaptationRiskSummary(metrics = {}) {
     reasons.push("Some support needs selected");
   }
 
+  if ((metrics.nlpRiskBonus || 0) > 0) {
+    score += metrics.nlpRiskBonus;
+    reasons.push("NLP detected support risk signals");
+  }
+
   const level = score >= 60 ? "high" : score >= 30 ? "medium" : "low";
 
   return {

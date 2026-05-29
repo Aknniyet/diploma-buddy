@@ -63,6 +63,8 @@ export function getStudentAdaptationInsights() {
             COALESCE(task_stats.high_priority_incomplete, 0) AS high_priority_incomplete,
             COALESCE(request_stats.request_count, 0) AS request_count,
             COALESCE(request_stats.support_needs_count, 0) AS support_needs_count,
+            latest_request.message AS latest_request_message,
+            COALESCE(latest_request.support_topics, ARRAY[]::text[]) AS latest_support_topics,
             EXISTS (
               SELECT 1
               FROM buddy_matches bm
@@ -93,6 +95,13 @@ export function getStudentAdaptationInsights() {
        FROM buddy_requests
        GROUP BY international_student_id
      ) request_stats ON request_stats.user_id = u.id
+     LEFT JOIN LATERAL (
+       SELECT br.message, br.support_topics
+       FROM buddy_requests br
+       WHERE br.international_student_id = u.id
+       ORDER BY br.created_at DESC
+       LIMIT 1
+     ) latest_request ON TRUE
      WHERE u.role = 'international'
      ORDER BY u.created_at DESC`
   );
