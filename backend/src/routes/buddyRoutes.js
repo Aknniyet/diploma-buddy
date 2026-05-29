@@ -7,6 +7,7 @@ import {
   getIncomingRequests,
   getMyMatches,
   getMyRequests,
+  requestMatchReassignment,
   respondToRequest,
   saveBuddyFeedback,
 } from '../controllers/buddyController.js';
@@ -19,6 +20,7 @@ router.get('/requests/my', authenticate, getMyRequests);
 router.get('/requests/incoming', authenticate, getIncomingRequests);
 router.patch('/requests/:requestId/respond', authenticate, respondToRequest);
 router.get('/matches/my', authenticate, getMyMatches);
+router.post('/matches/:matchId/reassignment-request', authenticate, requestMatchReassignment);
 router.post('/feedback', authenticate, saveBuddyFeedback);
 router.get('/feedback/my-summary', authenticate, getMyFeedbackOverview);
 

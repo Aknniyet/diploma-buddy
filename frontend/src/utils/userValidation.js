@@ -205,6 +205,7 @@ const LIST_ITEM_REGEX = /^[\p{L}\s&'-]+$/u;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,72}$/;
 const GENDERS = new Set(["female", "male", "other"]);
 const GENDER_PREFERENCES = new Set(["no_preference", "female", "male", "other"]);
+const MEETING_MODES = new Set(["online", "offline", "both"]);
 const PLACEHOLDER_PATTERN = /^(test|tester|testing|qwerty|asdf|admin|user|unknown|none|null|n\/a)$/iu;
 const REPEATED_CHAR_PATTERN = /(.)\1{3,}/u;
 const UNSAFE_CONTENT_PATTERNS = [
@@ -491,7 +492,7 @@ export function sanitizeRestrictedFieldValue(name, value) {
     return value.replace(/[^\p{L}\s'-]/gu, "");
   }
 
-  if (name === "hobbies") {
+  if (name === "hobbies" || name === "supportAreas") {
     return value.replace(/[^\p{L}\s,&'-]/gu, "");
   }
 
@@ -581,9 +582,24 @@ export function validateProfileForm(formData, isBuddy, t = null) {
 
   if (isBuddy) {
     const maxBuddies = Number.parseInt(String(formData.maxBuddies), 10);
+    const maxWeeklyHours = Number.parseInt(String(formData.maxWeeklyHours), 10);
+    const meetingMode = collapseSpaces(formData.preferredMeetingMode || "both");
 
     if (!Number.isInteger(maxBuddies) || maxBuddies < 1 || maxBuddies > 3) {
       return t ? t("signup.errors.maxBuddiesInvalid") : "Maximum students must be between 1 and 3.";
+    }
+
+    if (!MEETING_MODES.has(meetingMode)) {
+      return "Please choose a valid meeting mode.";
+    }
+
+    if (!Number.isInteger(maxWeeklyHours) || maxWeeklyHours < 1 || maxWeeklyHours > 20) {
+      return "Maximum weekly hours must be between 1 and 20.";
+    }
+
+    const supportAreasError = validateListField(formData.supportAreas, "Support areas");
+    if (supportAreasError) {
+      return supportAreasError;
     }
   }
 

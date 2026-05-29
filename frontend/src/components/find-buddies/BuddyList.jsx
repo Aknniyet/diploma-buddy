@@ -1,6 +1,6 @@
 import BuddyCard from "./BuddyCard";
 
-function BuddyList({ buddies = [], onConnect, onLeaveFeedback, searchValue = "" }) {
+function BuddyList({ buddies = [], onConnect, onLeaveFeedback, onRequestReassignment, searchValue = "" }) {
   if (buddies.length === 0) {
     const isSearching = searchValue.trim().length > 0;
     return (
@@ -19,6 +19,7 @@ function BuddyList({ buddies = [], onConnect, onLeaveFeedback, searchValue = "" 
           buddy={buddy}
           onConnect={onConnect}
           onLeaveFeedback={onLeaveFeedback}
+          onRequestReassignment={onRequestReassignment}
         />
       ))}
     </div>

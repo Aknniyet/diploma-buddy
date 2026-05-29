@@ -18,7 +18,12 @@ import {
 import { formatBuddyCard } from '../services/matchingService.js';
 import { createNotification } from '../services/notificationService.js';
 import { detectSupportTopics, getTopicLabels } from '../services/nlpSupportService.js';
-import { findUserProfileById } from '../repositories/userRepository.js';
+import { findAdminRecipients, findUserProfileById } from '../repositories/userRepository.js';
+import {
+  createReassignmentRequest,
+  findActiveMatchForStudent,
+} from "../repositories/adminMatchRepository.js";
+import { ensurePlatformEnhancements } from "../services/platformSetupService.js";
 import { formatAstanaDate } from "../utils/datetime.js";
 
 export async function getAvailableBuddies(req, res) {
@@ -27,13 +32,18 @@ export async function getAvailableBuddies(req, res) {
       return res.status(403).json({ message: 'Only international students can browse buddies.' });
     }
 
+    await ensurePlatformEnhancements();
+
     const [studentResult, studentActiveMatch, requestStatuses] = await Promise.all([
       findStudentForMatching(req.user.id),
       findStudentActiveMatch(req.user.id),
       findStudentRequestStatuses(req.user.id),
     ]);
     const student = studentResult.rows[0] || null;
-    const activeMatchBuddyId = studentActiveMatch.rows[0]?.buddy_id || null;
+    const activeMatch = studentActiveMatch.rows[0] || null;
+    const activeMatchBuddyId = activeMatch?.buddy_id || null;
+    const activeMatchId = activeMatch?.id || null;
+    const hasPendingReassignment = Boolean(activeMatch?.has_pending_reassignment);
     const statusMap = new Map(requestStatuses.rows.map((item) => [item.buddy_id, item.status]));
     const pendingRequest = requestStatuses.rows.find((item) => item.status === 'pending');
     const pendingRequestBuddyId = pendingRequest?.buddy_id || null;
@@ -52,7 +62,9 @@ export async function getAvailableBuddies(req, res) {
           statusMap,
           activeMatchBuddyId,
           hasActiveMatch,
-          pendingRequestBuddyId
+          pendingRequestBuddyId,
+          activeMatchId,
+          hasPendingReassignment
         )
       )
       .sort((a, b) => {
@@ -81,6 +93,8 @@ export async function createRequest(req, res) {
     if (!buddyId) {
       return res.status(400).json({ message: 'Buddy id is required.' });
     }
+
+    await ensurePlatformEnhancements();
 
     const activeMatch = await findStudentActiveMatch(req.user.id);
     if (activeMatch.rows.length > 0) {
@@ -245,6 +259,8 @@ export async function respondToRequest(req, res) {
 
 export async function getMyMatches(req, res) {
   try {
+    await ensurePlatformEnhancements();
+
     const result = await findMyMatches(req.user.id, req.user.role);
 
     if (req.user.role === 'international') {
@@ -310,6 +326,68 @@ export async function saveBuddyFeedback(req, res) {
   } catch (error) {
     console.error('Save buddy feedback error:', error.message);
     return res.status(500).json({ message: 'Could not save feedback.' });
+  }
+}
+
+export async function requestMatchReassignment(req, res) {
+  try {
+    if (req.user.role !== 'international') {
+      return res.status(403).json({ message: 'Only international students can request reassignment.' });
+    }
+
+    await ensurePlatformEnhancements();
+
+    const { matchId } = req.params;
+    const reason = req.body.reason?.trim();
+
+    if (!reason || reason.length < 10) {
+      return res.status(400).json({ message: 'Please write a short reason for reassignment.' });
+    }
+
+    if (reason.length > 500) {
+      return res.status(400).json({ message: 'Reason should be 500 characters or less.' });
+    }
+
+    const matchResult = await findActiveMatchForStudent(matchId, req.user.id);
+
+    if (matchResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Active match not found.' });
+    }
+
+    const result = await createReassignmentRequest({
+      matchId: Number(matchId),
+      studentId: req.user.id,
+      reason,
+    });
+
+    if (result.rows.length === 0) {
+      return res.status(409).json({ message: 'You already have a pending reassignment request.' });
+    }
+
+    const studentResult = await findUserProfileById(req.user.id);
+    const studentName = studentResult.rows[0]?.full_name || 'A student';
+    const adminsResult = await findAdminRecipients();
+
+    await Promise.all(
+      adminsResult.rows.map((admin) =>
+        createNotification({
+          userId: admin.id,
+          type: 'reassignment_requested',
+          title: 'Reassignment requested',
+          description: `${studentName} requested a buddy reassignment.`,
+          referenceType: 'match',
+          referenceId: Number(matchId),
+        }).catch(() => null)
+      )
+    );
+
+    return res.status(201).json({
+      message: 'Your reassignment request was sent to admin.',
+      request: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Request reassignment error:', error.message);
+    return res.status(500).json({ message: 'Could not request reassignment.' });
   }
 }
 

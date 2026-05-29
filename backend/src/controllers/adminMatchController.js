@@ -14,12 +14,15 @@ import {
   getBuddyProfiles,
   getMatchHistoryForAdmin,
   getPendingRequestsForAdmin,
+  getPendingReassignmentRequestsForAdmin,
   getUnmatchedStudents,
+  declineReassignmentRequest,
   reassignMatch,
   updateMatchStatus,
 } from "../repositories/adminMatchRepository.js";
 import { updateBuddyStatus } from "../repositories/userRepository.js";
 import { createNotification } from "../services/notificationService.js";
+import { ensurePlatformEnhancements } from "../services/platformSetupService.js";
 
 function ensureAdmin(req, res) {
   if (req.user.role !== "admin") {
@@ -34,11 +37,14 @@ export async function getAdminMatchesOverview(req, res) {
   try {
     if (!ensureAdmin(req, res)) return;
 
-    const [, pendingResult, activeMatchesResult, studentsResult, buddiesResult, buddyProfilesResult, matchHistoryResult] =
+    await ensurePlatformEnhancements();
+
+    const [, pendingResult, activeMatchesResult, reassignmentRequestsResult, studentsResult, buddiesResult, buddyProfilesResult, matchHistoryResult] =
       await Promise.all([
         ensureAdminNotesTable(),
         getPendingRequestsForAdmin(),
         getActiveMatchesForAdmin(),
+        getPendingReassignmentRequestsForAdmin(),
         getUnmatchedStudents(),
         getApprovedBuddiesForAdmin(),
         getBuddyProfiles(),
@@ -62,6 +68,8 @@ export async function getAdminMatchesOverview(req, res) {
           languages: item.student_languages || [],
           hobbies: item.student_hobbies || [],
           gender_preference: item.gender_preference,
+          latest_request_message: item.message,
+          latest_support_topics: item.support_topics || [],
         },
         {
           study_program: item.buddy_program,
@@ -72,6 +80,9 @@ export async function getAdminMatchesOverview(req, res) {
           active_students_count: item.active_students_count,
           average_rating: item.average_rating,
           feedback_count: item.feedback_count,
+          preferred_meeting_mode: item.preferred_meeting_mode,
+          max_weekly_hours: item.max_weekly_hours,
+          support_areas: item.support_areas || [],
         }
       );
 
@@ -120,6 +131,7 @@ export async function getAdminMatchesOverview(req, res) {
 
     return res.json({
       pendingRequests,
+      reassignmentRequests: reassignmentRequestsResult.rows,
       activeMatches: activeMatchesResult.rows,
       matchHistory: matchHistoryResult.rows,
       unmatchedStudents: studentsResult.rows.map((student) => ({
@@ -145,6 +157,9 @@ export async function getAdminMatchesOverview(req, res) {
           interests: item.hobbies || [],
           activeStudents: Number(item.active_students_count || 0),
           maxBuddies: Number(item.max_buddies || 3),
+          preferredMeetingMode: item.preferred_meeting_mode || "both",
+          maxWeeklyHours: Number(item.max_weekly_hours || 2),
+          supportAreas: item.support_areas || [],
           spotsAvailable: Math.max(0, Number(item.max_buddies || 3) - Number(item.active_students_count || 0)),
         }))
         .filter((buddy) => buddy.spotsAvailable > 0),
@@ -152,6 +167,44 @@ export async function getAdminMatchesOverview(req, res) {
   } catch (error) {
     console.error("Admin matches overview error:", error.message);
     return res.status(500).json({ message: "Could not load admin match data." });
+  }
+}
+
+export async function declineReassignmentRequestByAdmin(req, res) {
+  try {
+    if (!ensureAdmin(req, res)) return;
+
+    const { note } = req.body;
+
+    if (!note?.trim()) {
+      return res.status(400).json({ message: "Admin note is required." });
+    }
+
+    const result = await declineReassignmentRequest({
+      requestId: req.params.requestId,
+      adminId: req.user.id,
+      adminNote: note.trim(),
+    });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Pending reassignment request not found." });
+    }
+
+    const request = result.rows[0];
+
+    await createNotification({
+      userId: request.international_student_id,
+      type: "reassignment_declined",
+      title: "Reassignment request reviewed",
+      description: `Admin reviewed your reassignment request. Note: ${note.trim()}`,
+      referenceType: "match",
+      referenceId: request.match_id,
+    }).catch(() => null);
+
+    return res.json(request);
+  } catch (error) {
+    console.error("Decline reassignment request error:", error.message);
+    return res.status(500).json({ message: "Could not decline reassignment request." });
   }
 }
 
@@ -382,12 +435,16 @@ export async function reassignMatchByAdmin(req, res) {
       return res.status(400).json({ message: "New buddy is required." });
     }
 
-    const result = await reassignMatch(req.params.matchId, newBuddyId);
+    const cleanNote = note?.trim() || "";
+    const result = await reassignMatch(req.params.matchId, newBuddyId, {
+      adminId: req.user.id,
+      adminNote: cleanNote || null,
+    });
 
-    if (note?.trim()) {
+    if (cleanNote) {
       await createAdminMatchNote({
         matchId: Number(req.params.matchId),
-        note: note.trim(),
+        note: cleanNote,
         createdBy: req.user.id,
       });
     }

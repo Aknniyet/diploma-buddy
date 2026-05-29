@@ -16,7 +16,8 @@ export async function ensureAdminNotesTable() {
 export function getBuddyProfiles() {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
-            u.about_you, u.buddy_status, u.max_buddies, u.created_at,
+            u.about_you, u.buddy_status, u.max_buddies, u.preferred_meeting_mode,
+            u.max_weekly_hours, u.support_areas, u.created_at,
             COUNT(m.id) FILTER (WHERE m.status = 'active')::int AS active_students_count
      FROM users u
      LEFT JOIN buddy_matches m ON m.buddy_id = u.id AND m.status = 'active'
@@ -28,12 +29,13 @@ export function getBuddyProfiles() {
 
 export function getPendingRequestsForAdmin() {
   return query(
-    `SELECT br.id, br.created_at, br.message, br.preferred_language, br.status,
+    `SELECT br.id, br.created_at, br.message, br.preferred_language, br.support_topics, br.status,
             s.id AS student_id, s.full_name AS student_name, s.study_program AS student_program,
             s.languages AS student_languages, s.hobbies AS student_hobbies, s.gender_preference,
             b.id AS buddy_id, b.full_name AS buddy_name, b.study_program AS buddy_program,
             b.languages AS buddy_languages, b.hobbies AS buddy_hobbies, b.gender,
-            b.max_buddies,
+            b.max_buddies, b.preferred_meeting_mode, b.max_weekly_hours,
+            b.support_areas,
             COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count,
             COALESCE((
               SELECT ROUND(AVG(bf.rating)::numeric, 1)::float
@@ -75,10 +77,38 @@ export function getActiveMatchesForAdmin() {
   );
 }
 
+export function getPendingReassignmentRequestsForAdmin() {
+  return query(
+    `SELECT rr.id, rr.match_id, rr.reason, rr.status, rr.created_at,
+            s.id AS student_id, s.full_name AS student_name,
+            current_buddy.id AS current_buddy_id,
+            current_buddy.full_name AS current_buddy_name
+     FROM match_reassignment_requests rr
+     JOIN users s ON s.id = rr.international_student_id
+     JOIN users current_buddy ON current_buddy.id = rr.current_buddy_id
+     WHERE rr.status = 'pending'
+     ORDER BY rr.created_at DESC`
+  );
+}
+
 export function getUnmatchedStudents() {
   return query(
     `SELECT u.id, u.full_name, u.home_country, u.city, u.study_program, u.languages, u.hobbies,
-            u.gender_preference, u.created_at,
+            u.about_you, u.gender_preference, u.created_at,
+            (
+              SELECT br.message
+              FROM buddy_requests br
+              WHERE br.international_student_id = u.id
+              ORDER BY br.created_at DESC
+              LIMIT 1
+            ) AS latest_request_message,
+            COALESCE((
+              SELECT br.support_topics
+              FROM buddy_requests br
+              WHERE br.international_student_id = u.id
+              ORDER BY br.created_at DESC
+              LIMIT 1
+            ), ARRAY[]::text[]) AS latest_support_topics,
             CASE
               WHEN EXISTS (
                 SELECT 1 FROM buddy_requests br
@@ -101,7 +131,8 @@ export function getUnmatchedStudents() {
 export function getApprovedBuddiesForAdmin() {
   return query(
     `SELECT u.id, u.full_name, u.email, u.city, u.study_program, u.languages, u.hobbies,
-            u.about_you, u.gender, u.buddy_status, u.max_buddies, u.profile_photo_url,
+            u.about_you, u.gender, u.buddy_status, u.max_buddies, u.preferred_meeting_mode,
+            u.max_weekly_hours, u.support_areas, u.profile_photo_url,
             COUNT(m.id) FILTER (WHERE m.status = 'active') AS active_students_count,
             COALESCE((
               SELECT ROUND(AVG(bf.rating)::numeric, 1)::float
@@ -342,7 +373,7 @@ export async function createManualMatch({ studentId, buddyId }) {
   }
 }
 
-export async function reassignMatch(matchId, newBuddyId) {
+export async function reassignMatch(matchId, newBuddyId, { adminId = null, adminNote = null } = {}) {
   const client = await pool.connect();
 
   try {
@@ -423,6 +454,16 @@ export async function reassignMatch(matchId, newBuddyId) {
       [match.international_student_id, newBuddyId]
     );
 
+    await client.query(
+      `UPDATE match_reassignment_requests
+       SET status = 'resolved',
+           reviewed_by = $2,
+           admin_note = COALESCE($3, admin_note),
+           responded_at = NOW()
+       WHERE match_id = $1 AND status = 'pending'`,
+      [matchId, adminId, adminNote]
+    );
+
     await client.query("COMMIT");
     return {
       ...updatedMatch.rows[0],
@@ -437,6 +478,61 @@ export async function reassignMatch(matchId, newBuddyId) {
   } finally {
     client.release();
   }
+}
+
+export async function createReassignmentRequest({ matchId, studentId, reason }) {
+  return query(
+    `INSERT INTO match_reassignment_requests (
+       match_id,
+       international_student_id,
+       current_buddy_id,
+       reason,
+       status
+     )
+     SELECT bm.id, bm.international_student_id, bm.buddy_id, $3, 'pending'
+     FROM buddy_matches bm
+     WHERE bm.id = $1
+       AND bm.international_student_id = $2
+       AND bm.status = 'active'
+       AND NOT EXISTS (
+         SELECT 1
+         FROM match_reassignment_requests rr
+         WHERE rr.match_id = bm.id
+           AND rr.status = 'pending'
+       )
+     RETURNING id, match_id, international_student_id, current_buddy_id, reason, status, created_at`,
+    [matchId, studentId, reason]
+  );
+}
+
+export function findActiveMatchForStudent(matchId, studentId) {
+  return query(
+    `SELECT bm.id, bm.international_student_id, bm.buddy_id, b.full_name AS buddy_name
+     FROM buddy_matches bm
+     JOIN users b ON b.id = bm.buddy_id
+     WHERE bm.id = $1
+       AND bm.international_student_id = $2
+       AND bm.status = 'active'
+     LIMIT 1`,
+    [matchId, studentId]
+  );
+}
+
+export function declineReassignmentRequest({ requestId, adminId, adminNote }) {
+  return query(
+    `UPDATE match_reassignment_requests rr
+     SET status = 'declined',
+         reviewed_by = $2,
+         admin_note = $3,
+         responded_at = NOW()
+     FROM users s
+     WHERE rr.id = $1
+       AND rr.status = 'pending'
+       AND s.id = rr.international_student_id
+     RETURNING rr.id, rr.match_id, rr.international_student_id, rr.current_buddy_id,
+               rr.reason, rr.status, rr.admin_note, s.full_name AS student_name`,
+    [requestId, adminId, adminNote || null]
+  );
 }
 
 export async function createAdminMatchNote({ matchId = null, requestId = null, note, createdBy }) {

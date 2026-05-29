@@ -15,6 +15,10 @@ CREATE TABLE IF NOT EXISTS users (
   buddy_status VARCHAR(30) NOT NULL DEFAULT 'not_applied'
     CHECK (buddy_status IN ('not_applied', 'pending', 'approved', 'rejected', 'suspended')),
   max_buddies INTEGER NOT NULL DEFAULT 3,
+  preferred_meeting_mode VARCHAR(20) NOT NULL DEFAULT 'both'
+    CHECK (preferred_meeting_mode IN ('online', 'offline', 'both')),
+  max_weekly_hours INTEGER NOT NULL DEFAULT 2,
+  support_areas TEXT[] DEFAULT ARRAY[]::TEXT[],
   profile_photo_url TEXT,
   email_verified BOOLEAN NOT NULL DEFAULT FALSE,
   last_active_at TIMESTAMP,
@@ -30,6 +34,15 @@ ADD COLUMN IF NOT EXISTS email_verified BOOLEAN;
 
 ALTER TABLE users
 ADD COLUMN IF NOT EXISTS max_buddies INTEGER NOT NULL DEFAULT 3;
+
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS preferred_meeting_mode VARCHAR(20) NOT NULL DEFAULT 'both';
+
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS max_weekly_hours INTEGER NOT NULL DEFAULT 2;
+
+ALTER TABLE users
+ADD COLUMN IF NOT EXISTS support_areas TEXT[] DEFAULT ARRAY[]::TEXT[];
 
 ALTER TABLE users
 ADD COLUMN IF NOT EXISTS last_active_at TIMESTAMP;
@@ -119,6 +132,24 @@ DROP CONSTRAINT IF EXISTS buddy_matches_international_student_id_buddy_id_status
 CREATE UNIQUE INDEX IF NOT EXISTS one_active_match_per_student
 ON buddy_matches (international_student_id)
 WHERE status = 'active';
+
+CREATE TABLE IF NOT EXISTS match_reassignment_requests (
+  id SERIAL PRIMARY KEY,
+  match_id INTEGER NOT NULL REFERENCES buddy_matches(id) ON DELETE CASCADE,
+  international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  current_buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  reason TEXT NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'pending'
+    CHECK (status IN ('pending', 'resolved', 'declined')),
+  reviewed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  admin_note TEXT,
+  created_at TIMESTAMP DEFAULT NOW(),
+  responded_at TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS one_pending_reassignment_per_match
+ON match_reassignment_requests(match_id)
+WHERE status = 'pending';
 
 CREATE TABLE IF NOT EXISTS buddy_feedback (
   id SERIAL PRIMARY KEY,

@@ -8,12 +8,59 @@ import BuddyFeedbackModal from "../../components/find-buddies/BuddyFeedbackModal
 import { apiRequest } from "../../lib/api";
 import "../../styles/find-buddies.css";
 
+function ReassignmentRequestModal({ buddy, reason, isSubmitting, onReasonChange, onClose, onSubmit }) {
+  if (!buddy) return null;
+
+  return (
+    <div className="buddy-modal-overlay">
+      <div className="buddy-modal feedback-modal">
+        <button type="button" className="buddy-modal-close" onClick={onClose}>
+          x
+        </button>
+        <h2>Request reassignment</h2>
+        <p className="buddy-modal-subtitle">
+          Admin will review your request and decide whether to assign a different buddy.
+        </p>
+        <div className="buddy-modal-user">
+          <img src={buddy.avatar} alt={buddy.name} className="buddy-modal-avatar" />
+          <div>
+            <h3>{buddy.name}</h3>
+            <p>{buddy.program}</p>
+          </div>
+        </div>
+        <label className="buddy-modal-label" htmlFor="reassignment-reason">
+          Reason for reassignment
+        </label>
+        <textarea
+          id="reassignment-reason"
+          className="buddy-modal-textarea"
+          value={reason}
+          onChange={(event) => onReasonChange(event.target.value)}
+          placeholder="Briefly explain why you need a different buddy."
+          rows={5}
+        />
+        <button
+          type="button"
+          className="buddy-modal-submit"
+          onClick={onSubmit}
+          disabled={isSubmitting || reason.trim().length < 10}
+        >
+          {isSubmitting ? "Sending..." : "Send Request"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function FindBuddiesPage() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedBuddy, setSelectedBuddy] = useState(null);
   const [feedbackBuddy, setFeedbackBuddy] = useState(null);
+  const [reassignmentBuddy, setReassignmentBuddy] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [reassignmentReason, setReassignmentReason] = useState("");
+  const [isSubmittingReassignment, setIsSubmittingReassignment] = useState(false);
   const [buddies, setBuddies] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
 
@@ -48,7 +95,7 @@ function FindBuddiesPage() {
     if (!query) return buddies;
 
     return buddies.filter((buddy) =>
-      [buddy.name, buddy.city, buddy.program, buddy.languages, buddy.bio, ...(buddy.interests || [])]
+      [buddy.name, buddy.city, buddy.program, buddy.languages, buddy.bio, buddy.preferredMeetingMode, ...(buddy.interests || []), ...(buddy.supportAreas || [])]
         .join(" ")
         .toLowerCase()
         .includes(query)
@@ -89,6 +136,40 @@ function FindBuddiesPage() {
     }
   };
 
+  const handleRequestReassignment = async () => {
+    if (!reassignmentBuddy?.matchId) return;
+
+    setIsSubmittingReassignment(true);
+    try {
+      const response = await apiRequest(`/buddy/matches/${reassignmentBuddy.matchId}/reassignment-request`, {
+        method: "POST",
+        body: JSON.stringify({ reason: reassignmentReason }),
+      });
+      setAlertMessage(response.message);
+      setBuddies((prev) =>
+        prev.map((buddy) =>
+          buddy.matchId === reassignmentBuddy.matchId
+            ? { ...buddy, hasPendingReassignment: true }
+            : buddy
+        )
+      );
+      setReassignmentBuddy(null);
+      setReassignmentReason("");
+      await loadBuddies();
+      setBuddies((prev) =>
+        prev.map((buddy) =>
+          buddy.matchId === reassignmentBuddy.matchId
+            ? { ...buddy, hasPendingReassignment: true }
+            : buddy
+        )
+      );
+    } catch (error) {
+      setAlertMessage(error.message);
+    } finally {
+      setIsSubmittingReassignment(false);
+    }
+  };
+
   return (
     <DashboardLayout title="Find Buddies" sidebarType="student">
       <section className="find-buddies-page">
@@ -110,6 +191,10 @@ function FindBuddiesPage() {
             setFeedbackBuddy(buddy);
             setIsFeedbackModalOpen(true);
           }}
+          onRequestReassignment={(buddy) => {
+            setReassignmentBuddy(buddy);
+            setReassignmentReason("");
+          }}
         />
         <BuddyRequestModal buddy={selectedBuddy} isOpen={isModalOpen} onClose={() => { setSelectedBuddy(null); setIsModalOpen(false); }} onSend={handleSendRequest} />
         <BuddyFeedbackModal
@@ -120,6 +205,17 @@ function FindBuddiesPage() {
             setIsFeedbackModalOpen(false);
           }}
           onSave={handleSaveFeedback}
+        />
+        <ReassignmentRequestModal
+          buddy={reassignmentBuddy}
+          reason={reassignmentReason}
+          isSubmitting={isSubmittingReassignment}
+          onReasonChange={setReassignmentReason}
+          onClose={() => {
+            setReassignmentBuddy(null);
+            setReassignmentReason("");
+          }}
+          onSubmit={handleRequestReassignment}
         />
       </section>
     </DashboardLayout>

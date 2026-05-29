@@ -15,6 +15,21 @@ export function ensurePlatformEnhancements() {
 
     await query(
       `ALTER TABLE users
+       ADD COLUMN IF NOT EXISTS preferred_meeting_mode VARCHAR(20) NOT NULL DEFAULT 'both'`
+    );
+
+    await query(
+      `ALTER TABLE users
+       ADD COLUMN IF NOT EXISTS max_weekly_hours INTEGER NOT NULL DEFAULT 2`
+    );
+
+    await query(
+      `ALTER TABLE users
+       ADD COLUMN IF NOT EXISTS support_areas TEXT[] DEFAULT ARRAY[]::TEXT[]`
+    );
+
+    await query(
+      `ALTER TABLE users
        ALTER COLUMN last_active_at DROP DEFAULT`
     );
 
@@ -94,6 +109,28 @@ export function ensurePlatformEnhancements() {
         updated_at TIMESTAMP DEFAULT NOW(),
         UNIQUE (event_id, user_id)
       )`
+    );
+
+    await query(
+      `CREATE TABLE IF NOT EXISTS match_reassignment_requests (
+        id SERIAL PRIMARY KEY,
+        match_id INTEGER NOT NULL REFERENCES buddy_matches(id) ON DELETE CASCADE,
+        international_student_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        current_buddy_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        reason TEXT NOT NULL,
+        status VARCHAR(30) NOT NULL DEFAULT 'pending'
+          CHECK (status IN ('pending', 'resolved', 'declined')),
+        reviewed_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        admin_note TEXT,
+        created_at TIMESTAMP DEFAULT NOW(),
+        responded_at TIMESTAMP
+      )`
+    );
+
+    await query(
+      `CREATE UNIQUE INDEX IF NOT EXISTS one_pending_reassignment_per_match
+       ON match_reassignment_requests(match_id)
+       WHERE status = 'pending'`
     );
 
     await query(

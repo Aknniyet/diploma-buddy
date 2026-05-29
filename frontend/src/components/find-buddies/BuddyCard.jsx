@@ -8,9 +8,10 @@ import {
   MessageSquare,
   CheckCircle2,
   Star,
+  Clock3,
 } from "lucide-react";
 
-function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
+function BuddyCard({ buddy, onConnect, onLeaveFeedback, onRequestReassignment }) {
   const [isScoreOpen, setIsScoreOpen] = useState(false);
   const status = buddy.status;
   const matchedNlpTopics = buddy.nlpInsights?.matchedTopics || [];
@@ -26,6 +27,9 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
     status === "waiting" ||
     buddy.spotsAvailable === 0;
   const isAvailable = !isDisabled;
+  const meetingMode = buddy.preferredMeetingMode
+    ? buddy.preferredMeetingMode.charAt(0).toUpperCase() + buddy.preferredMeetingMode.slice(1)
+    : "Both";
 
   const buttonLabel =
     status === "matched"
@@ -59,6 +63,7 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
       <div className="buddy-card-details">
         <div className="buddy-detail-row"><BookOpen size={14} /><span>{buddy.program}</span></div>
         <div className="buddy-detail-row"><Globe size={14} /><span>{buddy.languages || "Not specified"}</span></div>
+        <div className="buddy-detail-row"><Clock3 size={14} /><span>{meetingMode} | {buddy.maxWeeklyHours || 2}h/week</span></div>
       </div>
 
       <div className="buddy-rating-row">
@@ -141,6 +146,7 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
 
       <div className="buddy-tags">
         {(buddy.interests || []).map((tag) => <span key={tag} className="buddy-tag">{tag}</span>)}
+        {(buddy.supportAreas || []).map((tag) => <span key={`support-${tag}`} className="buddy-tag support">{tag}</span>)}
       </div>
 
       <div className="buddy-card-footer">
@@ -168,10 +174,23 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback }) {
           </button>
 
           {status === "matched" ? (
-            <button type="button" className="feedback-btn" onClick={() => onLeaveFeedback?.(buddy)}>
-              <Star size={16} />
-              <span>{buddy.currentUserRating ? "Edit Feedback" : "Leave Feedback"}</span>
-            </button>
+            <>
+              <button type="button" className="feedback-btn" onClick={() => onLeaveFeedback?.(buddy)}>
+                <Star size={16} />
+                <span>{buddy.currentUserRating ? "Edit Feedback" : "Leave Feedback"}</span>
+              </button>
+              {buddy.hasPendingReassignment ? (
+                <div className="feedback-btn feedback-btn-status">
+                  <CheckCircle2 size={16} />
+                  <span>Request Sent</span>
+                </div>
+              ) : (
+                <button type="button" className="feedback-btn" onClick={() => onRequestReassignment?.(buddy)} disabled={!buddy.matchId}>
+                  <MessageSquare size={16} />
+                  <span>Request Reassignment</span>
+                </button>
+              )}
+            </>
           ) : null}
         </div>
       </div>

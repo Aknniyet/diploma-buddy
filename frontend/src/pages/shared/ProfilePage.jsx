@@ -41,6 +41,9 @@ function ProfilePage({ userType = "student" }) {
       aboutYou: profile.about_you || "",
       profilePhotoUrl: profile.profile_photo_url || "",
       maxBuddies: String(profile.max_buddies || 3),
+      preferredMeetingMode: profile.preferred_meeting_mode || "both",
+      maxWeeklyHours: String(profile.max_weekly_hours || 2),
+      supportAreas: (profile.support_areas || []).join(", "),
     });
   };
 
@@ -150,6 +153,22 @@ function ProfilePage({ userType = "student" }) {
                 type: "select",
                 options: ["1", "2", "3"],
               },
+              {
+                id: 9,
+                label: "Preferred Meeting Mode",
+                key: "preferredMeetingMode",
+                value: rawProfile.preferred_meeting_mode || "both",
+                type: "select",
+                options: ["online", "offline", "both"],
+              },
+              {
+                id: 10,
+                label: "Max Weekly Hours",
+                key: "maxWeeklyHours",
+                value: String(rawProfile.max_weekly_hours || 2),
+                type: "select",
+                options: ["1", "2", "3", "4", "5", "6", "8", "10", "12", "15", "20"],
+              },
             ]
           : []),
       ],
@@ -170,8 +189,20 @@ function ProfilePage({ userType = "student" }) {
           key: "hobbies",
           items: rawProfile.hobbies?.length ? rawProfile.hobbies : ["Not provided"],
         },
+        ...(isBuddy
+          ? [
+              {
+                id: 3,
+                title: "Support Areas",
+                icon: Heart,
+                type: "outline",
+                key: "supportAreas",
+                items: rawProfile.support_areas?.length ? rawProfile.support_areas : ["Not provided"],
+              },
+            ]
+          : []),
         {
-          id: 3,
+          id: 4,
           title: "About You",
           icon: UserRound,
           type: "text",

@@ -187,6 +187,7 @@ const LANGUAGE_ALIASES = {
 const PUBLIC_ROLES = new Set(['international', 'local']);
 const GENDERS = new Set(['female', 'male', 'other']);
 const GENDER_PREFERENCES = new Set(['no_preference', 'female', 'male', 'other']);
+const MEETING_MODES = new Set(['online', 'offline', 'both']);
 const LANGUAGE_SET = new Set(LANGUAGE_OPTIONS);
 const MAX_LANGUAGES = 5;
 const NAME_LIKE_REGEX = /^[\p{L}\s'-]+$/u;
@@ -391,6 +392,10 @@ function normalizeMaxBuddies(maxBuddies) {
   return Number.parseInt(String(maxBuddies), 10);
 }
 
+function normalizeMaxWeeklyHours(maxWeeklyHours) {
+  return Number.parseInt(String(maxWeeklyHours), 10);
+}
+
 function validateSharedProfileFields(data, { requireCity = false } = {}) {
   const fullName = collapseSpaces(data.fullName);
   const homeCountry = collapseSpaces(data.homeCountry);
@@ -527,6 +532,9 @@ export function validateProfileData(data, { role }) {
 
   const normalizedRole = normalizeRole(role);
   const maxBuddies = normalizeMaxBuddies(data.maxBuddies);
+  const preferredMeetingMode = collapseSpaces(data.preferredMeetingMode || 'both') || 'both';
+  const maxWeeklyHours = normalizeMaxWeeklyHours(data.maxWeeklyHours || 2);
+  const supportAreas = normalizeArray(data.supportAreas).map((item) => collapseSpaces(item)).filter(Boolean);
 
   if (normalizedRole === 'local') {
     if (!Number.isInteger(maxBuddies)) {
@@ -536,12 +544,28 @@ export function validateProfileData(data, { role }) {
     if (maxBuddies < 1 || maxBuddies > 3) {
       return { error: 'Maximum buddies must be between 1 and 3.' };
     }
+
+    if (!MEETING_MODES.has(preferredMeetingMode)) {
+      return { error: 'Preferred meeting mode is invalid.' };
+    }
+
+    if (!Number.isInteger(maxWeeklyHours) || maxWeeklyHours < 1 || maxWeeklyHours > 20) {
+      return { error: 'Maximum weekly hours must be between 1 and 20.' };
+    }
+
+    const supportAreasError = validateListField(supportAreas, 'Support areas');
+    if (supportAreasError) {
+      return { error: supportAreasError };
+    }
   }
 
   return {
     value: {
       ...sharedValidation.value,
       maxBuddies: normalizedRole === 'local' ? maxBuddies : null,
+      preferredMeetingMode: normalizedRole === 'local' ? preferredMeetingMode : null,
+      maxWeeklyHours: normalizedRole === 'local' ? maxWeeklyHours : null,
+      supportAreas: normalizedRole === 'local' ? supportAreas : null,
       profilePhotoUrl: typeof data.profilePhotoUrl === 'string' ? data.profilePhotoUrl : '',
     },
   };

@@ -350,6 +350,11 @@
   font-weight: 500;
 }
 
+.buddy-tag.support {
+  background: #eef2ff;
+  color: #3949ab;
+}
+
 .buddy-card-footer {
   margin-top: auto;
   display: flex;
@@ -434,7 +439,7 @@
   border-radius: 12px;
   background: #ffffff;
   color: #0f172a;
-  width: 148px;
+  width: 178px;
   min-height: 40px;
   padding: 0 14px;
   display: inline-flex;
@@ -447,9 +452,27 @@
   text-align: center;
 }
 
+.feedback-btn span {
+  overflow-wrap: anywhere;
+  line-height: 1.2;
+}
+
 .feedback-btn:hover {
   border-color: #9fcfd5;
   color: #0f9c9c;
+}
+
+.feedback-btn-status {
+  cursor: default;
+  background: #e7f5f4;
+  border-color: #9fd8d8;
+  color: #0a7d84;
+  font-weight: 700;
+}
+
+.feedback-btn-status:hover {
+  border-color: #9fd8d8;
+  color: #0a7d84;
 }
 
 .buddy-empty-state {

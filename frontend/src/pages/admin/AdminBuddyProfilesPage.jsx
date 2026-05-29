@@ -41,6 +41,8 @@ function AdminBuddyProfilesPage() {
           buddy.study_program,
           buddy.languages?.join(" "),
           buddy.hobbies?.join(" "),
+          buddy.support_areas?.join(" "),
+          buddy.preferred_meeting_mode,
         ]
           .filter(Boolean)
           .join(" ")
@@ -139,8 +141,11 @@ function AdminBuddyProfilesPage() {
                       <span>{buddy.city || "Kazakhstan"}</span>
                       <span>{buddy.study_program || "Program not set"}</span>
                       <span>{activeStudents}/{maxBuddies} active students</span>
+                      <span>{buddy.preferred_meeting_mode ? buddy.preferred_meeting_mode.replaceAll("_", " ") : "both"} meetings</span>
+                      <span>{buddy.max_weekly_hours || 2}h/week</span>
                       <span>{buddy.languages?.length ? buddy.languages.join(", ") : "Languages not set"}</span>
                       <span>{buddy.hobbies?.length ? buddy.hobbies.join(", ") : "Interests not set"}</span>
+                      <span>{buddy.support_areas?.length ? buddy.support_areas.join(", ") : "Support areas not set"}</span>
                     </div>
                     <p>{buddy.about_you || "This buddy has not added a bio yet."}</p>
                     {cannotDisable ? (

@@ -13,7 +13,8 @@ export function findUserProfileById(userId) {
   return query(
     `SELECT id, full_name, email, role, home_country, city, study_program,
             languages, hobbies, about_you, gender, gender_preference,
-            buddy_status, max_buddies, profile_photo_url, created_at, email_verified,
+            buddy_status, max_buddies, preferred_meeting_mode, max_weekly_hours,
+            support_areas, profile_photo_url, created_at, email_verified,
             last_active_at
      FROM users
      WHERE id = $1`,
@@ -72,11 +73,15 @@ export function updateUserProfile(userId, profileData) {
          gender = COALESCE($9, gender),
          gender_preference = COALESCE($10, gender_preference),
          max_buddies = COALESCE($11, max_buddies),
+         preferred_meeting_mode = COALESCE($12, preferred_meeting_mode),
+         max_weekly_hours = COALESCE($13, max_weekly_hours),
+         support_areas = COALESCE($14::text[], support_areas),
          updated_at = NOW()
-     WHERE id = $12
+     WHERE id = $15
      RETURNING id, full_name, email, role, home_country, city, study_program,
                languages, hobbies, about_you, gender, gender_preference,
-               buddy_status, max_buddies, profile_photo_url`,
+               buddy_status, max_buddies, preferred_meeting_mode, max_weekly_hours,
+               support_areas, profile_photo_url`,
     [
       profileData.fullName || null,
       profileData.homeCountry || null,
@@ -89,6 +94,9 @@ export function updateUserProfile(userId, profileData) {
       profileData.gender || null,
       profileData.genderPreference || null,
       profileData.maxBuddies || null,
+      profileData.preferredMeetingMode || null,
+      profileData.maxWeeklyHours || null,
+      profileData.supportAreas || null,
       userId,
     ]
   );
@@ -162,6 +170,14 @@ export function findStudentAndBuddyRecipients() {
      FROM users
      WHERE role = 'international'
         OR (role = 'local' AND buddy_status = 'approved')`
+  );
+}
+
+export function findAdminRecipients() {
+  return query(
+    `SELECT id
+     FROM users
+     WHERE role = 'admin'`
   );
 }
 

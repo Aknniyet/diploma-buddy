@@ -7,6 +7,7 @@ import {
   changeBuddyStatusByAdmin,
   changeMatchStatusByAdmin,
   createManualMatchByAdmin,
+  declineReassignmentRequestByAdmin,
   getAdminMatchesOverview,
   getMatchNotesByAdmin,
   reassignMatchByAdmin,
@@ -21,6 +22,7 @@ router.post("/matches/manual", authenticate, createManualMatchByAdmin);
 router.patch("/buddies/:buddyId/status", authenticate, changeBuddyStatusByAdmin);
 router.patch("/matches/:matchId/status", authenticate, changeMatchStatusByAdmin);
 router.patch("/matches/:matchId/reassign", authenticate, reassignMatchByAdmin);
+router.patch("/reassignment-requests/:requestId/decline", authenticate, declineReassignmentRequestByAdmin);
 router.post("/matches/notes", authenticate, addAdminMatchNote);
 router.get("/matches/:matchId/notes", authenticate, getMatchNotesByAdmin);
 

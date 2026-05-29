@@ -231,7 +231,9 @@ export function formatBuddyCard(
   statusMap,
   activeMatchBuddyId,
   hasActiveMatch = false,
-  pendingRequestBuddyId = null
+  pendingRequestBuddyId = null,
+  activeMatchId = null,
+  hasPendingReassignment = false
 ) {
   const activeStudents = Number(buddy.active_students_count || 0);
   const maxBuddies = Number(buddy.max_buddies || 3);
@@ -248,6 +250,7 @@ export function formatBuddyCard(
 
   return {
     id: buddy.id,
+    matchId: isMatched ? activeMatchId : null,
     name: buddy.full_name,
     email: buddy.email,
     city: buddy.city || "Kazakhstan",
@@ -259,6 +262,9 @@ export function formatBuddyCard(
     spotsAvailable: Math.max(0, maxBuddies - activeStudents),
     activeStudents,
     maxBuddies,
+    preferredMeetingMode: buddy.preferred_meeting_mode || "both",
+    maxWeeklyHours: Number(buddy.max_weekly_hours || 2),
+    supportAreas: buddy.support_areas || [],
     score: matchInsights.score,
     scoreLabel: matchInsights.scoreLabel,
     ruleBasedScore: matchInsights.ruleBasedScore,
@@ -273,6 +279,7 @@ export function formatBuddyCard(
     status,
     hasActiveMatch,
     hasPendingRequest: Boolean(pendingRequestBuddyId),
+    hasPendingReassignment: isMatched && hasPendingReassignment,
     averageRating: Number(buddy.average_rating || 0),
     feedbackCount: Number(buddy.feedback_count || 0),
     currentUserRating: buddy.current_user_rating ? Number(buddy.current_user_rating) : null,

@@ -5,6 +5,9 @@ const PROFILE_SELECT_LABELS = {
   male: "Male",
   other: "Other",
   no_preference: "No Preference",
+  online: "Online",
+  offline: "Offline",
+  both: "Both",
 };
 
 function formatSelectValue(value) {

@@ -238,9 +238,11 @@ export function buildNlpMatchInsights(student = {}, buddy = {}) {
   const buddyText = collectTextParts(
     buddy.about_you,
     buddy.hobbies,
+    buddy.support_areas,
     buddy.study_program,
     buddy.languages,
-    buddy.city
+    buddy.city,
+    buddy.preferred_meeting_mode
   );
   const studentTopics = detectSupportTopics(studentText, student.latest_support_topics || []);
   const buddyTopics = detectSupportTopics(buddyText);
