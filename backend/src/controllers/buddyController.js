@@ -110,9 +110,8 @@ export async function createRequest(req, res) {
       return res.status(409).json({ message: 'You already sent a request to this buddy.' });
     }
 
-    const detectedTopicLabels = getTopicLabels(detectSupportTopics(message, supportTopics || []));
-    const mergedSupportTopics = Array.from(
-      new Set([...(supportTopics || []), ...detectedTopicLabels])
+    const mergedSupportTopics = getTopicLabels(
+      detectSupportTopics(message, supportTopics || [])
     );
 
     const result = await createBuddyRequest(req.user.id, {

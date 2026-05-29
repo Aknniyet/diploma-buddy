@@ -36,6 +36,10 @@ function AdminRiskMonitorPage() {
           student.email,
           student.risk?.label,
           student.risk?.reasons?.join(" "),
+          student.nlpRisk?.urgency,
+          student.nlpRisk?.detectedTopics?.join(" "),
+          student.nlpRisk?.signals?.join(" "),
+          student.nlpRisk?.recommendation,
         ]
           .filter(Boolean)
           .join(" ")

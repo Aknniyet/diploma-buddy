@@ -11,7 +11,8 @@ const TOPIC_CATALOG = [
       "migration",
       "registration",
       "iin",
-      "id",
+      "identification",
+      "identity",
       "validity",
     ],
   },
@@ -225,14 +226,15 @@ export function calculateTextSimilarity(leftText, rightText) {
 }
 
 export function buildNlpMatchInsights(student = {}, buddy = {}) {
-  const studentText = collectTextParts(
+  const studentProfileText = collectTextParts(
     student.about_you,
     student.hobbies,
     student.study_program,
     student.home_country,
-    student.latest_request_message,
     student.latest_support_topics
   );
+  const latestRequestText = collectTextParts(student.latest_request_message);
+  const studentText = collectTextParts(studentProfileText, latestRequestText);
   const buddyText = collectTextParts(
     buddy.about_you,
     buddy.hobbies,
@@ -266,6 +268,7 @@ export function buildNlpMatchInsights(student = {}, buddy = {}) {
     textSimilarity: Number(textSimilarity.toFixed(2)),
     detectedTopics: detectedTopicLabels,
     matchedTopics: topicLabels,
+    usesLatestRequestContext: Boolean(latestRequestText),
     reasons,
   };
 }
