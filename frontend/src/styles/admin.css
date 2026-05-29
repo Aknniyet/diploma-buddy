@@ -168,7 +168,17 @@
 }
 
 .admin-match-tabs {
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: thin;
   margin-bottom: 16px;
+}
+
+.admin-match-tabs .admin-tab-button {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  white-space: nowrap;
 }
 
 .admin-match-toolbar {

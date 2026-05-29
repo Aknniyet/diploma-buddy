@@ -367,7 +367,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  align-items: flex-end;
+  width: 178px;
+  align-items: stretch;
 }
 
 .buddy-card-footer p {
@@ -391,7 +392,8 @@
   border-radius: 14px;
   color: white;
   min-height: 40px;
-  min-width: 148px;
+  width: 100%;
+  min-width: 0;
   padding: 0 18px;
   display: inline-flex;
   align-items: center;
@@ -439,7 +441,7 @@
   border-radius: 12px;
   background: #ffffff;
   color: #0f172a;
-  width: 178px;
+  width: 100%;
   min-height: 40px;
   padding: 0 14px;
   display: inline-flex;

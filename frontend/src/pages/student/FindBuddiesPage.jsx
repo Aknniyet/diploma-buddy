@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { X } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import SearchBar from "../../components/find-buddies/SearchBar";
 import BuddyAlert from "../../components/find-buddies/BuddyAlert";
@@ -12,10 +13,10 @@ function ReassignmentRequestModal({ buddy, reason, isSubmitting, onReasonChange,
   if (!buddy) return null;
 
   return (
-    <div className="buddy-modal-overlay">
-      <div className="buddy-modal feedback-modal">
+    <div className="buddy-modal-overlay" onClick={onClose}>
+      <div className="buddy-modal feedback-modal" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="buddy-modal-close" onClick={onClose}>
-          x
+          <X size={24} />
         </button>
         <h2>Request reassignment</h2>
         <p className="buddy-modal-subtitle">
