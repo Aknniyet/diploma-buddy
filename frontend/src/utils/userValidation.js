@@ -201,6 +201,7 @@ const LANGUAGE_ALIASES = {
 const LANGUAGE_SET = new Set(LANGUAGE_OPTIONS);
 const MAX_LANGUAGES = 5;
 const NAME_LIKE_REGEX = /^[\p{L}\s'-]+$/u;
+const HAS_LETTER_REGEX = /\p{L}/u;
 const LIST_ITEM_REGEX = /^[\p{L}\s&'-]+$/u;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,72}$/;
 const GENDERS = new Set(["female", "male", "other"]);
@@ -312,6 +313,10 @@ function validateNameLikeField(value, label, { required = false, maxLength = 100
 
   if (!NAME_LIKE_REGEX.test(normalizedValue)) {
     return `${label} can contain only letters, spaces, hyphens, and apostrophes.`;
+  }
+
+  if (!HAS_LETTER_REGEX.test(normalizedValue)) {
+    return `${label} must include at least one letter.`;
   }
 
   if (looksLikePlaceholderText(normalizedValue)) {
