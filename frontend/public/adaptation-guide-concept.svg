@@ -1,0 +1,104 @@
+<svg width="1440" height="1024" viewBox="0 0 1440 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1440" height="1024" fill="#EEF6F6"/>
+  <rect x="0" y="0" width="244" height="1024" fill="#F6FBFB"/>
+  <rect x="244" y="0" width="1196" height="72" fill="#F6FBFB"/>
+  <line x1="244" y1="72.5" x2="1440" y2="72.5" stroke="#DCE8E8"/>
+  <line x1="243.5" y1="0" x2="243.5" y2="1024" stroke="#DCE8E8"/>
+
+  <circle cx="40" cy="38" r="14" fill="#D8ECEB"/>
+  <text x="64" y="44" fill="#1F2937" font-family="Arial, sans-serif" font-size="18" font-weight="700">Kazakh<tspan fill="#4FA9B0">Buddy</tspan></text>
+
+  <rect x="16" y="108" width="216" height="42" rx="12" fill="#E7F3F2"/>
+  <text x="52" y="135" fill="#1F2937" font-family="Arial, sans-serif" font-size="15">Adaptation Guide</text>
+  <text x="24" y="201" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Overview</text>
+  <text x="24" y="241" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Find Buddies</text>
+  <text x="24" y="281" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Messages</text>
+  <text x="24" y="321" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Checklist</text>
+  <text x="24" y="361" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Community Board</text>
+  <text x="24" y="401" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Events</text>
+
+  <text x="294" y="44" fill="#1F2937" font-family="Arial, sans-serif" font-size="20" font-weight="700">Adaptation Guide</text>
+
+  <text x="416" y="128" fill="#1F2937" font-family="Arial, sans-serif" font-size="28" font-weight="700">Your adaptation guide</text>
+  <text x="416" y="157" fill="#6B7280" font-family="Arial, sans-serif" font-size="16">A clearer guide with steps, priorities, search and actions.</text>
+
+  <rect x="416" y="188" width="776" height="52" rx="14" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="438" y="221" fill="#8A94A3" font-family="Arial, sans-serif" font-size="16">Search: visa, IIN, dormitory, bank card...</text>
+
+  <rect x="416" y="260" width="160" height="38" rx="19" fill="#4FA9B0"/>
+  <text x="452" y="284" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="700">First 3 days</text>
+  <rect x="588" y="260" width="138" height="38" rx="19" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="623" y="284" fill="#405261" font-family="Arial, sans-serif" font-size="14">First week</text>
+  <rect x="738" y="260" width="150" height="38" rx="19" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="770" y="284" fill="#405261" font-family="Arial, sans-serif" font-size="14">First month</text>
+  <rect x="900" y="260" width="146" height="38" rx="19" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="934" y="284" fill="#405261" font-family="Arial, sans-serif" font-size="14">Student life</text>
+
+  <rect x="416" y="320" width="220" height="648" rx="24" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="440" y="360" fill="#1F2937" font-family="Arial, sans-serif" font-size="20" font-weight="700">Categories</text>
+  <rect x="440" y="384" width="82" height="30" rx="15" fill="#EEF6FF"/>
+  <text x="458" y="404" fill="#2E78B7" font-family="Arial, sans-serif" font-size="13">Documents</text>
+  <rect x="532" y="384" width="76" height="30" rx="15" fill="#F6F4FF"/>
+  <text x="553" y="404" fill="#7A52CC" font-family="Arial, sans-serif" font-size="13">Housing</text>
+  <rect x="440" y="424" width="66" height="30" rx="15" fill="#FFF7E8"/>
+  <text x="459" y="444" fill="#C97917" font-family="Arial, sans-serif" font-size="13">Health</text>
+  <rect x="516" y="424" width="84" height="30" rx="15" fill="#ECF9F3"/>
+  <text x="537" y="444" fill="#27945C" font-family="Arial, sans-serif" font-size="13">Transport</text>
+  <rect x="440" y="464" width="74" height="30" rx="15" fill="#EEF6FF"/>
+  <text x="460" y="484" fill="#2E78B7" font-family="Arial, sans-serif" font-size="13">Banking</text>
+  <rect x="524" y="464" width="60" height="30" rx="15" fill="#F6F4FF"/>
+  <text x="543" y="484" fill="#7A52CC" font-family="Arial, sans-serif" font-size="13">Study</text>
+
+  <text x="440" y="544" fill="#1F2937" font-family="Arial, sans-serif" font-size="20" font-weight="700">Priority</text>
+  <rect x="440" y="568" width="152" height="56" rx="16" fill="#FFF7E8" stroke="#F3DFC0"/>
+  <text x="456" y="592" fill="#B46A10" font-family="Arial, sans-serif" font-size="13" font-weight="700">Urgent</text>
+  <text x="456" y="613" fill="#6B7280" font-family="Arial, sans-serif" font-size="13">Migration registration</text>
+  <rect x="440" y="636" width="152" height="56" rx="16" fill="#EEF6FF" stroke="#D5E9FB"/>
+  <text x="456" y="660" fill="#2E78B7" font-family="Arial, sans-serif" font-size="13" font-weight="700">Important</text>
+  <text x="456" y="681" fill="#6B7280" font-family="Arial, sans-serif" font-size="13">Get IIN and SIM card</text>
+  <rect x="440" y="704" width="152" height="56" rx="16" fill="#ECF9F3" stroke="#D7F0E2"/>
+  <text x="456" y="728" fill="#27945C" font-family="Arial, sans-serif" font-size="13" font-weight="700">Recommended</text>
+  <text x="456" y="749" fill="#6B7280" font-family="Arial, sans-serif" font-size="13">Join your first event</text>
+
+  <text x="440" y="820" fill="#1F2937" font-family="Arial, sans-serif" font-size="20" font-weight="700">Quick actions</text>
+  <rect x="440" y="844" width="164" height="42" rx="12" fill="#4FA9B0"/>
+  <text x="482" y="870" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="700">Open checklist</text>
+  <rect x="440" y="896" width="164" height="42" rx="12" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="483" y="922" fill="#405261" font-family="Arial, sans-serif" font-size="14">Find buddy</text>
+
+  <rect x="656" y="320" width="536" height="304" rx="24" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="684" y="362" fill="#1F2937" font-family="Arial, sans-serif" font-size="24" font-weight="700">First 3 days in Kazakhstan</text>
+  <text x="684" y="392" fill="#6B7280" font-family="Arial, sans-serif" font-size="15">Most important actions right after arrival.</text>
+
+  <rect x="684" y="424" width="112" height="28" rx="14" fill="#FFF7E8"/>
+  <text x="718" y="443" fill="#B46A10" font-family="Arial, sans-serif" font-size="12" font-weight="700">URGENT</text>
+  <rect x="806" y="424" width="108" height="28" rx="14" fill="#EEF6FF"/>
+  <text x="836" y="443" fill="#2E78B7" font-family="Arial, sans-serif" font-size="12" font-weight="700">Documents</text>
+
+  <text x="684" y="486" fill="#1F2937" font-family="Arial, sans-serif" font-size="17" font-weight="700">1. Migration registration</text>
+  <text x="684" y="514" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Complete registration as early as possible after arrival. This step is time-sensitive and should be handled before less urgent tasks.</text>
+
+  <text x="684" y="570" fill="#1F2937" font-family="Arial, sans-serif" font-size="17" font-weight="700">2. Get your IIN</text>
+  <text x="684" y="598" fill="#5F6F7F" font-family="Arial, sans-serif" font-size="15">Your IIN is needed for banking, SIM cards and many services. The guide can link this article directly to the related checklist step.</text>
+
+  <rect x="684" y="544" width="146" height="38" rx="12" fill="#4FA9B0"/>
+  <text x="719" y="568" fill="white" font-family="Arial, sans-serif" font-size="14" font-weight="700">Go to checklist</text>
+  <rect x="842" y="544" width="136" height="38" rx="12" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="873" y="568" fill="#405261" font-family="Arial, sans-serif" font-size="14">Mark as read</text>
+
+  <rect x="656" y="644" width="536" height="324" rx="24" fill="#FFFFFF" stroke="#D8E4E3"/>
+  <text x="684" y="686" fill="#1F2937" font-family="Arial, sans-serif" font-size="22" font-weight="700">Helpful articles</text>
+  <text x="684" y="714" fill="#6B7280" font-family="Arial, sans-serif" font-size="15">Compact cards instead of long text walls.</text>
+
+  <rect x="684" y="742" width="480" height="60" rx="16" fill="#FBFEFE" stroke="#E3ECEB"/>
+  <text x="706" y="767" fill="#1F2937" font-family="Arial, sans-serif" font-size="16" font-weight="700">How to open a bank account</text>
+  <text x="706" y="790" fill="#6B7280" font-family="Arial, sans-serif" font-size="14">Documents, common banks and what to prepare before visiting.</text>
+
+  <rect x="684" y="816" width="480" height="60" rx="16" fill="#FBFEFE" stroke="#E3ECEB"/>
+  <text x="706" y="841" fill="#1F2937" font-family="Arial, sans-serif" font-size="16" font-weight="700">Dormitory and housing tips</text>
+  <text x="706" y="864" fill="#6B7280" font-family="Arial, sans-serif" font-size="14">Check-in steps, what to bring and who to contact for help.</text>
+
+  <rect x="684" y="890" width="480" height="60" rx="16" fill="#FBFEFE" stroke="#E3ECEB"/>
+  <text x="706" y="915" fill="#1F2937" font-family="Arial, sans-serif" font-size="16" font-weight="700">Transport and daily life</text>
+  <text x="706" y="938" fill="#6B7280" font-family="Arial, sans-serif" font-size="14">Bus cards, taxi apps, maps and practical daily student advice.</text>
+</svg>

@@ -10,11 +10,25 @@ function BuddyRequestsPage() {
   const [activeTab, setActiveTab] = useState("pending");
   const [pendingRequests, setPendingRequests] = useState([]);
   const [pastRequests, setPastRequests] = useState([]);
+  const [respondingRequestId, setRespondingRequestId] = useState(null);
+  const [respondingAction, setRespondingAction] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const loadRequests = async () => {
-    const data = await apiRequest("/buddy/requests/incoming");
-    setPendingRequests(data.pending || []);
-    setPastRequests(data.past || []);
+    setIsLoading(true);
+    try {
+      const data = await apiRequest("/buddy/requests/incoming");
+      setPendingRequests(data.pending || []);
+      setPastRequests(data.past || []);
+      setError("");
+    } catch (requestError) {
+      setPendingRequests([]);
+      setPastRequests([]);
+      setError(requestError.message || "Could not load student requests.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -22,12 +36,22 @@ function BuddyRequestsPage() {
   }, []);
 
   const handleRespond = async (requestId, action) => {
-    await apiRequest(`/buddy/requests/${requestId}/respond`, {
-      method: "PATCH",
-      body: JSON.stringify({ action }),
-    });
-    await loadRequests();
-    setActiveTab("past");
+    try {
+      setRespondingRequestId(requestId);
+      setRespondingAction(action);
+      setError("");
+      await apiRequest(`/buddy/requests/${requestId}/respond`, {
+        method: "PATCH",
+        body: JSON.stringify({ action }),
+      });
+      await loadRequests();
+      setActiveTab("past");
+    } catch (requestError) {
+      setError(requestError.message || "Could not update this request.");
+    } finally {
+      setRespondingRequestId(null);
+      setRespondingAction("");
+    }
   };
 
   return (
@@ -40,15 +64,31 @@ function BuddyRequestsPage() {
 
         <RequestsTabs activeTab={activeTab} onChangeTab={setActiveTab} pendingCount={pendingRequests.length} />
 
-        {activeTab === "pending" ? (
+        {error ? <div className="buddy-requests-status error">{error}</div> : null}
+
+        {isLoading ? (
+          <div className="buddy-past-empty-card">
+            <div className="buddy-past-empty-content">
+              <h3>Loading student requests</h3>
+              <p>Please wait while we load the latest connection requests.</p>
+            </div>
+          </div>
+        ) : activeTab === "pending" ? (
           pendingRequests.length > 0 ? (
             <div className="buddy-requests-list">
               {pendingRequests.map((request) => (
-                <RequestCard key={request.id} request={request} onAccept={() => handleRespond(request.id, "accept")} onDecline={() => handleRespond(request.id, "decline")} />
-              ))}
-            </div>
+                <RequestCard
+                  key={request.id}
+                  request={request}
+                  isResponding={respondingRequestId === request.id}
+                  respondingAction={respondingAction}
+                  onAccept={() => handleRespond(request.id, "accept")}
+                  onDecline={() => handleRespond(request.id, "decline")}
+              />
+            ))}
+          </div>
           ) : (
-            <div className="buddy-past-empty-card"><div className="buddy-past-empty-content"><h3>No pending requests</h3><p>New student requests will appear here.</p></div></div>
+            <div className="buddy-past-empty-card"><div className="buddy-past-empty-content"><h3>No pending requests</h3><p>New student requests will appear here when students contact you.</p></div></div>
           )
         ) : pastRequests.length > 0 ? (
           <div className="buddy-requests-list">

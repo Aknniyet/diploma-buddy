@@ -131,32 +131,6 @@ function EventsPage({ userType = "student" }) {
         </div>
 
         <p>{item.description || "Event details will be shared soon."}</p>
-
-        {status === "upcoming" ? (
-          <div className="event-card-actions">
-            <button
-              type="button"
-              className={item.is_attending ? "event-cta-btn secondary" : "event-cta-btn"}
-              onClick={async () => {
-                try {
-                  const updated = await apiRequest(`/events/${item.id}/attendance`, {
-                    method: "POST",
-                  });
-                  setEvents((prev) =>
-                    prev.map((event) => (event.id === item.id ? updated : event))
-                  );
-                } catch {
-                  return null;
-                }
-              }}
-            >
-              {item.is_attending ? "Going" : "Plan to attend"}
-            </button>
-            <span className="event-attendance-count">
-              {item.attendees_count || 0} attending
-            </span>
-          </div>
-        ) : null}
       </div>
     </article>
   );

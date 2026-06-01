@@ -285,7 +285,17 @@ function CommunityBoardPage({ userType = "student" }) {
               <p>Community Board will become available after admin approval.</p>
             </div>
           ) : isLoading ? (
-            <div className="community-empty-card">Loading community posts...</div>
+            <div className="community-empty-card">
+              <MessageCircle size={28} />
+              <h3>Loading posts</h3>
+              <p>Please wait while we load the latest community updates.</p>
+            </div>
+          ) : error && posts.length === 0 ? (
+            <div className="community-empty-card">
+              <MessageCircle size={28} />
+              <h3>Could not load posts</h3>
+              <p>{error}</p>
+            </div>
           ) : posts.length === 0 ? (
             <div className="community-empty-card">
               <MessageCircle size={28} />

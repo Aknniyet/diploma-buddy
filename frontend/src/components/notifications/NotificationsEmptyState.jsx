@@ -5,8 +5,8 @@ function NotificationsEmptyState() {
     <div className="notifications-empty-state">
       <div className="notifications-empty-content">
         <Bell size={54} />
-        <h3>No notifications</h3>
-        <p>You'll see notifications here when there's activity on your account</p>
+        <h3>No notifications yet</h3>
+        <p>You will see updates here when there is new activity on your account.</p>
       </div>
     </div>
   );

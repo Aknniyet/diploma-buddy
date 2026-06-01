@@ -36,27 +36,34 @@ function formatDate(date) {
 function NotificationsPage({ userType = "student" }) {
   const [notifications, setNotifications] = useState([]);
   const [loadError, setLoadError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadNotifications = async () => {
-    const data = await apiRequest("/notifications");
-    const items = Array.isArray(data) ? data : [];
-    setNotifications(
-      items.map((item) => ({
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        read: item.read,
-        date: formatDate(item.created_at),
-        icon: iconMap[item.type] || Bell,
-      }))
-    );
-    setLoadError("");
+    setIsLoading(true);
+    try {
+      const data = await apiRequest("/notifications");
+      const items = Array.isArray(data) ? data : [];
+      setNotifications(
+        items.map((item) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          read: item.read,
+          date: formatDate(item.created_at),
+          icon: iconMap[item.type] || Bell,
+        }))
+      );
+      setLoadError("");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     loadNotifications().catch((error) => {
       setLoadError(error.message || "Could not load notifications.");
       setNotifications([]);
+      setIsLoading(false);
     });
   }, []);
 
@@ -88,7 +95,7 @@ function NotificationsPage({ userType = "student" }) {
       <section className="notifications-page">
         <div className="notifications-page-top">
           <NotificationsHeader unreadCount={unreadCount} />
-          <NotificationsToolbar onMarkAllRead={handleMarkAllRead} />
+          <NotificationsToolbar onMarkAllRead={handleMarkAllRead} disabled={isLoading || unreadCount === 0} />
         </div>
 
         <div className="notifications-card">
@@ -101,7 +108,15 @@ function NotificationsPage({ userType = "student" }) {
             <div className="notifications-load-error">{loadError}</div>
           ) : null}
 
-          {notifications.length > 0 ? (
+          {isLoading ? (
+            <div className="notifications-empty-state">
+              <div className="notifications-empty-content">
+                <Bell size={54} />
+                <h3>Loading notifications</h3>
+                <p>Please wait while we load the latest updates for your account.</p>
+              </div>
+            </div>
+          ) : notifications.length > 0 ? (
             <NotificationsList notifications={notifications} onMarkRead={handleMarkRead} onDelete={handleDelete} />
           ) : (
             <NotificationsEmptyState />

@@ -8,6 +8,7 @@ function ChatWindow({
   conversation,
   messages,
   actionError,
+  isLoadingMessages = false,
   isClearingConversation,
   isDeletingMessages,
   onClearConversation,
@@ -199,7 +200,12 @@ function ChatWindow({
       {actionError ? <div className="chat-inline-error">{actionError}</div> : null}
 
       <div className="chat-messages">
-        {renderedMessages.length === 0 ? (
+        {isLoadingMessages ? (
+          <div className="chat-empty-timeline">
+            <h4>Loading messages</h4>
+            <p>Please wait while we open this conversation.</p>
+          </div>
+        ) : renderedMessages.length === 0 ? (
           <div className="chat-empty-timeline">
             <h4>This side of the chat is clean.</h4>
             <p>New messages will appear here, while the other user keeps their own history.</p>

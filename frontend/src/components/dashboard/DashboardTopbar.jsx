@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { apiRequest } from "../../lib/api";
+import ThemeToggle from "../common/ThemeToggle";
 
 function DashboardTopbar({
   sidebarType = "student",
@@ -129,6 +130,7 @@ function DashboardTopbar({
         <span className="dashboard-topbar-context">{workspaceLabel}</span>
       </div>
       <div className="topbar-actions">
+        <ThemeToggle compact />
         {notificationsPath ? (
           <Link to={notificationsPath} className="icon-button notification-bell-button">
             <Bell size={20} />

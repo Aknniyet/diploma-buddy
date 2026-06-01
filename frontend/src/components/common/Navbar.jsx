@@ -5,6 +5,7 @@ import "../../styles/navbar.css";
 import logo from "../../assets/kazakhbuddy-logo-sun-transparent.png";
 import { useI18n } from "../../context/I18nContext";
 import LanguageSwitcher from "./LanguageSwitcher";
+import ThemeToggle from "./ThemeToggle";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -65,6 +66,7 @@ function Navbar() {
           </nav>
 
           <div className="nav-actions">
+            <ThemeToggle />
             <LanguageSwitcher />
 
             <NavLink to="/login" className="login" onClick={closeMenu}>

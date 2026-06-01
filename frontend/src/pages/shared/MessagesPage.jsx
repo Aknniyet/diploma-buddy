@@ -12,25 +12,40 @@ function MessagesPage({ userType = "student" }) {
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageActionError, setMessageActionError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [isDeletingMessages, setIsDeletingMessages] = useState(false);
   const [isClearingConversation, setIsClearingConversation] = useState(false);
   const isBuddy = userType === "buddy";
 
   const loadConversations = async () => {
-    const data = await apiRequest("/messages/conversations");
-    setConversations(data);
+    setIsLoadingConversations(true);
+    try {
+      const data = await apiRequest("/messages/conversations");
+      setConversations(data);
+      setLoadError("");
+      setMessageActionError("");
 
-    setSelectedConversation((currentConversation) => {
-      if (data.length === 0) {
-        return null;
-      }
+      setSelectedConversation((currentConversation) => {
+        if (data.length === 0) {
+          return null;
+        }
 
-      if (!currentConversation) {
-        return null;
-      }
+        if (!currentConversation) {
+          return data[0];
+        }
 
-      return data.find((item) => item.id === currentConversation.id) || null;
-    });
+        return data.find((item) => item.id === currentConversation.id) || data[0];
+      });
+    } catch (error) {
+      setConversations([]);
+      setSelectedConversation(null);
+      setLoadError(error.message || "Could not load conversations.");
+      setMessages([]);
+    } finally {
+      setIsLoadingConversations(false);
+    }
   };
 
   useEffect(() => {
@@ -38,8 +53,17 @@ function MessagesPage({ userType = "student" }) {
   }, []);
 
   const loadMessages = async (conversationId) => {
-    const data = await apiRequest(`/messages/conversations/${conversationId}/messages`);
-    setMessages(Array.isArray(data) ? data : []);
+    setIsLoadingMessages(true);
+    try {
+      const data = await apiRequest(`/messages/conversations/${conversationId}/messages`);
+      setMessages(Array.isArray(data) ? data : []);
+      setMessageActionError("");
+    } catch (error) {
+      setMessages([]);
+      setMessageActionError(error.message || "Could not load messages.");
+    } finally {
+      setIsLoadingMessages(false);
+    }
   };
 
   useEffect(() => {
@@ -155,11 +179,16 @@ function MessagesPage({ userType = "student" }) {
       <section className="messages-page">
         <div className="messages-page-header">
           <h1>Messages</h1>
-          <p>Chat becomes available after a buddy request is accepted.</p>
+          <p>Messages become available after a buddy request is accepted.</p>
         </div>
 
         <div className="messages-layout">
-          {conversations.length > 0 ? (
+          {isLoadingConversations ? (
+            <EmptyConversationsState
+              title="Loading conversations"
+              description="Please wait while we load your recent chats."
+            />
+          ) : conversations.length > 0 ? (
             <ConversationsList
               conversations={conversations}
               selectedConversation={selectedConversation}
@@ -167,8 +196,8 @@ function MessagesPage({ userType = "student" }) {
             />
           ) : (
             <EmptyConversationsState
-              title="No conversations yet"
-              description="Accept or receive a match to start chatting."
+              title={loadError ? "Could not load conversations" : "No conversations yet"}
+              description={loadError || "Accept or receive a buddy match to start chatting."}
             />
           )}
 
@@ -177,6 +206,7 @@ function MessagesPage({ userType = "student" }) {
               conversation={selectedConversation}
               messages={messages}
               actionError={messageActionError}
+              isLoadingMessages={isLoadingMessages}
               isClearingConversation={isClearingConversation}
               isDeletingMessages={isDeletingMessages}
               onClearConversation={handleClearConversation}

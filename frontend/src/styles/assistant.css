@@ -214,9 +214,7 @@
 }
 
 .assistant-sidebar-divider {
-  height: 1px;
-  background: #edf1f4;
-  margin: 16px 0 12px;
+  display: none;
 }
 
 .assistant-clear-chat-button {

@@ -6,6 +6,8 @@ import { apiRequest } from "../../lib/api";
 import "../../styles/buddy-my-buddies.css";
 
 function MyBuddiesPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [students, setStudents] = useState([]);
   const [feedbackSummary, setFeedbackSummary] = useState({
     average_rating: 0,
@@ -14,6 +16,7 @@ function MyBuddiesPage() {
   });
 
   useEffect(() => {
+    setIsLoading(true);
     Promise.all([
       apiRequest("/buddy/matches/my"),
       apiRequest("/buddy/feedback/my-summary"),
@@ -21,8 +24,12 @@ function MyBuddiesPage() {
       .then(([matches, feedback]) => {
         setStudents(matches);
         setFeedbackSummary(feedback);
+        setLoadError("");
       })
-      .catch(() => null);
+      .catch((error) => {
+        setLoadError(error.message || "Could not load your students right now.");
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   return (
@@ -32,6 +39,23 @@ function MyBuddiesPage() {
           <h1>My Students</h1>
           <p>International students you are currently helping</p>
         </div>
+
+        {loadError ? (
+          <div className="my-buddies-feedback-empty">
+            <p>{loadError}</p>
+          </div>
+        ) : null}
+
+        {isLoading ? (
+          <div className="my-buddies-empty-card">
+            <div className="my-buddies-empty-content">
+              <Users size={52} />
+              <h3>Loading your students</h3>
+              <p>Please wait while we load your current matches and feedback summary.</p>
+            </div>
+          </div>
+        ) : (
+          <>
 
         <div className="my-buddies-summary-card">
           <div className="my-buddies-summary-left">
@@ -131,6 +155,8 @@ function MyBuddiesPage() {
               </div>
             ))}
           </div>
+        )}
+          </>
         )}
       </section>
     </DashboardLayout>

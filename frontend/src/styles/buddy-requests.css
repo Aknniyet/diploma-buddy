@@ -185,6 +185,12 @@
   cursor: pointer;
 }
 
+.decline-btn:disabled,
+.accept-btn:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
 .decline-btn {
   border: 1px solid #f1d5d5;
   background: #fff;

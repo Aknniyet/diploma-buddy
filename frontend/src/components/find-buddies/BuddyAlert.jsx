@@ -7,7 +7,7 @@ function BuddyAlert({ message }) {
     <div className="buddy-alert">
       <CheckCircle2 size={18} />
       <div>
-        <strong>Update</strong>
+        <strong>Status update</strong>
         <p>{message}</p>
       </div>
     </div>

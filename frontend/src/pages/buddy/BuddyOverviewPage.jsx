@@ -8,6 +8,7 @@ import { formatAstanaShortDateTime } from "../../utils/datetime";
 
 function BuddyOverviewPage() {
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(true);
   const [dashboard, setDashboard] = useState({
     activeStudents: 0,
     pendingRequests: 0,
@@ -18,7 +19,11 @@ function BuddyOverviewPage() {
   });
 
   useEffect(() => {
-    apiRequest("/dashboard/buddy").then(setDashboard).catch(() => null);
+    setIsLoading(true);
+    apiRequest("/dashboard/buddy")
+      .then(setDashboard)
+      .catch(() => null)
+      .finally(() => setIsLoading(false));
   }, []);
 
   return (
@@ -29,6 +34,13 @@ function BuddyOverviewPage() {
           <p>Thank you for helping international students adapt.</p>
         </div>
 
+        {isLoading ? (
+          <div className="dashboard-card local-overview-panel">
+            <h3 className="card-title">Loading overview</h3>
+            <p className="card-subtitle">Please wait while we load your latest activity.</p>
+          </div>
+        ) : null}
+
         {dashboard.buddyStatus && dashboard.buddyStatus !== "approved" ? (
           <div className="local-review-alert">
             Your buddy profile status is <strong>{dashboard.buddyStatus}</strong>. You can edit
@@ -36,7 +48,7 @@ function BuddyOverviewPage() {
           </div>
         ) : null}
 
-        <div className="local-overview-cards">
+        {!isLoading ? <div className="local-overview-cards">
           <div className="dashboard-card local-stat-card">
             <h3 className="card-title">Active Students</h3>
             <div className="local-stat-value">{dashboard.activeStudents}</div>
@@ -45,16 +57,16 @@ function BuddyOverviewPage() {
           <div className="dashboard-card local-stat-card">
             <h3 className="card-title">Pending Requests</h3>
             <div className="local-stat-value">{dashboard.pendingRequests}</div>
-            <p className="local-stat-subtitle">students waiting for your answer</p>
+            <p className="local-stat-subtitle">students waiting for your response</p>
           </div>
           <div className="dashboard-card local-stat-card">
             <h3 className="card-title">Unread Messages</h3>
             <div className="local-stat-value">{dashboard.unreadMessages}</div>
             <p className="local-stat-subtitle">messages waiting for you</p>
           </div>
-        </div>
+        </div> : null}
 
-        <div className="local-overview-bottom-grid">
+        {!isLoading ? <div className="local-overview-bottom-grid">
           <div className="dashboard-card local-overview-panel local-events-card">
             <h3 className="card-title">Upcoming Events</h3>
             {dashboard.buddyStatus !== "approved" ? (
@@ -78,10 +90,10 @@ function BuddyOverviewPage() {
                 ))}
               </div>
             ) : (
-              <p className="card-subtitle">No upcoming events yet.</p>
+              <p className="card-subtitle">No upcoming events are available right now.</p>
             )}
           </div>
-        </div>
+        </div> : null}
       </section>
     </DashboardLayout>
   );

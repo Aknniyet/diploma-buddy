@@ -10,7 +10,7 @@ const supportTopicOptions = [
   "Personal",
 ];
 
-function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
+function BuddyRequestModal({ buddy, isOpen, isSubmitting = false, onClose, onSend }) {
   const [message, setMessage] = useState("");
   const [supportTopics, setSupportTopics] = useState([]);
 
@@ -21,24 +21,28 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
   if (!isOpen || !buddy) return null;
 
   const handleClose = () => {
+    if (isSubmitting) return;
     setMessage("");
     setSupportTopics([]);
     onClose();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isMessageValid) return;
+    if (!isMessageValid || isSubmitting) return;
 
-    onSend({
-      buddyId: buddy.id,
-      message: message.trim(),
-      supportTopics,
-    });
-
-    setMessage("");
-    setSupportTopics([]);
+    try {
+      await onSend({
+        buddyId: buddy.id,
+        message: message.trim(),
+        supportTopics,
+      });
+      setMessage("");
+      setSupportTopics([]);
+    } catch {
+      // Keep the entered message so the student can retry without retyping.
+    }
   };
 
   return (
@@ -51,6 +55,7 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
           type="button"
           className="buddy-modal-close"
           onClick={handleClose}
+          disabled={isSubmitting}
         >
           <X size={24} />
         </button>
@@ -84,6 +89,7 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
                   key={topic}
                   type="button"
                   className={isSelected ? "buddy-support-chip active" : "buddy-support-chip"}
+                  disabled={isSubmitting}
                   onClick={() =>
                     setSupportTopics((prev) =>
                       prev.includes(topic)
@@ -105,15 +111,27 @@ function BuddyRequestModal({ buddy, isOpen, onClose, onSend }) {
             rows="4"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            disabled={isSubmitting}
             placeholder="Hi! I'm from [country] and I'm studying [program]. I noticed we both enjoy [hobby]..."
           />
+
+          {isSubmitting ? (
+            <p className="buddy-modal-status">
+              <span className="buddy-modal-status-spinner" />
+              Sending your request...
+            </p>
+          ) : (
+            <p className="buddy-modal-status buddy-modal-status-hint">
+              Your message will be sent together with the selected support topics.
+            </p>
+          )}
 
           <button
             type="submit"
             className="buddy-modal-submit"
-            disabled={!isMessageValid}
+            disabled={!isMessageValid || isSubmitting}
           >
-            Send Request
+            {isSubmitting ? "Sending..." : "Send Request"}
           </button>
         </form>
       </div>

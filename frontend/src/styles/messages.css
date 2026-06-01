@@ -238,6 +238,10 @@
   font-size: 14px;
 }
 
+.chat-selection-copy strong {
+  margin-right: 6px;
+}
+
 .chat-inline-error {
   border: 1px solid #fecdd3;
   background: #fff1f2;

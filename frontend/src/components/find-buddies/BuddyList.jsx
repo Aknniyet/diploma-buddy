@@ -5,8 +5,8 @@ function BuddyList({ buddies = [], onConnect, onLeaveFeedback, onRequestReassign
     const isSearching = searchValue.trim().length > 0;
     return (
       <div className="buddy-empty-state centered">
-        <h3>No buddies found</h3>
-        <p>{isSearching ? "Try another search or clear the search field to see all available buddies." : "There are no available buddies yet. Create a buddy account or try again later."}</p>
+        <h3>{isSearching ? "No matches found" : "No buddies available yet"}</h3>
+        <p>{isSearching ? "Try another search or clear the search field to see all available buddies." : "Approved buddies will appear here as soon as they become available."}</p>
       </div>
     );
   }

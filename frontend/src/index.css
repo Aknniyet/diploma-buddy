@@ -4,6 +4,37 @@
   box-sizing: border-box;
 }
 
+:root {
+  --page-bg: #ffffff;
+  --app-bg: #eef4f4;
+  --surface: #fffdfd;
+  --surface-soft: #f4f8f8;
+  --surface-muted: #edf4f3;
+  --border-color: #d8e4e3;
+  --border-soft: #e7eeee;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --accent: #0f9aa8;
+  --accent-strong: #0c7e88;
+  --success-soft: #dff1f0;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --page-bg: #0d1418;
+  --app-bg: #10191f;
+  --surface: #17242c;
+  --surface-soft: #1d2c35;
+  --surface-muted: #132028;
+  --border-color: #31424d;
+  --border-soft: #2a3944;
+  --text-primary: #f2f8fa;
+  --text-secondary: #c1ced4;
+  --accent: #54c1ca;
+  --accent-strong: #76d7de;
+  --success-soft: #1f3940;
+}
+
 html,
 body,
 #root {
@@ -13,8 +44,9 @@ body,
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  color: #111827;
+  background-color: var(--page-bg);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
@@ -23,4 +55,1093 @@ a {
 
 button {
   cursor: pointer;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+.theme-toggle-shell {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  background: #f1f7f7;
+  border: 1px solid #d8eceb;
+  border-radius: 999px;
+}
+
+.theme-toggle-shell.compact {
+  padding: 3px;
+}
+
+.theme-toggle {
+  min-height: 34px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  border-radius: 999px;
+  padding: 7px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.theme-toggle.compact {
+  min-height: 30px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.theme-toggle.active-light,
+.theme-toggle.active-dark {
+  background: #ffffff;
+  color: #0f9aa8;
+}
+
+.theme-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html[data-theme="dark"] .navbar,
+html[data-theme="dark"] .footer,
+html[data-theme="dark"] .dashboard-layout,
+html[data-theme="dark"] .dashboard-topbar,
+html[data-theme="dark"] .dashboard-sidebar,
+html[data-theme="dark"] .nav-panel,
+html[data-theme="dark"] .topbar-profile-dropdown,
+html[data-theme="dark"] .dashboard-card,
+html[data-theme="dark"] .buddy-card,
+html[data-theme="dark"] .buddy-request-item,
+html[data-theme="dark"] .buddy-past-empty-card,
+html[data-theme="dark"] .buddy-modal,
+html[data-theme="dark"] .community-post-card,
+html[data-theme="dark"] .community-modal,
+html[data-theme="dark"] .messages-sidebar-card,
+html[data-theme="dark"] .messages-thread-card,
+html[data-theme="dark"] .profile-summary-card,
+html[data-theme="dark"] .profile-info-card,
+html[data-theme="dark"] .admin-card,
+html[data-theme="dark"] .event-card,
+html[data-theme="dark"] .guide-section-card {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .dashboard-layout,
+html[data-theme="dark"] .dashboard-topbar,
+html[data-theme="dark"] .dashboard-sidebar,
+html[data-theme="dark"] .dashboard-main,
+html[data-theme="dark"] .dashboard-content {
+  background: var(--app-bg);
+}
+
+html[data-theme="dark"] .dashboard-sidebar,
+html[data-theme="dark"] .dashboard-topbar,
+html[data-theme="dark"] .navbar {
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .events-section-secondary {
+  border-top-color: rgba(49, 66, 77, 0.55);
+}
+
+html[data-theme="dark"] .footer-bottom {
+  border-top-color: rgba(49, 66, 77, 0.55);
+}
+
+html[data-theme="dark"] .profile-divider {
+  background: rgba(49, 66, 77, 0.6);
+}
+
+html[data-theme="dark"] .sidebar-link,
+html[data-theme="dark"] .login,
+html[data-theme="dark"] .nav-link,
+html[data-theme="dark"] .topbar-profile-dropdown-link,
+html[data-theme="dark"] .icon-button,
+html[data-theme="dark"] .dashboard-topbar-context,
+html[data-theme="dark"] .footer-column p,
+html[data-theme="dark"] .footer-column a,
+html[data-theme="dark"] .footer-bottom,
+html[data-theme="dark"] .card-subtitle,
+html[data-theme="dark"] .section-subtitle,
+html[data-theme="dark"] .buddy-card-bio,
+html[data-theme="dark"] .buddy-detail-row,
+html[data-theme="dark"] .buddy-request-message,
+html[data-theme="dark"] .buddy-request-date,
+html[data-theme="dark"] .buddy-request-meta span {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .logo-text,
+html[data-theme="dark"] .logo-text-primary,
+html[data-theme="dark"] .sidebar-logo,
+html[data-theme="dark"] .sidebar-link.active,
+html[data-theme="dark"] .sidebar-user h4,
+html[data-theme="dark"] .nav-link:hover,
+html[data-theme="dark"] .dashboard-card,
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .view-all-btn,
+html[data-theme="dark"] .progress-value,
+html[data-theme="dark"] .message-count,
+html[data-theme="dark"] .buddy-info h4,
+html[data-theme="dark"] .topbar-profile-summary h4,
+html[data-theme="dark"] .footer-column h3,
+html[data-theme="dark"] .footer-column h4,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] p strong,
+html[data-theme="dark"] strong,
+html[data-theme="dark"] label {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .nav-link.active,
+html[data-theme="dark"] .sidebar-link.active,
+html[data-theme="dark"] .language-switcher,
+html[data-theme="dark"] .theme-toggle-shell,
+html[data-theme="dark"] .buddy-alert,
+html[data-theme="dark"] .buddy-request-message,
+html[data-theme="dark"] .messages-empty-state,
+html[data-theme="dark"] .profile-readonly-field,
+html[data-theme="dark"] .buddy-score-panel {
+  background: var(--surface-soft);
+}
+
+html[data-theme="dark"] .nav-toggle,
+html[data-theme="dark"] .language-switcher,
+html[data-theme="dark"] .theme-toggle-shell,
+html[data-theme="dark"] .language-switcher-button.active,
+html[data-theme="dark"] .buddy-search,
+html[data-theme="dark"] .buddy-modal-textarea,
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background: var(--surface-soft);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .theme-toggle.active-light,
+html[data-theme="dark"] .theme-toggle.active-dark {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .signup-btn,
+html[data-theme="dark"] .connect-btn-primary,
+html[data-theme="dark"] .accept-btn,
+html[data-theme="dark"] .buddy-modal-submit {
+  background: var(--accent);
+}
+
+html[data-theme="dark"] .signup-btn:hover,
+html[data-theme="dark"] .connect-btn-primary:hover,
+html[data-theme="dark"] .accept-btn:hover,
+html[data-theme="dark"] .buddy-modal-submit:hover {
+  background: var(--accent-strong);
+}
+
+html[data-theme="dark"] .footer {
+  background: linear-gradient(180deg, #10191f 0%, #0d1418 100%);
+}
+
+html[data-theme="dark"] .home-page,
+html[data-theme="dark"] .about-page,
+html[data-theme="dark"] .adaptation-page,
+html[data-theme="dark"] .login-page,
+html[data-theme="dark"] .signup-page {
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .hero-section {
+  background:
+    radial-gradient(circle at 72% 40%, rgba(84, 193, 202, 0.18), transparent 30%),
+    linear-gradient(180deg, #10191f 0%, #0f171d 100%);
+}
+
+html[data-theme="dark"] .features-section,
+html[data-theme="dark"] .testimonials-section {
+  background: var(--page-bg);
+}
+
+html[data-theme="dark"] .how-section {
+  background: var(--surface-muted);
+}
+
+html[data-theme="dark"] .steps-grid::before {
+  background: var(--border-color);
+}
+
+html[data-theme="dark"] .step-card p,
+html[data-theme="dark"] .section-header p {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .light-section,
+html[data-theme="dark"] .quick-tips-box,
+html[data-theme="dark"] .assistant-hero,
+html[data-theme="dark"] .notifications-card,
+html[data-theme="dark"] .login-card,
+html[data-theme="dark"] .signup-card,
+html[data-theme="dark"] .feature-card,
+html[data-theme="dark"] .about-feature-card,
+html[data-theme="dark"] .about-value-card,
+html[data-theme="dark"] .guide-card,
+html[data-theme="dark"] .admin-stats-grid .dashboard-card,
+html[data-theme="dark"] .notifications-card,
+html[data-theme="dark"] .assistant-chat-card,
+html[data-theme="dark"] .assistant-suggestions,
+html[data-theme="dark"] .notifications-card,
+html[data-theme="dark"] .notifications-load-error,
+html[data-theme="dark"] .notification-item,
+html[data-theme="dark"] .chat-window-card,
+html[data-theme="dark"] .messages-sidebar-card,
+html[data-theme="dark"] .notifications-card,
+html[data-theme="dark"] .events-card,
+html[data-theme="dark"] .profile-card,
+html[data-theme="dark"] .checklist-card,
+html[data-theme="dark"] .admin-toolbar-card,
+html[data-theme="dark"] .admin-main-panel,
+html[data-theme="dark"] .admin-side-panel,
+html[data-theme="dark"] .admin-stat-card,
+html[data-theme="dark"] .buddy-summary-card {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .hero-badge,
+html[data-theme="dark"] .about-feature-icon,
+html[data-theme="dark"] .guide-icon,
+html[data-theme="dark"] .notification-icon,
+html[data-theme="dark"] .assistant-message-icon,
+html[data-theme="dark"] .current-buddy-badge,
+html[data-theme="dark"] .buddy-request-tag,
+html[data-theme="dark"] .buddy-tag,
+html[data-theme="dark"] .profile-role-badge,
+html[data-theme="dark"] .checklist-chip,
+html[data-theme="dark"] .support-chip,
+html[data-theme="dark"] .admin-view-toggle,
+html[data-theme="dark"] .admin-view-toggle button.active {
+  background: var(--success-soft);
+  color: var(--accent);
+}
+
+html[data-theme="dark"] .assistant-message-user .assistant-message-icon,
+html[data-theme="dark"] .assistant-message-user .assistant-message-content,
+html[data-theme="dark"] .request-status-badge.accepted,
+html[data-theme="dark"] .request-status-badge.declined,
+html[data-theme="dark"] .conversation-unread-badge {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .secondary-btn,
+html[data-theme="dark"] .login-secondary-button,
+html[data-theme="dark"] .mark-all-btn,
+html[data-theme="dark"] .chat-header-btn,
+html[data-theme="dark"] .chat-selection-btn,
+html[data-theme="dark"] .decline-btn,
+html[data-theme="dark"] .admin-tab-button,
+html[data-theme="dark"] .admin-view-toggle button,
+html[data-theme="dark"] .buddy-support-chip,
+html[data-theme="dark"] .feedback-btn,
+html[data-theme="dark"] .connected-btn {
+  background: var(--surface);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .secondary-btn:hover,
+html[data-theme="dark"] .login-secondary-button:hover,
+html[data-theme="dark"] .mark-all-btn:hover,
+html[data-theme="dark"] .chat-header-btn:hover,
+html[data-theme="dark"] .chat-selection-btn:hover,
+html[data-theme="dark"] .decline-btn:hover,
+html[data-theme="dark"] .admin-tab-button:hover,
+html[data-theme="dark"] .buddy-support-chip:hover,
+html[data-theme="dark"] .feedback-btn:hover,
+html[data-theme="dark"] .connected-btn:hover {
+  background: var(--surface-soft);
+}
+
+html[data-theme="dark"] .admin-tab-button.active,
+html[data-theme="dark"] .chat-header-btn.active,
+html[data-theme="dark"] .buddy-support-chip.active,
+html[data-theme="dark"] .role-card.selected,
+html[data-theme="dark"] .signup-progress span.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .role-card,
+html[data-theme="dark"] .notification-item.unread,
+html[data-theme="dark"] .conversation-item:hover,
+html[data-theme="dark"] .conversation-item.active,
+html[data-theme="dark"] .messages-card-header,
+html[data-theme="dark"] .chat-header,
+html[data-theme="dark"] .assistant-message-content,
+html[data-theme="dark"] .buddy-score-content,
+html[data-theme="dark"] .buddy-pending-request-message,
+html[data-theme="dark"] .community-comment-body,
+html[data-theme="dark"] .community-message-box,
+html[data-theme="dark"] .guide-accordion-item-body,
+html[data-theme="dark"] .checklist-task-item,
+html[data-theme="dark"] .admin-combined-divider {
+  background: var(--surface-soft);
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .messages-composer,
+html[data-theme="dark"] .chat-inline-error,
+html[data-theme="dark"] .messages-empty-state,
+html[data-theme="dark"] .community-empty-state,
+html[data-theme="dark"] .notification-item,
+html[data-theme="dark"] .overview-empty-state,
+html[data-theme="dark"] .buddy-past-empty-content,
+html[data-theme="dark"] .past-requests-empty,
+html[data-theme="dark"] .no-data-card {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .messages-page-header h1,
+html[data-theme="dark"] .notifications-page-header h1,
+html[data-theme="dark"] .find-buddies-header h1,
+html[data-theme="dark"] .profile-page-header h1,
+html[data-theme="dark"] .buddy-requests-header h1,
+html[data-theme="dark"] .admin-page-header h1,
+html[data-theme="dark"] .assistant-hero h1,
+html[data-theme="dark"] .hero-title,
+html[data-theme="dark"] .section-header h2,
+html[data-theme="dark"] .about-hero h1,
+html[data-theme="dark"] .guide-hero h1,
+html[data-theme="dark"] .login-card h2,
+html[data-theme="dark"] .signup-card h2 {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .messages-page-header p,
+html[data-theme="dark"] .notifications-page-header p,
+html[data-theme="dark"] .find-buddies-header p,
+html[data-theme="dark"] .profile-page-header p,
+html[data-theme="dark"] .buddy-requests-header p,
+html[data-theme="dark"] .admin-page-header p,
+html[data-theme="dark"] .hero-description,
+html[data-theme="dark"] .section-header p,
+html[data-theme="dark"] .about-hero p,
+html[data-theme="dark"] .about-text-block p,
+html[data-theme="dark"] .about-center-block p,
+html[data-theme="dark"] .guide-hero p,
+html[data-theme="dark"] .guide-card-header p,
+html[data-theme="dark"] .login-subtitle,
+html[data-theme="dark"] .signup-step-text,
+html[data-theme="dark"] .signup-section-label {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .home-page p,
+html[data-theme="dark"] .home-page li,
+html[data-theme="dark"] .about-page p,
+html[data-theme="dark"] .about-page li,
+html[data-theme="dark"] .adaptation-page p,
+html[data-theme="dark"] .adaptation-page li,
+html[data-theme="dark"] .messages-page p,
+html[data-theme="dark"] .messages-page span,
+html[data-theme="dark"] .messages-page small,
+html[data-theme="dark"] .community-page p,
+html[data-theme="dark"] .community-page span,
+html[data-theme="dark"] .community-page small,
+html[data-theme="dark"] .profile-page p,
+html[data-theme="dark"] .profile-page span,
+html[data-theme="dark"] .profile-page small,
+html[data-theme="dark"] .notifications-page p,
+html[data-theme="dark"] .notifications-page span,
+html[data-theme="dark"] .notifications-page small,
+html[data-theme="dark"] .assistant-page p,
+html[data-theme="dark"] .assistant-page span,
+html[data-theme="dark"] .assistant-page small,
+html[data-theme="dark"] .admin-page p,
+html[data-theme="dark"] .admin-page span,
+html[data-theme="dark"] .admin-page small,
+html[data-theme="dark"] .buddy-requests-page p,
+html[data-theme="dark"] .buddy-requests-page span,
+html[data-theme="dark"] .buddy-requests-page small,
+html[data-theme="dark"] .find-buddies-page p,
+html[data-theme="dark"] .find-buddies-page span,
+html[data-theme="dark"] .find-buddies-page small,
+html[data-theme="dark"] .checklist-page p,
+html[data-theme="dark"] .checklist-page span,
+html[data-theme="dark"] .checklist-page small {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .home-page h1,
+html[data-theme="dark"] .home-page h2,
+html[data-theme="dark"] .home-page h3,
+html[data-theme="dark"] .home-page h4,
+html[data-theme="dark"] .about-page h1,
+html[data-theme="dark"] .about-page h2,
+html[data-theme="dark"] .about-page h3,
+html[data-theme="dark"] .adaptation-page h1,
+html[data-theme="dark"] .adaptation-page h2,
+html[data-theme="dark"] .adaptation-page h3,
+html[data-theme="dark"] .messages-page h1,
+html[data-theme="dark"] .messages-page h2,
+html[data-theme="dark"] .messages-page h3,
+html[data-theme="dark"] .messages-page h4,
+html[data-theme="dark"] .community-page h1,
+html[data-theme="dark"] .community-page h2,
+html[data-theme="dark"] .community-page h3,
+html[data-theme="dark"] .community-page h4,
+html[data-theme="dark"] .profile-page h1,
+html[data-theme="dark"] .profile-page h2,
+html[data-theme="dark"] .profile-page h3,
+html[data-theme="dark"] .profile-page h4,
+html[data-theme="dark"] .notifications-page h1,
+html[data-theme="dark"] .notifications-page h2,
+html[data-theme="dark"] .notifications-page h3,
+html[data-theme="dark"] .notifications-page h4,
+html[data-theme="dark"] .assistant-page h1,
+html[data-theme="dark"] .assistant-page h2,
+html[data-theme="dark"] .assistant-page h3,
+html[data-theme="dark"] .assistant-page h4,
+html[data-theme="dark"] .admin-page h1,
+html[data-theme="dark"] .admin-page h2,
+html[data-theme="dark"] .admin-page h3,
+html[data-theme="dark"] .admin-page h4,
+html[data-theme="dark"] .buddy-requests-page h1,
+html[data-theme="dark"] .buddy-requests-page h2,
+html[data-theme="dark"] .buddy-requests-page h3,
+html[data-theme="dark"] .buddy-requests-page h4,
+html[data-theme="dark"] .find-buddies-page h1,
+html[data-theme="dark"] .find-buddies-page h2,
+html[data-theme="dark"] .find-buddies-page h3,
+html[data-theme="dark"] .find-buddies-page h4,
+html[data-theme="dark"] .checklist-page h1,
+html[data-theme="dark"] .checklist-page h2,
+html[data-theme="dark"] .checklist-page h3,
+html[data-theme="dark"] .checklist-page h4 {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .login-brand,
+html[data-theme="dark"] .signup-brand,
+html[data-theme="dark"] .login-brand h1,
+html[data-theme="dark"] .signup-brand h1,
+html[data-theme="dark"] .conversation-text h4,
+html[data-theme="dark"] .chat-user h3,
+html[data-theme="dark"] .notifications-card-header h3,
+html[data-theme="dark"] .notification-content h4,
+html[data-theme="dark"] .assistant-eyebrow,
+html[data-theme="dark"] .guide-card-header h3,
+html[data-theme="dark"] .about-feature-card h3,
+html[data-theme="dark"] .about-text-block h2,
+html[data-theme="dark"] .about-center-block h2,
+html[data-theme="dark"] .about-section-heading h2,
+html[data-theme="dark"] .about-cta-content h2 {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .login-footer-text,
+html[data-theme="dark"] .signup-footer-text,
+html[data-theme="dark"] .notification-content p,
+html[data-theme="dark"] .conversation-text p,
+html[data-theme="dark"] .chat-user p,
+html[data-theme="dark"] .tips-list li,
+html[data-theme="dark"] .guide-accordion-header p,
+html[data-theme="dark"] .guide-accordion-body,
+html[data-theme="dark"] .assistant-hero p,
+html[data-theme="dark"] .assistant-message-content,
+html[data-theme="dark"] .assistant-empty-state p,
+html[data-theme="dark"] .admin-stat-label,
+html[data-theme="dark"] .admin-section-header p,
+html[data-theme="dark"] .admin-search input::placeholder {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .login-card,
+html[data-theme="dark"] .signup-card,
+html[data-theme="dark"] .login-button,
+html[data-theme="dark"] .signup-button,
+html[data-theme="dark"] .primary-btn,
+html[data-theme="dark"] .community-primary-btn,
+html[data-theme="dark"] .event-primary-btn {
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .login-page input,
+html[data-theme="dark"] .signup-page input,
+html[data-theme="dark"] .signup-page textarea,
+html[data-theme="dark"] .signup-page select,
+html[data-theme="dark"] .profile-page input,
+html[data-theme="dark"] .profile-page textarea,
+html[data-theme="dark"] .profile-page select,
+html[data-theme="dark"] .messages-page input,
+html[data-theme="dark"] .messages-page textarea,
+html[data-theme="dark"] .community-page input,
+html[data-theme="dark"] .community-page textarea,
+html[data-theme="dark"] .community-page select,
+html[data-theme="dark"] .admin-page input,
+html[data-theme="dark"] .admin-page textarea,
+html[data-theme="dark"] .admin-page select,
+html[data-theme="dark"] .assistant-page textarea,
+html[data-theme="dark"] .assistant-page input,
+html[data-theme="dark"] .assistant-page select,
+html[data-theme="dark"] .notifications-page input,
+html[data-theme="dark"] .notifications-page select,
+html[data-theme="dark"] .find-buddies-page input,
+html[data-theme="dark"] .find-buddies-page textarea,
+html[data-theme="dark"] .buddy-requests-page input,
+html[data-theme="dark"] .buddy-requests-page textarea {
+  background: var(--surface-soft);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .notifications-load-error,
+html[data-theme="dark"] .assistant-inline-error,
+html[data-theme="dark"] .chat-inline-error,
+html[data-theme="dark"] .community-error-banner {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.34);
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .dashboard-menu-button,
+html[data-theme="dark"] .sidebar-close-button {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .community-category,
+html[data-theme="dark"] .community-role-badge,
+html[data-theme="dark"] .community-category-study,
+html[data-theme="dark"] .community-category-food,
+html[data-theme="dark"] .community-category-sports,
+html[data-theme="dark"] .community-category-question,
+html[data-theme="dark"] .community-role-international,
+html[data-theme="dark"] .community-role-local,
+html[data-theme="dark"] .buddy-reason-pill,
+html[data-theme="dark"] .buddy-reason-pill.compact,
+html[data-theme="dark"] .buddy-request-support-tag,
+html[data-theme="dark"] .buddy-pending-request-tag,
+html[data-theme="dark"] .checklist-status-badge,
+html[data-theme="dark"] .checklist-priority-badge {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .buddy-request-message,
+html[data-theme="dark"] .community-comment p,
+html[data-theme="dark"] .community-post-card p,
+html[data-theme="dark"] .assistant-message-content,
+html[data-theme="dark"] .guide-accordion-content,
+html[data-theme="dark"] .quick-tips-box p,
+html[data-theme="dark"] .tips-list li,
+html[data-theme="dark"] .notification-content p {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .accordion-header,
+html[data-theme="dark"] .accordion-header span,
+html[data-theme="dark"] .accordion-header svg,
+html[data-theme="dark"] .guide-card h3,
+html[data-theme="dark"] .guide-card strong,
+html[data-theme="dark"] .guide-help-section h2,
+html[data-theme="dark"] .guide-help-section p,
+html[data-theme="dark"] .calendar-link,
+html[data-theme="dark"] .links-list a,
+html[data-theme="dark"] .community-post-card h3,
+html[data-theme="dark"] .community-author strong,
+html[data-theme="dark"] .community-author span,
+html[data-theme="dark"] .community-post-meta span,
+html[data-theme="dark"] .community-interest,
+html[data-theme="dark"] .community-comment-count,
+html[data-theme="dark"] .community-comment strong,
+html[data-theme="dark"] .conversation-item,
+html[data-theme="dark"] .conversation-item h4,
+html[data-theme="dark"] .chat-header-btn,
+html[data-theme="dark"] .chat-selection-btn,
+html[data-theme="dark"] .mark-all-btn,
+html[data-theme="dark"] .admin-tab-button,
+html[data-theme="dark"] .view-all-btn,
+html[data-theme="dark"] .text-link,
+html[data-theme="dark"] .next-steps-link,
+html[data-theme="dark"] .sidebar-link,
+html[data-theme="dark"] .login,
+html[data-theme="dark"] .nav-link,
+html[data-theme="dark"] .footer-column a,
+html[data-theme="dark"] a {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .accordion-content,
+html[data-theme="dark"] .accordion-content p,
+html[data-theme="dark"] .guide-card p,
+html[data-theme="dark"] .guide-card-header p,
+html[data-theme="dark"] .community-post-card p,
+html[data-theme="dark"] .community-comment p,
+html[data-theme="dark"] .community-author span,
+html[data-theme="dark"] .conversation-text p,
+html[data-theme="dark"] .chat-user p,
+html[data-theme="dark"] .notification-content p,
+html[data-theme="dark"] .assistant-hero p,
+html[data-theme="dark"] .assistant-message-content,
+html[data-theme="dark"] .assistant-suggestions p,
+html[data-theme="dark"] .about-page p,
+html[data-theme="dark"] .home-page p,
+html[data-theme="dark"] .adaptation-page p,
+html[data-theme="dark"] .login-subtitle,
+html[data-theme="dark"] .signup-step-text,
+html[data-theme="dark"] .signup-section-label {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .calendar-link,
+html[data-theme="dark"] .links-list a,
+html[data-theme="dark"] .text-link,
+html[data-theme="dark"] .next-steps-link {
+  color: var(--accent);
+}
+
+html[data-theme="dark"] .local-stat-card,
+html[data-theme="dark"] .local-events-card,
+html[data-theme="dark"] .my-buddies-summary-card,
+html[data-theme="dark"] .my-buddies-feedback-card,
+html[data-theme="dark"] .my-buddies-empty-card,
+html[data-theme="dark"] .buddy-past-empty-card,
+html[data-theme="dark"] .buddy-empty-state,
+html[data-theme="dark"] .community-empty-card,
+html[data-theme="dark"] .community-confirm-modal,
+html[data-theme="dark"] .chat-messages,
+html[data-theme="dark"] .chat-input-area,
+html[data-theme="dark"] .chat-empty-timeline,
+html[data-theme="dark"] .events-empty-card,
+html[data-theme="dark"] .checklist-main-card,
+html[data-theme="dark"] .checklist-section-card,
+html[data-theme="dark"] .checklist-task,
+html[data-theme="dark"] .checklist-modal,
+html[data-theme="dark"] .category-card,
+html[data-theme="dark"] .assistant-confirm-modal,
+html[data-theme="dark"] .admin-list-item,
+html[data-theme="dark"] .admin-status-box,
+html[data-theme="dark"] .admin-mini-item,
+html[data-theme="dark"] .admin-empty-state,
+html[data-theme="dark"] .admin-match-breakdown,
+html[data-theme="dark"] .admin-report-card,
+html[data-theme="dark"] .profile-field-box,
+html[data-theme="dark"] .profile-about-box,
+html[data-theme="dark"] .language-options-panel,
+html[data-theme="dark"] .language-option-row,
+html[data-theme="dark"] .language-option-list.plain,
+html[data-theme="dark"] .buddy-score-panel,
+html[data-theme="dark"] .assistant-input-row {
+  background: var(--surface);
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .conversation-item:hover,
+html[data-theme="dark"] .conversation-item.active,
+html[data-theme="dark"] .community-comment,
+html[data-theme="dark"] .community-comment-photo,
+html[data-theme="dark"] .assistant-message-content,
+html[data-theme="dark"] .assistant-input-row,
+html[data-theme="dark"] .admin-meta span,
+html[data-theme="dark"] .admin-page-btn,
+html[data-theme="dark"] .admin-inline-action,
+html[data-theme="dark"] .admin-toolbar-select,
+html[data-theme="dark"] .events-section-header > span,
+html[data-theme="dark"] .event-details span,
+html[data-theme="dark"] .event-status-past,
+html[data-theme="dark"] .my-buddies-feedback-score,
+html[data-theme="dark"] .my-buddies-feedback-item,
+html[data-theme="dark"] .section-count-badge,
+html[data-theme="dark"] .task-icon-btn,
+html[data-theme="dark"] .checklist-empty-state,
+html[data-theme="dark"] .community-post-meta span,
+html[data-theme="dark"] .community-comment-form button.community-comment-photo {
+  background: var(--surface-soft);
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .local-overview-header h1,
+html[data-theme="dark"] .my-buddies-header h1,
+html[data-theme="dark"] .my-buddies-feedback-top h3,
+html[data-theme="dark"] .my-buddies-summary-left h3,
+html[data-theme="dark"] .my-buddies-feedback-score strong,
+html[data-theme="dark"] .my-buddies-feedback-user h4,
+html[data-theme="dark"] .events-page-header h1,
+html[data-theme="dark"] .events-section-header h2,
+html[data-theme="dark"] .events-empty-card h3,
+html[data-theme="dark"] .event-card h3,
+html[data-theme="dark"] .assistant-suggestions h3,
+html[data-theme="dark"] .assistant-confirm-modal h2,
+html[data-theme="dark"] .admin-stat-value,
+html[data-theme="dark"] .admin-status-box strong,
+html[data-theme="dark"] .admin-list-item h4,
+html[data-theme="dark"] .admin-match-breakdown-toggle strong,
+html[data-theme="dark"] .admin-match-breakdown-row p,
+html[data-theme="dark"] .checklist-overview-header h3,
+html[data-theme="dark"] .category-card h4,
+html[data-theme="dark"] .checklist-section-header h3,
+html[data-theme="dark"] .task-content h4,
+html[data-theme="dark"] .profile-summary-top h2,
+html[data-theme="dark"] .profile-info-header h3,
+html[data-theme="dark"] .profile-field label,
+html[data-theme="dark"] .profile-tags-title,
+html[data-theme="dark"] .buddy-score-toggle strong,
+html[data-theme="dark"] .buddy-breakdown-row p,
+html[data-theme="dark"] .community-empty-card h3,
+html[data-theme="dark"] .chat-empty-timeline h4,
+html[data-theme="dark"] .empty-chat-content h3,
+html[data-theme="dark"] .empty-conversations-content h3,
+html[data-theme="dark"] .messages-card-header h3,
+html[data-theme="dark"] .local-stat-value,
+html[data-theme="dark"] .local-request-content h4 {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .local-overview-header p,
+html[data-theme="dark"] .local-stat-subtitle,
+html[data-theme="dark"] .local-empty-state,
+html[data-theme="dark"] .local-request-content p,
+html[data-theme="dark"] .my-buddies-header p,
+html[data-theme="dark"] .my-buddies-feedback-top p,
+html[data-theme="dark"] .my-buddies-feedback-score span,
+html[data-theme="dark"] .my-buddies-feedback-user p,
+html[data-theme="dark"] .my-buddies-feedback-comment,
+html[data-theme="dark"] .my-buddies-feedback-empty p,
+html[data-theme="dark"] .my-buddies-summary-left p,
+html[data-theme="dark"] .my-buddies-empty-content,
+html[data-theme="dark"] .my-buddies-empty-content p,
+html[data-theme="dark"] .events-page-header p,
+html[data-theme="dark"] .events-section-header p,
+html[data-theme="dark"] .events-empty-card,
+html[data-theme="dark"] .events-empty-card p,
+html[data-theme="dark"] .event-card p,
+html[data-theme="dark"] .assistant-confirm-modal p,
+html[data-theme="dark"] .assistant-suggestions p,
+html[data-theme="dark"] .admin-stat-label,
+html[data-theme="dark"] .admin-list-item p,
+html[data-theme="dark"] .admin-item-main p,
+html[data-theme="dark"] .admin-match-breakdown-toggle span,
+html[data-theme="dark"] .admin-match-breakdown-row small,
+html[data-theme="dark"] .admin-empty-state,
+html[data-theme="dark"] .checklist-overview-header p,
+html[data-theme="dark"] .task-content p,
+html[data-theme="dark"] .checklist-empty-state,
+html[data-theme="dark"] .profile-email,
+html[data-theme="dark"] .profile-summary-item,
+html[data-theme="dark"] .profile-info-header p,
+html[data-theme="dark"] .profile-field-box,
+html[data-theme="dark"] .profile-about-box,
+html[data-theme="dark"] .language-option-row,
+html[data-theme="dark"] .language-no-results,
+html[data-theme="dark"] .community-empty-card,
+html[data-theme="dark"] .community-empty-card p,
+html[data-theme="dark"] .chat-empty-timeline p,
+html[data-theme="dark"] .empty-chat-content,
+html[data-theme="dark"] .empty-conversations-content,
+html[data-theme="dark"] .chat-user p,
+html[data-theme="dark"] .conversation-text p,
+html[data-theme="dark"] .buddy-card-footer p,
+html[data-theme="dark"] .buddy-card-footer small,
+html[data-theme="dark"] .buddy-score-toggle span,
+html[data-theme="dark"] .buddy-breakdown-row small {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .events-toolbar input,
+html[data-theme="dark"] .chat-input-area input,
+html[data-theme="dark"] .assistant-input-row input,
+html[data-theme="dark"] .profile-input,
+html[data-theme="dark"] .profile-textarea,
+html[data-theme="dark"] .profile-select,
+html[data-theme="dark"] .language-search-input,
+html[data-theme="dark"] .community-toolbar input,
+html[data-theme="dark"] .community-toolbar select,
+html[data-theme="dark"] .community-comment-form input,
+html[data-theme="dark"] .community-modal input,
+html[data-theme="dark"] .community-modal textarea,
+html[data-theme="dark"] .community-modal select,
+html[data-theme="dark"] .checklist-composer-form input,
+html[data-theme="dark"] .checklist-composer-form textarea,
+html[data-theme="dark"] .checklist-composer-form select,
+html[data-theme="dark"] .admin-search input,
+html[data-theme="dark"] .admin-form input,
+html[data-theme="dark"] .admin-form textarea,
+html[data-theme="dark"] .admin-form select,
+html[data-theme="dark"] .events-toolbar input,
+html[data-theme="dark"] .profile-field-box {
+  background: var(--surface-soft);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .event-badge,
+html[data-theme="dark"] .event-status-upcoming,
+html[data-theme="dark"] .my-buddies-summary-badge,
+html[data-theme="dark"] .buddy-tag,
+html[data-theme="dark"] .buddy-reason-pill,
+html[data-theme="dark"] .buddy-reason-pill.compact,
+html[data-theme="dark"] .profile-tag,
+html[data-theme="dark"] .profile-role-badge,
+html[data-theme="dark"] .task-meta-pill,
+html[data-theme="dark"] .checklist-summary-pill,
+html[data-theme="dark"] .admin-status-pill,
+html[data-theme="dark"] .admin-match-reason-pill {
+  background: var(--success-soft);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .profile-tag.outline,
+html[data-theme="dark"] .feedback-btn,
+html[data-theme="dark"] .admin-secondary-btn,
+html[data-theme="dark"] .community-comment-count,
+html[data-theme="dark"] .community-owner-actions button,
+html[data-theme="dark"] .buddy-support-chip,
+html[data-theme="dark"] .feedback-star-button {
+  background: var(--surface);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .buddy-message .chat-bubble,
+html[data-theme="dark"] .assistant-message-content,
+html[data-theme="dark"] .community-comment,
+html[data-theme="dark"] .community-comment-body,
+html[data-theme="dark"] .checklist-task.completed {
+  background: var(--surface-soft);
+}
+
+html[data-theme="dark"] .messages-page .chat-messages,
+html[data-theme="dark"] .messages-page .chat-window-card,
+html[data-theme="dark"] .messages-page .chat-input-area,
+html[data-theme="dark"] .messages-page .messages-sidebar-card,
+html[data-theme="dark"] .messages-page .messages-card-header,
+html[data-theme="dark"] .messages-page .chat-header {
+  border-color: var(--border-color);
+}
+
+html[data-theme="dark"] .community-page .community-empty-card,
+html[data-theme="dark"] .events-page .events-empty-card,
+html[data-theme="dark"] .admin-page .admin-empty-state,
+html[data-theme="dark"] .buddy-requests-page .buddy-past-empty-card,
+html[data-theme="dark"] .find-buddies-page .buddy-empty-state {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .admin-page-btn.active,
+html[data-theme="dark"] .buddy-tab-button.active,
+html[data-theme="dark"] .category-card.active,
+html[data-theme="dark"] .community-interest.active {
+  background: var(--surface-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+html[data-theme="dark"] .community-open-composer,
+html[data-theme="dark"] .edit-profile-btn,
+html[data-theme="dark"] .checklist-primary-btn,
+html[data-theme="dark"] .admin-primary-btn,
+html[data-theme="dark"] .assistant-input-row button {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .community-open-composer:hover,
+html[data-theme="dark"] .edit-profile-btn:hover,
+html[data-theme="dark"] .checklist-primary-btn:hover,
+html[data-theme="dark"] .admin-primary-btn:hover,
+html[data-theme="dark"] .assistant-input-row button:hover {
+  background: var(--accent-strong);
+}
+
+html[data-theme="dark"] .checklist-secondary-btn,
+html[data-theme="dark"] .profile-cancel-btn {
+  background: var(--surface);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .local-review-alert,
+html[data-theme="dark"] .checklist-status-message,
+html[data-theme="dark"] .profile-status-message,
+html[data-theme="dark"] .admin-status {
+  background: rgba(84, 193, 202, 0.12);
+  border-color: rgba(84, 193, 202, 0.32);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .checklist-status-message.error,
+html[data-theme="dark"] .admin-error,
+html[data-theme="dark"] .community-confirm-error {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] input:-webkit-autofill,
+html[data-theme="dark"] textarea:-webkit-autofill,
+html[data-theme="dark"] select:-webkit-autofill {
+  -webkit-text-fill-color: var(--text-primary);
+  box-shadow: 0 0 0 1000px var(--surface-soft) inset;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: var(--text-primary);
+}
+
+html[data-theme="dark"] .dashboard-sidebar .sidebar-link:hover {
+  background: var(--surface-soft);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .dashboard-sidebar .sidebar-link.active:hover {
+  background: var(--surface-soft);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .dashboard-sidebar .logout-button:hover {
+  background: var(--surface-soft);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .dashboard-sidebar .logout-button {
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+
+html[data-theme="dark"] .topbar-profile-dropdown-actions,
+html[data-theme="dark"] .topbar-profile-dropdown-link + .topbar-profile-dropdown-link {
+  border-top-color: var(--border-color);
+}
+
+html[data-theme="dark"] .topbar-profile-dropdown-link:hover {
+  background: var(--surface-soft) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"] .topbar-profile-dropdown-link.danger {
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .topbar-profile-dropdown-link.danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #fecaca;
+}
+
+html[data-theme="dark"] .buddy-requests-tabs {
+  background: var(--surface-soft);
+}
+
+html[data-theme="dark"] .buddy-tab-button {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .buddy-tab-button.active {
+  background: var(--surface);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .buddy-tab-count {
+  background: var(--success-soft);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .community-modal .community-modal-actions {
+  background: transparent;
+  border-top-color: transparent;
+}
+
+html[data-theme="dark"] .community-modal .community-photo-button {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+html[data-theme="dark"] .community-modal .community-submit-button {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .community-modal .community-submit-button:hover:not(:disabled) {
+  background: var(--accent-strong);
+}
+
+html[data-theme="dark"] .community-modal .community-modal-close {
+  background: var(--surface-soft);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .assistant-page .assistant-starter-list button {
+  background: var(--surface-muted);
+  border-color: var(--border-color);
+  color: var(--accent);
+}
+
+html[data-theme="dark"] .assistant-page .assistant-starter-list button:hover {
+  background: var(--surface-soft);
+}
+
+html[data-theme="dark"] .assistant-page .assistant-clear-chat-button {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #fca5a5;
+}
+
+html[data-theme="dark"] .assistant-page .assistant-clear-chat-button:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.42);
+}
+
+html[data-theme="dark"] .assistant-page .assistant-actions button {
+  background: var(--surface-muted);
+  border-color: var(--border-color);
+  color: var(--accent);
+}
+
+html[data-theme="dark"] .assistant-page .assistant-actions button:hover {
+  background: var(--surface-soft);
+}
+
+html[data-theme="dark"] .admin-image-upload {
+  background: var(--surface-muted);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .admin-table-head,
+html[data-theme="dark"] .admin-table-row,
+html[data-theme="dark"] .accordion-item {
+  border-bottom-color: transparent;
+}
+
+html[data-theme="dark"] .accordion-item:last-child {
+  border-bottom: none;
+}
+
+html[data-theme="dark"] .steps-grid::before,
+html[data-theme="dark"] .assistant-input-row,
+html[data-theme="dark"] .topbar-profile-dropdown-actions,
+html[data-theme="dark"] .topbar-profile-dropdown-link + .topbar-profile-dropdown-link,
+html[data-theme="dark"] .admin-combined-divider {
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .assistant-input-row {
+  border-top: none;
 }

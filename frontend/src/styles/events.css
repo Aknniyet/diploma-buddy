@@ -82,7 +82,7 @@
 
 .events-section-secondary {
   padding-top: 4px;
-  border-top: 1px solid #e4eeee;
+  border-top: 1px solid rgba(216, 228, 227, 0.45);
 }
 
 .events-section-secondary .events-section-header h2 {
@@ -282,36 +282,6 @@
   line-height: 1.6;
 }
 
-.event-card-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.event-cta-btn {
-  height: 38px;
-  border: none;
-  border-radius: 12px;
-  background: #0f9c9c;
-  color: #ffffff;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.event-cta-btn.secondary {
-  background: #dff1f0;
-  color: #0a7d84;
-}
-
-.event-attendance-count {
-  font-size: 12px;
-  font-weight: 600;
-  color: #667085;
-}
-
 .event-details {
   display: flex;
   flex-wrap: wrap;
@@ -368,11 +338,6 @@
 
   .events-grid-secondary {
     grid-template-columns: 1fr;
-  }
-
-  .event-card-actions {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .event-card-hero {

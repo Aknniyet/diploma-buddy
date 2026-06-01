@@ -62,10 +62,13 @@ function FindBuddiesPage() {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [reassignmentReason, setReassignmentReason] = useState("");
   const [isSubmittingReassignment, setIsSubmittingReassignment] = useState(false);
+  const [isSendingRequest, setIsSendingRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [buddies, setBuddies] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
 
   const loadBuddies = async () => {
+    setIsLoading(true);
     try {
       const data = await apiRequest("/buddy/available");
       setBuddies(data);
@@ -83,7 +86,10 @@ function FindBuddiesPage() {
 
       setAlertMessage("");
     } catch (error) {
+      setBuddies([]);
       setAlertMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -105,6 +111,7 @@ function FindBuddiesPage() {
 
   const handleSendRequest = async (data) => {
     try {
+      setIsSendingRequest(true);
       const response = await apiRequest("/buddy/requests", {
         method: "POST",
         body: JSON.stringify({
@@ -119,6 +126,9 @@ function FindBuddiesPage() {
       await loadBuddies();
     } catch (error) {
       setAlertMessage(error.message);
+      throw error;
+    } finally {
+      setIsSendingRequest(false);
     }
   };
 
@@ -180,6 +190,12 @@ function FindBuddiesPage() {
         </div>
         <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />
         <BuddyAlert message={alertMessage} />
+        {isLoading ? (
+          <div className="buddy-empty-state centered">
+            <h3>Loading buddies</h3>
+            <p>Please wait while we prepare the latest available matches for you.</p>
+          </div>
+        ) : (
         <BuddyList
           buddies={filteredBuddies}
           searchValue={searchValue}
@@ -197,7 +213,18 @@ function FindBuddiesPage() {
             setReassignmentReason("");
           }}
         />
-        <BuddyRequestModal buddy={selectedBuddy} isOpen={isModalOpen} onClose={() => { setSelectedBuddy(null); setIsModalOpen(false); }} onSend={handleSendRequest} />
+      )}
+      <BuddyRequestModal
+        buddy={selectedBuddy}
+        isOpen={isModalOpen}
+          isSubmitting={isSendingRequest}
+        onClose={() => {
+          if (isSendingRequest) return;
+          setSelectedBuddy(null);
+          setIsModalOpen(false);
+        }}
+        onSend={handleSendRequest}
+      />
         <BuddyFeedbackModal
           buddy={feedbackBuddy}
           isOpen={isFeedbackModalOpen}

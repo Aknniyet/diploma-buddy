@@ -22,6 +22,7 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback, onRequestReassignment })
     matchedNlpTopics.length > 0 ? "NLP support match" : "Detected student needs";
   const isDisabled =
     status === "pending" ||
+    status === "declined" ||
     status === "matched" ||
     status === "locked" ||
     status === "waiting" ||
@@ -34,6 +35,8 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback, onRequestReassignment })
   const buttonLabel =
     status === "matched"
       ? "Your Buddy"
+      : status === "declined"
+      ? "Declined"
       : status === "locked"
       ? "Unavailable"
       : status === "waiting"
@@ -157,8 +160,10 @@ function BuddyCard({ buddy, onConnect, onLeaveFeedback, onRequestReassignment })
               ? "You are currently matched with this buddy"
               : status === "locked"
               ? "You already have an active buddy"
+              : status === "declined"
+              ? "This buddy already declined your request."
               : status === "waiting"
-              ? "You already have a pending request"
+              ? "You already have a pending request."
               : `Matching score: ${buddy.scoreLabel || `${buddy.score}/100`}`}
           </small>
         </div>

@@ -267,7 +267,7 @@ function AdminEventsPage() {
                 ) : (
                   <label className="admin-image-upload">
                     <ImagePlus size={16} />
-                    Add image
+                    Add event image
                     <input type="file" accept="image/*" onChange={handleImageChange} />
                   </label>
                 )}
