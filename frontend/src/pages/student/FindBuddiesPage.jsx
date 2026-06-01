@@ -7,6 +7,7 @@ import BuddyList from "../../components/find-buddies/BuddyList";
 import BuddyRequestModal from "../../components/find-buddies/BuddyRequestModal";
 import BuddyFeedbackModal from "../../components/find-buddies/BuddyFeedbackModal";
 import { apiRequest } from "../../lib/api";
+import { REALTIME_WINDOW_EVENT } from "../../lib/realtime";
 import "../../styles/find-buddies.css";
 
 function ReassignmentRequestModal({ buddy, reason, isSubmitting, onReasonChange, onClose, onSubmit }) {
@@ -95,6 +96,26 @@ function FindBuddiesPage() {
 
   useEffect(() => {
     loadBuddies();
+  }, []);
+
+  useEffect(() => {
+    const handleRealtimeEvent = (event) => {
+      const detail = event.detail || {};
+      const realtimeType = detail.type;
+      const notificationType = detail.payload?.notification?.type;
+
+      if (
+        realtimeType === "buddy_request.updated" ||
+        realtimeType === "match.updated" ||
+        (realtimeType === "notification.created" &&
+          ["request_accepted", "request_declined", "match_created", "match_reassigned"].includes(notificationType))
+      ) {
+        loadBuddies().catch(() => null);
+      }
+    };
+
+    window.addEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
+    return () => window.removeEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
   }, []);
 
   const filteredBuddies = useMemo(() => {

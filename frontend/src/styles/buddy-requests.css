@@ -267,6 +267,20 @@
 }
 
 @media (max-width: 768px) {
+  .buddy-requests-tabs {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .buddy-tab-button {
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+
+  .buddy-request-item {
+    padding: 16px;
+  }
+
   .buddy-request-main {
     flex-direction: column;
   }
@@ -274,6 +288,14 @@
   .buddy-request-avatar {
     width: 58px;
     height: 58px;
+  }
+
+  .buddy-request-meta {
+    gap: 8px;
+  }
+
+  .buddy-request-footer {
+    align-items: stretch;
   }
 
   .buddy-request-actions {
@@ -288,5 +310,18 @@
 
   .request-status-badge {
     align-self: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .buddy-requests-header h1 {
+    font-size: 18px;
+  }
+
+  .buddy-requests-header p,
+  .buddy-request-message,
+  .buddy-request-date,
+  .buddy-request-meta span {
+    font-size: 12px;
   }
 }

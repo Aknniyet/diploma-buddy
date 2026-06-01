@@ -4,6 +4,7 @@ import RequestsTabs from "../../components/buddy-requests/RequestsTabs";
 import RequestCard from "../../components/buddy-requests/RequestCard";
 import PastRequestsEmptyState from "../../components/buddy-requests/PastRequestsEmptyState";
 import { apiRequest } from "../../lib/api";
+import { REALTIME_WINDOW_EVENT } from "../../lib/realtime";
 import "../../styles/buddy-requests.css";
 
 function BuddyRequestsPage() {
@@ -33,6 +34,27 @@ function BuddyRequestsPage() {
 
   useEffect(() => {
     loadRequests().catch(() => null);
+  }, []);
+
+  useEffect(() => {
+    const handleRealtimeEvent = (event) => {
+      const detail = event.detail || {};
+      const realtimeType = detail.type;
+      const notificationType = detail.payload?.notification?.type;
+
+      if (
+        realtimeType === "buddy_request.created" ||
+        realtimeType === "buddy_request.updated" ||
+        realtimeType === "match.updated" ||
+        (realtimeType === "notification.created" &&
+          ["request_received", "match_created", "match_reassigned"].includes(notificationType))
+      ) {
+        loadRequests().catch(() => null);
+      }
+    };
+
+    window.addEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
+    return () => window.removeEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
   }, []);
 
   const handleRespond = async (requestId, action) => {

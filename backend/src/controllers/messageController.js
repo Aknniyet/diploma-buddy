@@ -10,6 +10,7 @@ import {
 import { env } from "../config/env.js";
 import { findRecentNotification } from "../repositories/notificationRepository.js";
 import { createNotification } from '../services/notificationService.js';
+import { sendRealtimeEventToUser, sendRealtimeEventToUsers } from "../services/realtimeService.js";
 import { findUserProfileById } from '../repositories/userRepository.js';
 import { formatAstanaTime } from "../utils/datetime.js";
 import { decryptMessagePayload, encryptMessageText } from "../utils/messageCrypto.js";
@@ -78,6 +79,9 @@ export async function getConversationMessages(req, res) {
 
     const result = await findMessagesInConversation(conversationId, req.user.id);
     await markMessagesAsRead(conversationId, req.user.id);
+    sendRealtimeEventToUser(req.user.id, "conversation.read", {
+      conversationId: Number(conversationId),
+    });
 
     return res.json(
       result.rows.map((item) => mapConversationMessage(item, req.user.id))
@@ -134,13 +138,31 @@ export async function sendMessage(req, res) {
           : `${env.frontendUrl}/student/messages`,
     }).catch(() => null);
 
+    const realtimeMessage = {
+      id: result.rows[0].id,
+      text,
+      senderId: req.user.id,
+      senderName,
+      time: formatMessageTime(result.rows[0].created_at),
+      date: result.rows[0].created_at,
+    };
+
+    sendRealtimeEventToUsers(
+      [req.user.id, recipientId],
+      "message.created",
+      {
+        conversationId: Number(conversationId),
+        senderId: req.user.id,
+        recipientId,
+        messageId: result.rows[0].id,
+        message: realtimeMessage,
+      }
+    );
+
     return res.status(201).json({
       message: {
-        id: result.rows[0].id,
-        text,
+        ...realtimeMessage,
         sender: 'me',
-        time: formatMessageTime(result.rows[0].created_at),
-        date: result.rows[0].created_at,
       },
     });
   } catch (error) {
@@ -169,9 +191,15 @@ export async function removeMessagesForUser(req, res) {
     }
 
     const result = await deleteMessagesForUser(conversationId, req.user.id, messageIds);
+    const deletedMessageIds = result.rows.map((item) => item.message_id);
+
+    sendRealtimeEventToUser(req.user.id, "message.deleted", {
+      conversationId: Number(conversationId),
+      deletedMessageIds,
+    });
 
     return res.json({
-      deletedMessageIds: result.rows.map((item) => item.message_id),
+      deletedMessageIds,
     });
   } catch (error) {
     console.error('Delete messages error:', error.message);
@@ -189,9 +217,15 @@ export async function clearMessagesForUser(req, res) {
     }
 
     const result = await clearConversationForUser(conversationId, req.user.id);
+    const clearedAt = result.rows[0]?.cleared_at || null;
+
+    sendRealtimeEventToUser(req.user.id, "conversation.cleared", {
+      conversationId: Number(conversationId),
+      clearedAt,
+    });
 
     return res.json({
-      clearedAt: result.rows[0]?.cleared_at || null,
+      clearedAt,
     });
   } catch (error) {
     console.error('Clear conversation error:', error.message);

@@ -812,6 +812,10 @@
 }
 
 @media (max-width: 768px) {
+  .buddy-search {
+    max-width: 100%;
+  }
+
   .buddy-alert {
     padding: 18px;
     align-items: flex-start;
@@ -824,6 +828,10 @@
   .buddy-card-footer {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .buddy-card-actions {
+    width: 100%;
   }
 
   .buddy-score-toggle,
@@ -878,6 +886,32 @@
   .buddy-modal-submit {
     height: 48px;
     font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .find-buddies-header h1 {
+    font-size: 19px;
+  }
+
+  .find-buddies-header p,
+  .buddy-alert p,
+  .buddy-card-bio,
+  .buddy-detail-row,
+  .buddy-card-footer p,
+  .buddy-card-footer small {
+    font-size: 12px;
+  }
+
+  .buddy-modal-overlay {
+    padding: 12px;
+    align-items: flex-end;
+  }
+
+  .buddy-modal {
+    max-height: 92vh;
+    overflow-y: auto;
+    border-radius: 22px 22px 0 0;
   }
 }
 

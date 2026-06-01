@@ -1,8 +1,10 @@
-import { Send, Trash2, X } from "lucide-react";
+import { ArrowLeft, Send, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import AssistantConfirmModal from "../assistant/AssistantConfirmModal";
 import { getSavedUser } from "../../lib/api";
 import { formatAstanaRelativeDateLabel, formatAstanaTime, getAstanaDateKey } from "../../utils/datetime";
+
+const AUTO_SCROLL_THRESHOLD_PX = 72;
 
 function ChatWindow({
   conversation,
@@ -11,9 +13,11 @@ function ChatWindow({
   isLoadingMessages = false,
   isClearingConversation,
   isDeletingMessages,
+  onBack,
   onClearConversation,
   onDeleteMessages,
   onSendMessage,
+  showBackButton = false,
 }) {
   const [text, setText] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -22,13 +26,34 @@ function ChatWindow({
   const [selectedMessageIds, setSelectedMessageIds] = useState([]);
   const canSend = useMemo(() => text.trim().length > 0, [text]);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const isSendingRef = useRef(false);
+  const previousConversationIdRef = useRef(conversation.id);
+  const previousLastMessageKeyRef = useRef(null);
+  const shouldStickToBottomRef = useRef(true);
   const currentUser = getSavedUser();
   const isBusy = isSending || isDeletingMessages || isClearingConversation;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const container = messagesContainerRef.current;
+
+    if (!container) {
+      return () => {};
+    }
+
+    const updateShouldStickToBottom = () => {
+      const distanceFromBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight;
+      shouldStickToBottomRef.current = distanceFromBottom <= AUTO_SCROLL_THRESHOLD_PX;
+    };
+
+    updateShouldStickToBottom();
+    container.addEventListener("scroll", updateShouldStickToBottom);
+
+    return () => {
+      container.removeEventListener("scroll", updateShouldStickToBottom);
+    };
+  }, [conversation.id]);
 
   useEffect(() => {
     setIsSelectionMode(false);
@@ -71,6 +96,42 @@ function ChatWindow({
       };
     });
   }, [messages, currentUser?.id, selectedMessageIds]);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const lastRenderedMessage =
+      renderedMessages.length > 0 ? renderedMessages[renderedMessages.length - 1] : null;
+    const lastMessageKey =
+      lastRenderedMessage?.id ??
+      `${lastRenderedMessage?.date || lastRenderedMessage?.time || "empty"}-${renderedMessages.length}`;
+    const hasConversationChanged = previousConversationIdRef.current !== conversation.id;
+    const hasNewTailMessage = previousLastMessageKeyRef.current !== lastMessageKey;
+    const shouldScrollToBottom =
+      hasConversationChanged ||
+      (hasNewTailMessage &&
+        (shouldStickToBottomRef.current || Boolean(lastRenderedMessage?.isMyMessage)));
+
+    if (shouldScrollToBottom) {
+      requestAnimationFrame(() => {
+        const nextContainer = messagesContainerRef.current;
+
+        if (!nextContainer) {
+          return;
+        }
+
+        nextContainer.scrollTop = nextContainer.scrollHeight;
+        shouldStickToBottomRef.current = true;
+      });
+    }
+
+    previousConversationIdRef.current = conversation.id;
+    previousLastMessageKeyRef.current = lastMessageKey;
+  }, [conversation.id, renderedMessages]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,6 +196,17 @@ function ChatWindow({
     <div className="chat-window-card">
       <div className="chat-header">
         <div className="chat-user">
+          {showBackButton ? (
+            <button
+              type="button"
+              className="chat-back-button"
+              onClick={onBack}
+              aria-label="Back to conversations"
+            >
+              <ArrowLeft size={18} />
+            </button>
+          ) : null}
+
           <img
             src={conversation.avatar}
             alt={conversation.name}
@@ -199,7 +271,7 @@ function ChatWindow({
 
       {actionError ? <div className="chat-inline-error">{actionError}</div> : null}
 
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messagesContainerRef}>
         {isLoadingMessages ? (
           <div className="chat-empty-timeline">
             <h4>Loading messages</h4>

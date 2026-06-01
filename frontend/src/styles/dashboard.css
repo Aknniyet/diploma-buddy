@@ -717,6 +717,10 @@ button {
     padding: 0 14px;
   }
 
+  .topbar-actions {
+    gap: 12px;
+  }
+
   .topbar-profile-dropdown {
     right: -6px;
   }
@@ -735,5 +739,31 @@ button {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboard-topbar {
+    height: 60px;
+    padding: 0 12px;
+  }
+
+  .dashboard-topbar-context {
+    display: none;
+  }
+
+  .topbar-actions {
+    gap: 10px;
+  }
+
+  .dashboard-content {
+    padding: 12px;
+  }
+
+  .dashboard-menu-button,
+  .topbar-avatar,
+  .topbar-avatar-button {
+    width: 38px;
+    height: 38px;
   }
 }
