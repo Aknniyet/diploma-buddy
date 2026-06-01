@@ -1,6 +1,7 @@
 import { env } from "../config/env.js";
 import { createNotification as createNotificationRecord } from "../repositories/notificationRepository.js";
 import { findUserProfileById } from "../repositories/userRepository.js";
+import { sendRealtimeEventToUser } from "./realtimeService.js";
 import { isEmailConfigured, sendNotificationEmail } from "../utils/mailer.js";
 
 function getDefaultActionUrl(role) {
@@ -17,6 +18,13 @@ function getDefaultActionUrl(role) {
 
 export async function createNotification(payload) {
   const result = await createNotificationRecord(payload);
+  const createdNotification = result.rows[0] || null;
+
+  if (createdNotification) {
+    sendRealtimeEventToUser(payload.userId, "notification.created", {
+      notification: createdNotification,
+    });
+  }
 
   if (payload.sendEmail === false || !isEmailConfigured()) {
     return result;

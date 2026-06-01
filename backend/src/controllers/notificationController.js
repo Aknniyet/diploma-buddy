@@ -4,6 +4,7 @@ import {
   markAllNotificationsAsRead,
   deleteNotificationById,
 } from "../repositories/notificationRepository.js";
+import { sendRealtimeEventToUser } from "../services/realtimeService.js";
 
 export async function getNotifications(req, res) {
   try {
@@ -38,6 +39,10 @@ export async function readNotification(req, res) {
       return res.status(404).json({ message: "Notification not found." });
     }
 
+    sendRealtimeEventToUser(req.user.id, "notification.read", {
+      notificationId: Number(notificationId),
+    });
+
     return res.json({ message: "Notification marked as read." });
   } catch (error) {
     console.error("Mark notification read error:", error.message);
@@ -48,6 +53,7 @@ export async function readNotification(req, res) {
 export async function readAllNotifications(req, res) {
   try {
     await markAllNotificationsAsRead(req.user.id);
+    sendRealtimeEventToUser(req.user.id, "notification.read_all");
     return res.json({ message: "All notifications marked as read." });
   } catch (error) {
     console.error("Mark all notifications read error:", error.message);
@@ -64,6 +70,10 @@ export async function removeNotification(req, res) {
     if (!result.rows[0]) {
       return res.status(404).json({ message: "Notification not found." });
     }
+
+    sendRealtimeEventToUser(req.user.id, "notification.deleted", {
+      notificationId: Number(notificationId),
+    });
 
     return res.json({ message: "Notification deleted." });
   } catch (error) {

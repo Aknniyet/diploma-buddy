@@ -6,6 +6,7 @@ import NotificationsToolbar from "../../components/notifications/NotificationsTo
 import NotificationsList from "../../components/notifications/NotificationsList";
 import NotificationsEmptyState from "../../components/notifications/NotificationsEmptyState";
 import { apiRequest } from "../../lib/api";
+import { REALTIME_WINDOW_EVENT } from "../../lib/realtime";
 import { formatAstanaShortDateTime } from "../../utils/datetime";
 import "../../styles/notifications.css";
 
@@ -65,6 +66,19 @@ function NotificationsPage({ userType = "student" }) {
       setNotifications([]);
       setIsLoading(false);
     });
+  }, []);
+
+  useEffect(() => {
+    const handleRealtimeEvent = (event) => {
+      const realtimeType = event.detail?.type;
+
+      if (String(realtimeType || "").startsWith("notification.")) {
+        loadNotifications().catch(() => null);
+      }
+    };
+
+    window.addEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
+    return () => window.removeEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
   }, []);
 
   const unreadCount = useMemo(

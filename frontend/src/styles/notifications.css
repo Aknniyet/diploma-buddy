@@ -210,3 +210,47 @@
     margin-left: 58px;
   }
 }
+
+@media (max-width: 560px) {
+  .notifications-card-header {
+    padding: 18px 16px 14px;
+  }
+
+  .notifications-list {
+    padding: 0 8px 12px;
+  }
+
+  .notification-item {
+    margin: 0 8px 10px;
+    padding: 14px;
+  }
+
+  .notification-left {
+    gap: 12px;
+  }
+
+  .notification-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+
+  .notification-content h4 {
+    font-size: 15px;
+  }
+
+  .notification-content p,
+  .notification-date,
+  .notification-link {
+    font-size: 13px;
+  }
+
+  .notification-date {
+    margin-left: 0;
+  }
+
+  .mark-all-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

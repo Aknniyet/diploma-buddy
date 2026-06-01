@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Star, Users } from "lucide-react";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { apiRequest } from "../../lib/api";
+import { REALTIME_WINDOW_EVENT } from "../../lib/realtime";
 import "../../styles/buddy-my-buddies.css";
 
 function MyBuddiesPage() {
@@ -15,21 +16,44 @@ function MyBuddiesPage() {
     recent_reviews: [],
   });
 
-  useEffect(() => {
+  const loadData = async () => {
     setIsLoading(true);
-    Promise.all([
-      apiRequest("/buddy/matches/my"),
-      apiRequest("/buddy/feedback/my-summary"),
-    ])
-      .then(([matches, feedback]) => {
-        setStudents(matches);
-        setFeedbackSummary(feedback);
-        setLoadError("");
-      })
-      .catch((error) => {
-        setLoadError(error.message || "Could not load your students right now.");
-      })
-      .finally(() => setIsLoading(false));
+    try {
+      const [matches, feedback] = await Promise.all([
+        apiRequest("/buddy/matches/my"),
+        apiRequest("/buddy/feedback/my-summary"),
+      ]);
+      setStudents(matches);
+      setFeedbackSummary(feedback);
+      setLoadError("");
+    } catch (error) {
+      setLoadError(error.message || "Could not load your students right now.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData().catch(() => null);
+  }, []);
+
+  useEffect(() => {
+    const handleRealtimeEvent = (event) => {
+      const detail = event.detail || {};
+      const realtimeType = detail.type;
+      const notificationType = detail.payload?.notification?.type;
+
+      if (
+        realtimeType === "match.updated" ||
+        (realtimeType === "notification.created" &&
+          ["match_created", "match_reassigned", "feedback_received"].includes(notificationType))
+      ) {
+        loadData().catch(() => null);
+      }
+    };
+
+    window.addEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
+    return () => window.removeEventListener(REALTIME_WINDOW_EVENT, handleRealtimeEvent);
   }, []);
 
   return (
