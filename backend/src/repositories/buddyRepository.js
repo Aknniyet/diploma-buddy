@@ -125,6 +125,17 @@ export function findPendingRequestBetween(studentId, buddyId) {
   );
 }
 
+export function findDeclinedRequestBetween(studentId, buddyId) {
+  return query(
+    `SELECT id
+     FROM buddy_requests
+     WHERE international_student_id = $1 AND buddy_id = $2 AND status = 'declined'
+     ORDER BY responded_at DESC NULLS LAST, created_at DESC
+     LIMIT 1`,
+    [studentId, buddyId]
+  );
+}
+
 export function createBuddyRequest(studentId, payload) {
   return query(
     `INSERT INTO buddy_requests (
@@ -161,7 +172,7 @@ export function findRequestsCreatedByStudent(studentId) {
 
 export function findIncomingRequestsForBuddy(buddyId) {
   return query(
-    `SELECT br.id, br.message, br.status, br.created_at, br.responded_at,
+    `SELECT br.id, br.message, br.support_topics, br.status, br.created_at, br.responded_at,
             s.id AS student_id, s.full_name, s.home_country, s.study_program, s.hobbies, s.profile_photo_url
      FROM buddy_requests br
      JOIN users s ON s.id = br.international_student_id

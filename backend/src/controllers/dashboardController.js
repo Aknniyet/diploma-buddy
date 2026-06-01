@@ -29,7 +29,7 @@ export async function getStudentDashboard(req, res) {
       findUpcomingDashboardEvents(2),
     ]);
 
-    const [matchResult, requestResult, unreadResult, eventEngagementResult] = dashboardData;
+    const [matchResult, requestResult, unreadResult] = dashboardData;
 
     const buddy = matchResult.rows[0] || null;
     const tasks = checklistResult.rows || [];
@@ -59,7 +59,6 @@ export async function getStudentDashboard(req, res) {
       pendingRequests: requestResult.rows[0]?.pending_count || 0,
       hasBuddyRequest: Number(requestResult.rows[0]?.total_count || 0) > 0,
       unreadMessages: unreadResult.rows[0]?.count || 0,
-      eventEngagementCount: eventEngagementResult.rows[0]?.count || 0,
       buddy: buddy
         ? {
             name: buddy.full_name,

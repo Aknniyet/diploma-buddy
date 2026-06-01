@@ -1,7 +1,5 @@
 import {
-  createEventAttendance,
   createEvent,
-  deleteEventAttendance,
   deleteEvent,
   findAllEvents,
   findEventById,
@@ -53,7 +51,7 @@ export async function getEvents(req, res) {
   try {
     if (!(await ensureEventViewer(req, res))) return;
     triggerEventReminders();
-    const result = await findAllEvents(req.user.id);
+    const result = await findAllEvents();
     return res.json(result.rows);
   } catch (error) {
     console.error('Events error:', error.message);
@@ -65,7 +63,7 @@ export async function getEventDetails(req, res) {
   try {
     if (!(await ensureEventViewer(req, res))) return;
     triggerEventReminders();
-    const result = await findEventById(req.params.eventId, req.user.id);
+    const result = await findEventById(req.params.eventId);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: "Event not found." });
@@ -75,36 +73,6 @@ export async function getEventDetails(req, res) {
   } catch (error) {
     console.error("Event details error:", error.message);
     return res.status(500).json({ message: "Could not load event details." });
-  }
-}
-
-export async function toggleEventAttendanceByUser(req, res) {
-  try {
-    const user = await ensureEventViewer(req, res);
-    if (!user) return;
-
-    if (user.role === "admin") {
-      return res.status(403).json({ message: "Admins cannot RSVP to events." });
-    }
-
-    const eventResult = await findEventById(req.params.eventId, req.user.id);
-    const event = eventResult.rows[0];
-
-    if (!event) {
-      return res.status(404).json({ message: "Event not found." });
-    }
-
-    if (event.is_attending) {
-      await deleteEventAttendance(event.id, req.user.id);
-    } else {
-      await createEventAttendance(event.id, req.user.id);
-    }
-
-    const updatedResult = await findEventById(req.params.eventId, req.user.id);
-    return res.json(updatedResult.rows[0]);
-  } catch (error) {
-    console.error("Toggle event attendance error:", error.message);
-    return res.status(500).json({ message: "Could not update event attendance." });
   }
 }
 

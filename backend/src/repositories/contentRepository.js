@@ -1,40 +1,19 @@
 import { query } from '../config/db.js';
 
-export function findAllEvents(userId) {
+export function findAllEvents() {
   return query(
-    `SELECT e.id, e.title, e.description, e.event_date, e.location, e.category, e.image_url,
-            EXISTS (
-              SELECT 1
-              FROM event_attendance ea
-              WHERE ea.event_id = e.id AND ea.user_id = $1
-            ) AS is_attending,
-            (
-              SELECT COUNT(*)::int
-              FROM event_attendance ea
-              WHERE ea.event_id = e.id
-            ) AS attendees_count
+    `SELECT e.id, e.title, e.description, e.event_date, e.location, e.category, e.image_url
      FROM events e
-     ORDER BY event_date ASC`,
-    [userId]
+     ORDER BY event_date ASC`
   );
 }
 
-export function findEventById(eventId, userId) {
+export function findEventById(eventId) {
   return query(
-    `SELECT e.id, e.title, e.description, e.event_date, e.location, e.category, e.image_url,
-            EXISTS (
-              SELECT 1
-              FROM event_attendance ea
-              WHERE ea.event_id = e.id AND ea.user_id = $2
-            ) AS is_attending,
-            (
-              SELECT COUNT(*)::int
-              FROM event_attendance ea
-              WHERE ea.event_id = e.id
-            ) AS attendees_count
+    `SELECT e.id, e.title, e.description, e.event_date, e.location, e.category, e.image_url
      FROM events e
      WHERE e.id = $1`,
-    [eventId, userId]
+    [eventId]
   );
 }
 
@@ -108,25 +87,5 @@ export function markEventReminderSent(eventId, userId, reminderType) {
      ON CONFLICT (event_id, user_id, reminder_type) DO NOTHING
      RETURNING id`,
     [eventId, userId, reminderType]
-  );
-}
-
-export function createEventAttendance(eventId, userId) {
-  return query(
-    `INSERT INTO event_attendance (event_id, user_id, status, updated_at)
-     VALUES ($1, $2, 'going', NOW())
-     ON CONFLICT (event_id, user_id)
-     DO UPDATE SET status = 'going', updated_at = NOW()
-     RETURNING id`,
-    [eventId, userId]
-  );
-}
-
-export function deleteEventAttendance(eventId, userId) {
-  return query(
-    `DELETE FROM event_attendance
-     WHERE event_id = $1 AND user_id = $2
-     RETURNING id`,
-    [eventId, userId]
   );
 }

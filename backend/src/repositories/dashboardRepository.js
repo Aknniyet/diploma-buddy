@@ -28,12 +28,6 @@ export function findStudentDashboardData(userId) {
          AND m.sender_id <> $1 AND m.is_read = FALSE`,
       [userId]
     ),
-    query(
-      `SELECT COUNT(*)::int AS count
-       FROM event_attendance
-       WHERE user_id = $1`,
-      [userId]
-    ),
   ]);
 }
 

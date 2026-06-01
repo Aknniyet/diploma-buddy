@@ -5,6 +5,7 @@ import {
   findIncomingRequestsForBuddy,
   findBuddyFeedbackOverview,
   findMyMatches,
+  findDeclinedRequestBetween,
   findPendingRequestBetween,
   findStudentMatchedBuddy,
   findRequestsCreatedByStudent,
@@ -124,6 +125,13 @@ export async function createRequest(req, res) {
       return res.status(409).json({ message: 'You already sent a request to this buddy.' });
     }
 
+    const previousDeclined = await findDeclinedRequestBetween(req.user.id, buddyId);
+    if (previousDeclined.rows.length > 0) {
+      return res.status(409).json({
+        message: 'This buddy already declined your previous request. Please choose another buddy.',
+      });
+    }
+
     const mergedSupportTopics = getTopicLabels(
       detectSupportTopics(message, supportTopics || [])
     );
@@ -180,6 +188,7 @@ export async function getIncomingRequests(req, res) {
       country: item.home_country || 'Not specified',
       program: item.study_program || 'Not specified',
       interests: item.hobbies || [],
+      supportTopics: item.support_topics || [],
       message: item.message || 'No message provided.',
       date: formatAstanaDate(item.created_at),
       avatar:

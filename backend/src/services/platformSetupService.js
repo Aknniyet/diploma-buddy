@@ -99,19 +99,6 @@ export function ensurePlatformEnhancements() {
     );
 
     await query(
-      `CREATE TABLE IF NOT EXISTS event_attendance (
-        id SERIAL PRIMARY KEY,
-        event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        status VARCHAR(20) NOT NULL DEFAULT 'going'
-          CHECK (status IN ('going', 'attended')),
-        created_at TIMESTAMP DEFAULT NOW(),
-        updated_at TIMESTAMP DEFAULT NOW(),
-        UNIQUE (event_id, user_id)
-      )`
-    );
-
-    await query(
       `CREATE TABLE IF NOT EXISTS match_reassignment_requests (
         id SERIAL PRIMARY KEY,
         match_id INTEGER NOT NULL REFERENCES buddy_matches(id) ON DELETE CASCADE,
